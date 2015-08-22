@@ -1,0 +1,61 @@
+<link rel="import" href="common-styles.html">
+
+<dom-module id="today-view">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+  }
+
+  </style>
+  
+  <template>
+    
+    <style include="common-styles"></style>
+
+    <paper-card heading="{{exerciseTitle}}">
+      <div class="card-content">
+        <div class="layout horizontal">
+          <div>{{exerciseGoal}}</div>
+          <!-- TODO: use iron-icon -->
+          <img src="{{exerciseImageURL}}"></div>
+        </div>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: "today-view",
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+
+        exerciseTitle: {
+          type: String,
+          value: "???"
+        },
+
+        exerciseGoal: {
+          type: String,
+          value: "???"
+        },
+
+        exerciseImageURL: {
+          type: String,
+          value: "???"
+        }
+      }
+
+    });
+  </script>
+
+</dom-module>

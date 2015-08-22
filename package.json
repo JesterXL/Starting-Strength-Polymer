@@ -1,0 +1,25 @@
+{
+  "name": "starting-strength-polymer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JesterXL/Starting-Strength-Polymer.git"
+  },
+  "author": "Jesse Warden <jesse@jessewarden.com> (https://jessewarden.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JesterXL/Starting-Strength-Polymer/issues"
+  },
+  "homepage": "https://github.com/JesterXL/Starting-Strength-Polymer#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "lodash": "^3.10.1",
+    "restify": "^4.0.0",
+    "rx": "^3.1.1"
+  }
+}
