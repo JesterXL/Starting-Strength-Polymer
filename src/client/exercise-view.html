@@ -24,8 +24,8 @@
         <div>{{exercise.goal.weight}}</div>
       </div>
 
-      <template is="dom-repeat" items="{{sets}}">
-        <set-input></set-input>
+      <template is="dom-repeat" items="{{exercise.sets}}">
+        <set-input reps="{{item.reps}}" weight="{{item.weight}}"></set-input>
       </template>
       <paper-fab icon="add"></paper-fab>
     </div>
@@ -46,18 +46,15 @@
 
         exercise: {
           type: Object,
-          value: null
-        },
-
-        sets: {
-          type: Array,
-          value: []
+          value: null,
+          observer: '_onExerciseChanged'
         }
       },
 
-      _onImageChanged: function()
+      _onExerciseChanged: function(newValue, oldValue)
       {
-        console.log("_onImageChanged:", arguments);
+        console.log("exercise-view::_onExerciseChanged");
+        console.log(newValue);
       }
 
     });

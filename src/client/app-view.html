@@ -20,8 +20,8 @@
     </paper-toolbar>
 
     <iron-pages selected="{{selectedPageIndex}}">
-        <today-view on-selected="onShowExercise"></today-view>
-        <exercise-view></exercise-view>
+        <today-view on-exerciseselected="onShowExercise"></today-view>
+        <exercise-view exercise="{{currentExercise}}"></exercise-view>
     </iron-pages>
 
   </template>
@@ -44,6 +44,11 @@
         breadcrumbs: {
           type: Array,
           value: ['Starting Strength']
+        },
+
+        currentExercise: {
+          type: Object,
+          value: null
         }
       },
 
@@ -54,6 +59,8 @@
 
       onShowExercise: function(event, exercise)
       {
+        console.log("app-view::onShowExercise");
+        this.currentExercise = exercise;
         this.selectedPageIndex = 1;
         var list = _.toArray(this.breadcrumbs);
         list.push(exercise.name);
