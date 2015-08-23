@@ -55,11 +55,24 @@ function getRestDaysFromWorkoutDays(workoutDays)
 	return _.difference([0, 1, 2, 3, 4, 5, 6], workoutDays);
 }
 
+function getWorkoutForToday()
+{
+	// var today = new Date().getDay();
+	// var workoutSchedule = getDefaultWorkoutSchedule();
+	// return _.find(workoutSchedule, function(schedule)
+	// {
+	// 	return _.includes(schedule.days, today);
+	// }).exercises;
+	
+
+}
+
 var workouts = {
 	validDate: validDate,
 	goodDate: goodDate,
 	getDefaultWorkoutSchedule: getDefaultWorkoutSchedule,
-	getWorkoutSchedule: getWorkoutSchedule
+	getWorkoutSchedule: getWorkoutSchedule,
+	getWorkoutForToday: getWorkoutForToday
 
 };
 

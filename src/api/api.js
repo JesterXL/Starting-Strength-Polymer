@@ -28,7 +28,53 @@ api.get('/api/workouts/today', function(req, res)
 {
     // TODO: calculate goal, for now hardcode
     console.log("*** /api/workouts ***");
-    res.json(workouts);
+    res.json([
+            {
+                name: 'Squat',
+                sets: [
+                    {
+                        reps: 5,
+                        weight: 45
+                    },
+                    {
+                        reps: 5,
+                        weight: 45
+                    },
+                    {
+                        reps: 5,
+                        weight: 45
+                    }
+                ]
+            },
+
+            {
+                name: 'Bench Press',
+                sets: [
+                    {
+                        reps: 5,
+                        weight: 45
+                    },
+                    {
+                        reps: 5,
+                        weight: 45
+                    },
+                    {
+                        reps: 5,
+                        weight: 45
+                    }
+                ]
+            },
+
+            {
+                name: 'Deadlift',
+                sets: [
+                    {
+                        reps: 5,
+                        weight: 45
+                    }
+                ]
+            }
+        ]);
 });
 
 

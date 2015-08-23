@@ -20,10 +20,7 @@
     <!-- TODO: fix image, need more coffee -->
     <div class="layout vertical">
        <template is="dom-repeat" items="{{exercises}}">
-          <today-exercise-card exercise-title="{{item.name}}"
-            exercise-goal="{{item.goal}}"
-            exercise-image-url="images/bench-press.png"
-            on-cow="onExerciseTapped"></today-exercise-card>
+          <today-exercise-card exercise="{{item}}"></today-exercise-card>
         </template>
     </div>
 
@@ -80,25 +77,12 @@
       handleResponse: function(response)
       {
         console.log("today-view::handleResponse, response:", response.detail.response);
-        var todaysWorkout = response.detail.response;
-        var monday = new Date();
-        monday.setDate(monday.getDate() + 1);
-        var workout = this.getExercisesForDate(todaysWorkout, monday);
-        this.exercises = workout.exercises;
-      },
-
-      getExercisesForDate: function(workouts, date)
-      {
-          return _.find(workouts, function(workout)
-          {
-              return _.includes(workout.days, date.getDay());
-          });
-      },
-
-      onExerciseTapped: function(event, detail)
-      {
-        console.log("today-view::onExerciseTapped");
-        this.fire('selected', detail);
+        var me = this;
+        this.exercises = _.map(response.detail.response, function(exercise)
+        {
+          exercise.imageURL = me.getExerciseIcon(exercise.name);
+          return exercise;
+        });
       }
 
     });

@@ -10,19 +10,22 @@
     padding: 12px;
   }
 
+  img {
+    width: 220px;
+    height: 220px;
+  }
+
   </style>
   
   <template>
     
     <style include="common-styles"></style>
 
-    <paper-card heading="{{exerciseTitle}}"
-      image$="{{exerciseImageURL}}">
+    <paper-card heading="{{exercise.name}}">
       <div class="card-content">
         <div class="layout horizontal">
-          <div>{{exerciseGoal}}</div>
-          <!-- TODO: use iron-icon -->
-          <!-- <img src="{{exerciseImageURL}}"></div> -->
+            <div>{{exercise.goal}}</div>
+            <img src="{{exercise.imageURL}}"></img>
         </div>
       </div>
     </paper-card>
@@ -40,20 +43,9 @@
 
       properties: {
 
-        exerciseTitle: {
-          type: String,
-          value: "???"
-        },
-
-        exerciseGoal: {
-          type: String,
-          value: "???"
-        },
-
-        exerciseImageURL: {
-          type: String,
-          value: "???",
-          observer: '_onImageChanged'
+        exercise: {
+          type: Object,
+          value: null
         }
       },
 
@@ -69,7 +61,7 @@
       onCardTap: function()
       {
         console.log("today-exercise-card::onCardTap");
-        this.fire('cow', {name: this.exerciseTitle});
+        this.fire('selected', this.exercise);
       }
 
     });

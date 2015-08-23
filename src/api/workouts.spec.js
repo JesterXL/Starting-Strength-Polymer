@@ -113,6 +113,15 @@ describe('#workouts', function() {
     	});
     });
 
+    describe('#workoutSchedule', function()
+    {
+        it('getWorkoutForToday', function()
+        {
+            console.log("workouts.getWorkoutForToday():", workouts.getWorkoutForToday());
+            workouts.getWorkoutForToday().should.not.be.null;
+        });
+    });
+
     
 
     
