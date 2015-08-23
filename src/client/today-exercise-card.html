@@ -60,6 +60,16 @@
       _onImageChanged: function()
       {
         console.log("_onImageChanged:", arguments);
+      },
+
+      listeners: {
+        'tap': 'onCardTap'
+      },
+
+      onCardTap: function()
+      {
+        console.log("today-exercise-card::onCardTap");
+        this.fire('cow', {name: this.exerciseTitle});
       }
 
     });

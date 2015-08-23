@@ -23,7 +23,7 @@
           <today-exercise-card exercise-title="{{item.name}}"
             exercise-goal="{{item.goal}}"
             exercise-image-url="images/bench-press.png"
-            ></today-exercise-card>
+            on-cow="onExerciseTapped"></today-exercise-card>
         </template>
     </div>
 
@@ -93,6 +93,12 @@
           {
               return _.includes(workout.days, date.getDay());
           });
+      },
+
+      onExerciseTapped: function(event, detail)
+      {
+        console.log("today-view::onExerciseTapped");
+        this.fire('selected', detail);
       }
 
     });

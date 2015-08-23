@@ -19,11 +19,7 @@
     </paper-toolbar>
 
     <iron-pages selected="{{selectedPageIndex}}">
-        <div class="layout vertical wrap">
-            <today-view></today-view>
-        </div>
-        <div>Dos</div>
-        <div>Tres</div>
+        <today-view on-selected="onShowExercise"></today-view>
         <exercise-view></exercise-view>
     </iron-pages>
 
@@ -45,15 +41,10 @@
         }
       },
 
-      attached: function()
+      onShowExercise: function(event, detail)
       {
-        var me = this;
-        _.delay(function()
-        {
-          me.selectedPageIndex = 1;
-        }, 3000);
+        this.selectedPageIndex = 1;
       }
-
 
 
 
