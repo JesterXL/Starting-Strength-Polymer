@@ -1,0 +1,53 @@
+<link rel="import" href="common-styles.html">
+
+<dom-module id="set-input">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+  }
+
+  </style>
+  
+  <template>
+    
+    <style include="common-styles"></style>
+
+    <div class="layout horizontal">
+      <h3>Set</h3>
+      <paper-input value="{{reps}}"></paper-input>
+      <paper-input value="{{weight}}"></paper-input>
+    </div>
+    
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: "exercise-view",
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+
+        exercise: {
+          type: Object,
+          value: null
+        },
+
+        sets: {
+          type: Array,
+          value: []
+        }
+      }
+
+    });
+  </script>
+
+</dom-module>

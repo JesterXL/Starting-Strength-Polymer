@@ -17,16 +17,18 @@
     
     <style include="common-styles"></style>
 
+    <!-- TODO: fix image, need more coffee -->
     <div class="layout vertical">
        <template is="dom-repeat" items="{{exercises}}">
           <today-exercise-card exercise-title="{{item.name}}"
             exercise-goal="{{item.goal}}"
-            exercise-image-url="{{getExerciseIcon(item.name)}}"
+            exercise-image-url="images/bench-press.png"
             ></today-exercise-card>
         </template>
     </div>
 
     <iron-ajax
+      auto
       id="workoutTodayService"
       url="http://localhost:5000/api/workouts/today"
       handle-as="json"
@@ -71,7 +73,7 @@
             image = 'images/bench-press.png';
             break;
         }
-        console.log("image:", image);
+        console.log("getExerciseIcon, image:", image);
         return image;
       },
 
@@ -80,7 +82,7 @@
         console.log("today-view::handleResponse, response:", response.detail.response);
         var todaysWorkout = response.detail.response;
         var monday = new Date();
-        monday.setDate(monday.getDate() + 2);
+        monday.setDate(monday.getDate() + 1);
         var workout = this.getExercisesForDate(todaysWorkout, monday);
         this.exercises = workout.exercises;
       },
@@ -91,16 +93,6 @@
           {
               return _.includes(workout.days, date.getDay());
           });
-      },
-
-      attached: function()
-      {
-        var me = this;
-        _.delay(function()
-        {
-          me.$.workoutTodayService.generateRequest();
-        }, 2000);
-        
       }
 
     });

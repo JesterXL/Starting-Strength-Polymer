@@ -1,0 +1,66 @@
+<link rel="import" href="common-styles.html">
+
+<dom-module id="exercise-view">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+  }
+
+  </style>
+  
+  <template>
+    
+    <style include="common-styles"></style>
+
+    <div class="layout vertical">
+
+      <div class="layout horizontal">
+        <h2>{{exercise.name}}</h2>
+        <div>{{exercise.goal.reps}}</div>
+        <div>{{exercise.goal.weight}}</div>
+      </div>
+
+      <template is="dom-repeat" items="{{sets}}">
+        <set-input></set-input>
+      </template>
+      <paper-fab icon="add"></paper-fab>
+    </div>
+    
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: "exercise-view",
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+
+        exercise: {
+          type: Object,
+          value: null
+        },
+
+        sets: {
+          type: Array,
+          value: []
+        }
+      },
+
+      _onImageChanged: function()
+      {
+        console.log("_onImageChanged:", arguments);
+      }
+
+    });
+  </script>
+
+</dom-module>

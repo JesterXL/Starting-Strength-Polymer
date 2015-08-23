@@ -1,0 +1,63 @@
+<dom-module id="app-view">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+  }
+
+  </style>
+  
+  <template>
+    
+    <paper-toolbar>
+        <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
+            <div class="title">Starting Strength</div>
+        <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+    </paper-toolbar>
+
+    <iron-pages selected="{{selectedPageIndex}}">
+        <div class="layout vertical wrap">
+            <today-view></today-view>
+        </div>
+        <div>Dos</div>
+        <div>Tres</div>
+        <exercise-view></exercise-view>
+    </iron-pages>
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: "app-view",
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+        selectedPageIndex: {
+          type: Number,
+          value: 0
+        }
+      },
+
+      attached: function()
+      {
+        var me = this;
+        _.delay(function()
+        {
+          me.selectedPageIndex = 1;
+        }, 3000);
+      }
+
+
+
+
+    });
+  </script>
+
+</dom-module>
