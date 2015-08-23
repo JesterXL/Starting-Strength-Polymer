@@ -1,4 +1,5 @@
 <link rel="import" href="common-styles.html">
+<link rel="import" href="set-input.html">
 
 <dom-module id="exercise-view">
 
@@ -18,16 +19,17 @@
 
     <div class="layout vertical">
 
-      <div class="layout horizontal">
-        <h2>{{exercise.name}}</h2>
-        <div>{{exercise.goal.reps}}</div>
-        <div>{{exercise.goal.weight}}</div>
-      </div>
+      <h2>{{exercise.name}}</h2>
 
       <template is="dom-repeat" items="{{exercise.sets}}">
-        <set-input reps="{{item.reps}}" weight="{{item.weight}}"></set-input>
+        <set-input current-set="{{item}}"></set-input>
       </template>
-      <paper-fab icon="add"></paper-fab>
+
+      <div class="layout horizontal">
+        <div class="flex"></div>
+        <paper-fab icon="add"></paper-fab>
+      </div>
+
     </div>
     
 
@@ -46,15 +48,8 @@
 
         exercise: {
           type: Object,
-          value: null,
-          observer: '_onExerciseChanged'
+          value: null
         }
-      },
-
-      _onExerciseChanged: function(newValue, oldValue)
-      {
-        console.log("exercise-view::_onExerciseChanged");
-        console.log(newValue);
       }
 
     });

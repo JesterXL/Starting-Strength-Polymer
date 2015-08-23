@@ -18,8 +18,8 @@
 
     <div class="layout horizontal">
       <h3>Set</h3>
-      <paper-input value="{{reps}}"></paper-input>
-      <paper-input value="{{weight}}"></paper-input>
+      <paper-input label="{{getGoalReps(currentSet.goalReps)}}" value="{{currentSet.reps}}"></paper-input>
+      <paper-input label="{{getGoalWeight(currentSet.goalWeight)}}" value="{{currentSet.weight}}"></paper-input>
     </div>
     
 
@@ -28,7 +28,7 @@
   <script>
 
     Polymer({
-      is: "exercise-view",
+      is: "set-input",
 
       behaviors: [
         Polymer.NeonAnimationRunnerBehavior
@@ -36,15 +36,20 @@
 
       properties: {
 
-        reps: {
-          type: Number,
-          value: null
-        },
-
-        weight: {
-          type: Number,
+        currentSet: {
+          type: Object,
           value: null
         }
+      },
+
+      getGoalReps: function(reps)
+      {
+        return 'Goal: ' + reps + ' reps'
+      },
+
+      getGoalWeight: function(weight)
+      {
+        return 'Goal: ' + weight + ' lbs'
       }
 
     });

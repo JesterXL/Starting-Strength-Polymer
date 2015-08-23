@@ -33,46 +33,64 @@ api.get('/api/workouts/today', function(req, res)
                 name: 'Squat',
                 sets: [
                     {
-                        reps: 5,
-                        weight: 45
+                        reps: null,
+                        weight: 45,
+                        goalReps: 5,
+                        goalWeight: 45
                     },
                     {
-                        reps: 5,
-                        weight: 45
+                        reps: null,
+                        weight: 45,
+                        goalReps: 5,
+                        goalWeight: 45
                     },
                     {
-                        reps: 5,
-                        weight: 45
+                        reps: null,
+                        weight: 45,
+                        goalReps: 5,
+                        goalWeight: 45
                     }
-                ]
+                ],
+                goalSets: 3
             },
 
             {
                 name: 'Bench Press',
                 sets: [
                     {
-                        reps: 5,
-                        weight: 45
+                        reps: null,
+                        weight: 45,
+                        goalReps: 5,
+                        goalWeight: 45
                     },
                     {
-                        reps: 5,
-                        weight: 45
+                        reps: null,
+                        weight: 45,
+                        goalReps: 5,
+                        goalWeight: 45
                     },
                     {
-                        reps: 5,
-                        weight: 45
+                        reps: null,
+                        weight: 45,
+                        goalReps: 5,
+                        goalWeight: 45
                     }
-                ]
+                ],
+                goalSets: 3
             },
 
             {
                 name: 'Deadlift',
                 sets: [
                     {
-                        reps: 5,
-                        weight: 45
+                        reps: null,
+                        weight: 45,
+                        goalReps: 5,
+                        goalWeight: 45
                     }
-                ]
+                ],
+                goalSets: 1
+
             }
         ]);
 });
