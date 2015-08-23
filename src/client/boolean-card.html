@@ -1,0 +1,211 @@
+<link rel="import" href="validator-styles.html">
+
+<dom-module id="boolean-card">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+  }
+
+  </style>
+  
+  <template>
+    
+    <style include="validator-styles"></style>
+
+    <paper-card heading="Boolean Validator">
+        <div class="card-content">
+          <div class="layout vertical">
+            <paper-dropdown-menu id="dataTypes" label="Choose a datatype" on-selected-item-changed="onSelected">
+              <paper-menu class="dropdown-content">
+                <paper-item data-type="true">true</paper-item>
+                <paper-item data-type="false">false</paper-item>
+                <paper-item data-type="0">0</paper-item>
+                <paper-item data-type="1">1</paper-item>
+                <paper-item data-type="string0">"0"</paper-item>
+                <paper-item data-type="string1">"1"</paper-item>
+                <paper-item data-type="null">null</paper-item>
+                <paper-item data-type="undefined">undefined</paper-item>
+                <paper-item data-type="newboolean">new Boolean(false)</paper-item>
+              </paper-menu>
+            </paper-dropdown-menu>
+
+            <template is="dom-if" if="{{showTitles(dirty)}}"><span id="browserTitle"><h3>Browser</h3></span></template>
+            <success-failure id="browserSuccess"
+              valid-message="Valid boolean."
+              invalid-message="Not a valid boolean!"></success-failure>
+
+            <template is="dom-if" if="{{showTitles(dirty)}}"><h3 id="nodeTitle">Node</h3></template>
+            <success-failure id="nodeSuccess"
+              valid-message="Valid boolean."
+              invalid-message="Not a valid boolean!"></success-failure>
+          </div>
+
+        </div>
+        
+        <div class="card-actions layout horizontal">
+            <span class="flex"></span>
+            <paper-button on-click="validate">Validate</paper-button>
+        </div>
+
+    </paper-card>
+
+    <iron-ajax
+      id="predicateService"
+      url="http://localhost:3000/api/predicate"
+      handle-as="json"
+      content-type="application/json"
+      method="POST"
+      on-response="handleResponse"
+      debounce-duration="300"></iron-ajax>
+
+  </template>
+
+
+
+  <script>
+
+    Polymer({
+      is: "boolean-card",
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+
+        dirty: {
+          type: Boolean,
+          value: false
+        },
+
+        selectedType: {
+          type: Object,
+          value: null
+        },
+
+        animationConfig: {
+            type: Object,
+            value: function() {
+              console.log("title", this.$.browserTitle);
+              return {
+                name: 'fade-in-animation',
+                node: this,
+                timing: {duration: 1000}
+              }
+            }
+
+        }
+      },
+
+      setSelectedType: function(type)
+      {
+        switch(type)
+        {
+          case 'true':
+            this.selectedType = true;
+            break;
+
+          case 'false':
+            this.selectedType = false;
+            break;
+
+          case '1':
+            this.selectedType = 1;
+            break;
+
+          case '0':
+            this.selectedType = 0;
+            break;
+
+          case 'string1':
+            this.selectedType = '1';
+            break;
+
+          case 'string0':
+            this.selectedType = '0';
+            break;
+
+          case 'null':
+            this.selectedType = null;
+            break;
+
+          case 'undefined':
+            this.selectedType = undefined;
+            break;
+
+          case 'newboolean':
+            this.selectedType = new Boolean(false);
+            break;
+        }
+        
+      },
+
+      validate: function()
+      {
+        var validated  = wdprValidators.boolean.aBoolean(this.selectedType);
+        this.validationResult(validated);
+        this.dirty = true;
+        // var me = this;
+        // _.delay(function()
+        // {
+        //   me.playAnimation();
+        // }, 4000);
+        
+        // this.playAnimation('browserTitle');
+        // this.playAnimation('nodeTitle');
+
+        this.$.nodeSuccess.currentState = 'loading';
+
+        this.$.predicateService.body = {
+          method: 'aBoolean',
+          package: 'boolean',
+          value: this.selectedType
+        };
+        this.$.predicateService.generateRequest();
+
+      },
+
+      onSelected: function()
+      {
+        this.setSelectedType(this.$.dataTypes.selectedItem.dataset.type);
+      },
+
+      showTitles: function()
+      {
+        return this.$.browserSuccess.currentState !== 'waiting';
+      },
+
+      validationResult: function(validated)
+      {
+        if(validated)
+        {
+          this.$.browserSuccess.currentState = 'valid';
+        }
+        else
+        {
+          this.$.browserSuccess.currentState = 'invalid';
+        }
+      },
+
+      handleResponse: function(event)
+      {
+        if(event.detail.response.result === true)
+        {
+          this.$.nodeSuccess.currentState = 'valid';
+        }
+        else
+        {
+          this.$.nodeSuccess.currentState = 'invalid';
+        }
+      }
+
+    });
+  </script>
+
+  
+
+</dom-module>

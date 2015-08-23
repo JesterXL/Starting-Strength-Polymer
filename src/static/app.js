@@ -26,4 +26,4 @@ app.listen(port, function() {
     console.log('Demo server started on port ' + port);
 });
 
-// var api = require('../api');
+var api = require('../api/api');

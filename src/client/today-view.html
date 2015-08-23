@@ -1,4 +1,5 @@
 <link rel="import" href="common-styles.html">
+<link rel="import" href="today-exercise-card.html">
 
 <dom-module id="today-view">
 
@@ -16,15 +17,23 @@
     
     <style include="common-styles"></style>
 
-    <paper-card heading="{{exerciseTitle}}">
-      <div class="card-content">
-        <div class="layout horizontal">
-          <div>{{exerciseGoal}}</div>
-          <!-- TODO: use iron-icon -->
-          <img src="{{exerciseImageURL}}"></div>
-        </div>
-      </div>
-    </paper-card>
+    <div class="layout vertical">
+       <template is="dom-repeat" items="{{exercises}}">
+          <today-exercise-card exercise-title="{{item.name}}"
+            exercise-goal="{{item.goal}}"
+            exercise-image-url="{{getExerciseIcon(item.name)}}"
+            ></today-exercise-card>
+        </template>
+    </div>
+
+    <iron-ajax
+      id="workoutTodayService"
+      url="http://localhost:5000/api/workouts/today"
+      handle-as="json"
+      content-type="application/json"
+      method="GET"
+      on-response="handleResponse"
+      debounce-duration="300"></iron-ajax>
 
   </template>
 
@@ -39,20 +48,59 @@
 
       properties: {
 
-        exerciseTitle: {
-          type: String,
-          value: "???"
-        },
-
-        exerciseGoal: {
-          type: String,
-          value: "???"
-        },
-
-        exerciseImageURL: {
-          type: String,
-          value: "???"
+        exercises: {
+          type: Array,
+          value: []
         }
+      },
+
+      getExerciseIcon: function(exerciseName)
+      {
+        var image = "";
+        switch(exerciseName.toLowerCase())
+        {
+          case 'squat':
+            image = 'images/squat.jpg';
+            break;
+
+          case 'deadlift':
+            image = 'images/deadlift.jpg';
+            break;
+
+          case 'bench press':
+            image = 'images/bench-press.png';
+            break;
+        }
+        console.log("image:", image);
+        return image;
+      },
+
+      handleResponse: function(response)
+      {
+        console.log("today-view::handleResponse, response:", response.detail.response);
+        var todaysWorkout = response.detail.response;
+        var monday = new Date();
+        monday.setDate(monday.getDate() + 2);
+        var workout = this.getExercisesForDate(todaysWorkout, monday);
+        this.exercises = workout.exercises;
+      },
+
+      getExercisesForDate: function(workouts, date)
+      {
+          return _.find(workouts, function(workout)
+          {
+              return _.includes(workout.days, date.getDay());
+          });
+      },
+
+      attached: function()
+      {
+        var me = this;
+        _.delay(function()
+        {
+          me.$.workoutTodayService.generateRequest();
+        }, 2000);
+        
       }
 
     });
