@@ -1,6 +1,6 @@
 # Starting Strength
 
-A project I created to learn more about [Polymer](https://www.polymer-project.org/1.0/) 1.1 and [RxJS](https://github.com/Reactive-Extensions/RxJS).
+A project I created to learn more about [Polymer](https://www.polymer-project.org/1.0/) 1.1 and [RxJS](https://github.com/Reactive-Extensions/RxJS). It helps you track your [Starting Strength](http://startingstrength.com/) progress.
 
 # Instructions
 
