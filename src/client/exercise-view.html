@@ -11,6 +11,14 @@
     padding: 12px;
   }
 
+  .removeIcon {
+    opacity: 0.54;
+  }
+
+  .setTitle {
+    opacity: 0.87;
+  }
+
   </style>
   
   <template>
@@ -21,23 +29,46 @@
 
       <h2>{{exercise.name}}</h2>
 
-      <template is="dom-repeat" items="{{exercise.sets}}">
-        <set-input current-set="{{item}}"></set-input>
+      <template is="dom-if" if="{{!saving}}">
+      
+        <h4 class="listTitle">Sets</h4>
+
+        <template is="dom-repeat" items="{{exercise.sets}}">
+          <div class="layout horizontal center">
+            <h3 class="setTitle">[[getSetNumber(index)]]</h3>
+            <set-input current-set="{{item}}"></set-input>
+            <iron-icon icon="icons:remove-circle" class="removeIcon" on-tap="removeSet"></iron-icon>
+          </div>
+        </template>
+
+        <div class="layout horizontal">
+          <paper-fab icon="add" on-tap="onAddSet"></paper-fab>
+          <div class="flex"></div>
+        </div>
+
+        <div class="layout horizontal">
+          <div class="flex"></div>
+            <paper-button on-tap="onSave">Save</paper-button>
+        </div>
       </template>
 
-      <div class="layout horizontal">
-        <paper-fab icon="add" on-tap="onAddSet"></paper-fab>
-        <div class="flex"></div>
-      </div>
-
-      <div class="layout horizontal">
-        <div class="flex"></div>
-        <paper-button on-tap="onSave">Save</paper-button>
-      </div>
-
     </div>
-    
 
+    <template is="dom-if" if="{{saving}}">
+        <div class="layout horizontal center">
+          <paper-spinner active></paper-spinner><div class="loading">Saving...</div>
+        </div>
+    </template>
+
+    <iron-ajax
+      id="saveExerciseService"
+      url="http://localhost:5000/api/workouts/exercise/save"
+      handle-as="json"
+      content-type="application/json"
+      method="POST"
+      on-response="onSaveExerciseResponse"
+      debounce-duration="1000"></iron-ajax>
+    
   </template>
 
   <script>
@@ -54,30 +85,62 @@
         exercise: {
           type: Object,
           value: null
+        },
+
+        saving: {
+          type: Boolean,
+          value: false
         }
       },
 
-      // _onExerciseChanged: function(newValue, oldValue)
-      // {
-      //   console.log("exercise-view::_onExerciseChanged:", newValue);
-      // },
+      getSetNumber: function(index)
+      {
+        return "Set #" + (index + 1);
+      },
 
       onAddSet: function()
       {
-        var previousSet = this.exercise.sets[this.exercise.sets.length - 1];
-        var newSet = {
-          reps: 0,
-          weight: previousSet.weight,
-          goalReps: previousSet.goalReps,
-          goalWeight: previousSet.goalWeight
-        };
+        var newSet;
+        if(this.exercise.sets.length > 0)
+        {
+          var previousSet = this.exercise.sets[this.exercise.sets.length - 1];
+          newSet = {
+            reps: 0,
+            weight: previousSet.weight,
+            goalReps: previousSet.goalReps,
+            goalWeight: previousSet.goalWeight
+          };
+        }
+        else
+        {
+          newSet = {
+            reps: 0,
+            weight: 0,
+            goalReps: 0,
+            goalWeight: 0
+          };
+        }
         this.push('exercise.sets', newSet);
 
       },
 
+      removeSet: function(event)
+      {
+        this.splice('exercise.sets', event.model.index, 1);
+      },
+
       onSave: function()
       {
-        this.fire('save');
+        console.log("exercise-view::onSave");
+        this.saving = true;
+        saveExerciseService.body = JSON.stringify(this.exercise);
+        saveExerciseService.generateRequest();
+      },
+
+      onSaveExerciseResponse: function(response)
+      {
+        console.log("today-view::onSaveExerciseResponse, response:", response.detail.response);
+        this.saving = false;
       }
 
     });

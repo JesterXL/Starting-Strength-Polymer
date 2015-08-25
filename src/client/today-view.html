@@ -22,7 +22,8 @@
     <!-- TODO: fix image, need more coffee -->
     <div class="layout horizontal wrap">
        <template is="dom-repeat" items="{{exercises}}">
-          <today-exercise-card exercise="{{item}}"></today-exercise-card>
+          <today-exercise-card exercise="{{item}}"
+            on-cow="onSaveExercise"></today-exercise-card>
         </template>
     </div>
 

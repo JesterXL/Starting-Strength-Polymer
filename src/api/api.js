@@ -1,5 +1,7 @@
 console.log('Loading restify server...');
 
+var _ = require('lodash');
+
 var restify = require('restify');
 var api = restify.createServer({name: 'starting-strength'});
 api.listen(process.env.PORT || 5000, function () {
@@ -93,6 +95,16 @@ api.get('/api/workouts/today', function(req, res)
 
             }
         ]);
+});
+
+api.post('/api/workouts/exercise/save', function(req, res)
+{
+    console.log("*** /api/workouts/exercise/save ***");
+
+    _.delay(function()
+    {
+        res.json({result: true});
+    }, 1000);
 });
 
 

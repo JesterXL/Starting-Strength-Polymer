@@ -10,6 +10,10 @@
     padding: 12px;
   }
 
+  .padder {
+    width: 2em;
+  }
+
   </style>
   
   <template>
@@ -17,8 +21,8 @@
     <style include="common-styles"></style>
 
     <div class="layout horizontal">
-      <h3>Set</h3>
       <paper-input label="{{getGoalReps(currentSet.goalReps)}}" value="{{currentSet.reps}}"></paper-input>
+      <div class="padder"></div>
       <paper-input label="{{getGoalWeight(currentSet.goalWeight)}}" value="{{currentSet.weight}}"></paper-input>
     </div>
     
