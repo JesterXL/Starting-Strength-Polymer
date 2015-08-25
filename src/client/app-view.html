@@ -22,7 +22,8 @@
 
           <iron-pages selected="{{selectedPageIndex}}">
               <today-view on-exerciseselected="onShowExercise"></today-view>
-              <exercise-view exercise="{{currentExercise}}"></exercise-view>
+              <exercise-view exercise="{{currentExercise}}"
+                on-exercise-saved="onExerciseSaved"></exercise-view>
           </iron-pages>
         </paper-header-panel>
       </div>
@@ -106,6 +107,11 @@
           console.log("onpopstate:", event);
           me.navigateIfExercise(history.state);
         };
+      },
+
+      onExerciseSaved: function(event, exercise)
+      {
+        console.log("app-view::onExerciseSaved, exercise:", exercise);
       }
 
 

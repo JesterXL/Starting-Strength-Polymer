@@ -141,6 +141,7 @@
       {
         console.log("today-view::onSaveExerciseResponse, response:", response.detail.response);
         this.saving = false;
+        this.fire('exercise-saved', this.exercise);
       }
 
     });
