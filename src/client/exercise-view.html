@@ -26,8 +26,13 @@
       </template>
 
       <div class="layout horizontal">
+        <paper-fab icon="add" on-tap="onAddSet"></paper-fab>
         <div class="flex"></div>
-        <paper-fab icon="add"></paper-fab>
+      </div>
+
+      <div class="layout horizontal">
+        <div class="flex"></div>
+        <paper-button on-tap="onSave">Save</paper-button>
       </div>
 
     </div>
@@ -50,6 +55,29 @@
           type: Object,
           value: null
         }
+      },
+
+      // _onExerciseChanged: function(newValue, oldValue)
+      // {
+      //   console.log("exercise-view::_onExerciseChanged:", newValue);
+      // },
+
+      onAddSet: function()
+      {
+        var previousSet = this.exercise.sets[this.exercise.sets.length - 1];
+        var newSet = {
+          reps: 0,
+          weight: previousSet.weight,
+          goalReps: previousSet.goalReps,
+          goalWeight: previousSet.goalWeight
+        };
+        this.push('exercise.sets', newSet);
+
+      },
+
+      onSave: function()
+      {
+        this.fire('save');
       }
 
     });

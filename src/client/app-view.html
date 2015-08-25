@@ -64,8 +64,8 @@
 
       onShowExercise: function(event, exercise)
       {
-        console.log("app-view::onShowExercise");
-        this.currentExercise = exercise;
+        console.log("app-view::onShowExercise, exercise:", exercise);
+        this.currentExercise = _.cloneDeep(exercise);
         if(exercise)
         {
           window.history.pushState({exercise: exercise}, exercise.name, '#' + exercise.name.toLowerCase());
@@ -84,6 +84,7 @@
 
       navigateIfExercise: function(state)
       {
+        console.log("app-view::navigateIfExercise, state:", state);
         if(state)
         {
           this.onShowExercise(null, state.exercise);
