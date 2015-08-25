@@ -9,6 +9,8 @@
     position: relative;
     display: inline-block;
     padding: 12px;
+    width: 100%;
+    height: 100%;
   }
 
   </style>
@@ -18,7 +20,7 @@
     <style include="common-styles"></style>
 
     <!-- TODO: fix image, need more coffee -->
-    <div class="layout vertical">
+    <div class="layout horizontal wrap">
        <template is="dom-repeat" items="{{exercises}}">
           <today-exercise-card exercise="{{item}}"></today-exercise-card>
         </template>
