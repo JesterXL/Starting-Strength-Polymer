@@ -66,12 +66,46 @@
       {
         console.log("app-view::onShowExercise");
         this.currentExercise = exercise;
-        this.selectedPageIndex = 1;
-        var list = _.toArray(this.breadcrumbs);
-        list.push(exercise.name);
-        this.breadcrumbs = list;
-      }
+        if(exercise)
+        {
+          window.history.pushState({exercise: exercise}, exercise.name, '#' + exercise.name.toLowerCase());
+          this.selectedPageIndex = 1;
+        }
+        else
+        {
+          window.history.pushState(null, '');
+          this.selectedPageIndex = 0;
+        }
+        // var list = _.toArray(this.breadcrumbs);
+        // list.push(exercise.name);
+        // this.breadcrumbs = list;
+        
+      },
 
+      navigateIfExercise: function(state)
+      {
+        if(state)
+        {
+          this.onShowExercise(null, state.exercise);
+        }
+        else
+        {
+          this.onShowExercise(null, null);
+        }
+      },
+
+      attached: function()
+      {
+        console.log("app-view::attached");
+        console.log("history.state:", history.state);
+        this.navigateIfExercise(history.state);
+        var me = this;
+        window.onpopstate = function(event)
+        {
+          console.log("onpopstate:", event);
+          me.navigateIfExercise(history.state);
+        };
+      }
 
 
     });

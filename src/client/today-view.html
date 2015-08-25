@@ -72,13 +72,13 @@
             image = 'images/bench-press.png';
             break;
         }
-        console.log("getExerciseIcon, image:", image);
+        // console.log("getExerciseIcon, image:", image);
         return image;
       },
 
       handleResponse: function(response)
       {
-        console.log("today-view::handleResponse, response:", response.detail.response);
+        // console.log("today-view::handleResponse, response:", response.detail.response);
         var me = this;
         this.exercises = _.map(response.detail.response, function(exercise)
         {
