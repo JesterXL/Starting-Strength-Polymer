@@ -8,7 +8,8 @@ A project I created to learn more about [Polymer](https://www.polymer-project.or
 
 1. download
 2. cd to your directory and type `npm install && bower install`, then hit enter
-3. type `node src/static/app.js` and hit enter
+3. type `mongod` and hit enter 
+4. type `node src/static/app.js` and hit enter
 
 If you want to play with the code, open a new Terminal tab, type `browser-sync start --proxy "localhost:8626" --files "src/client/*.html"` and hit enter
 

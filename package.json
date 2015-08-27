@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/JesterXL/Starting-Strength-Polymer#readme",
   "dependencies": {
+    "bluebird": "^2.9.34",
     "express": "^4.13.3",
     "lodash": "^3.10.1",
     "moment": "^2.10.6",
+    "mongodb": "^2.0.42",
     "restify": "^4.0.0",
     "rx": "^3.1.1"
   },
