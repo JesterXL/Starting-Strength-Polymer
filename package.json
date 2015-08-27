@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/JesterXL/Starting-Strength-Polymer#readme",
   "dependencies": {
+    "asyncawait": "^0.7.4",
     "bluebird": "^2.9.34",
     "express": "^4.13.3",
     "lodash": "^3.10.1",

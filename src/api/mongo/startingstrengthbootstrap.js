@@ -1,4 +1,6 @@
 var Promise = require('bluebird');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 var _db = null;
 
@@ -147,49 +149,23 @@ function initialize()
 	});
 }
 
-function insertDefaultSchedules()
+var insertDefaultSchedules = async (function()
 {
 	console.log("insertDefaultSchedules");
-	return new Promise(function(success, failure)
-	{
-		try
-		{
-			var level1schedule = require('./workouts/fixtures/level1schedule');
-			var level2schedule = require('./workouts/fixtures/level2schedule');
-			var level3schedule = require('./workouts/fixtures/level3schedule');
+	var level1schedule = require('./workouts/fixtures/level1schedule');
+	var level2schedule = require('./workouts/fixtures/level2schedule');
+	var level3schedule = require('./workouts/fixtures/level3schedule');
 
-
-			return _db.collection("schedule")
-			.insertMany([level1schedule, level2schedule, level3schedule])
-			.then(function(result)
-			{
-				console.log("insert many, result.result.ok:", result.result.ok);
-				if(result.result.ok === 1)
-				{
-					success(true);
-				}
-				else
-				{
-					failure(new Error("Result was not ok: " + result.result));
-				}
-			})
-			.catch(function(err)
-			{
-				console.log("insert many failed:", err);
-				failure(err);
-			});
-		}
-		catch(e)
-		{
-			console.log("insertDefaultSchedules failed:", e);
-			failure(e);
-		}
-	})
-	.catch(function(error)
+	var result = await(_db.collection("schedule").insertMany([level1schedule, level2schedule, level3schedule]));
+	if(result.result.ok === 1)
 	{
-		failure(error);
-	});
-}
+		return true;
+	}
+	else
+	{
+		return new Error("Result was not ok: " + result.result);
+	}
+});
 
 var startingStrengthBootstrap = {
 	initialize: initialize,
