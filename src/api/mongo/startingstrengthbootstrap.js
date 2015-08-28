@@ -4,150 +4,97 @@ var await = require('asyncawait/await');
 
 var _db = null;
 
-function programInitIsThere()
+var programInitIsThere = async (function()
 {
 	// console.log("programInitIsThere");
-	return new Promise(function(success, failure)
-	{
-		_db.collection("programinit")
-		.find({initialized: true})
-		.toArray()
-		.then(function(result)
-		{
-			if(result.length > 0)
-			{
-				// console.log("found an init document");
-				success(true);
-			}
-			else
-			{
-				// console.log("no init document exists");
-				success(false);
-			}
-		})
-		.catch(function(err)
-		{
-			failure(err);
-		});
-	});
-}
+	var result = await (_db.collection("programinit")
+	.find({initialized: true})
+	.toArray());
 
-function insertInitialization()
+	if(result.length > 0)
+	{
+		// console.log("found an init document");
+		return true;
+	}
+	else
+	{
+		// console.log("no init document exists");
+		return false;
+	}
+});
+
+var insertInitialization = async (function()
 {
 	console.log("insertInitialization");
-	return new Promise(function(success, failure)
+	var result = await (_db.collection("programinit")
+	.insert({initialized: true}));
+	if(result.result.ok === 1)
 	{
-		return _db.collection("programinit")
-		.insert({initialized: true})
-		.then(function(result)
+		console.log("inserted init document");
+		var defaultResult = await (insertDefaultSchedules());
+		if(defaultResult === true)
 		{
-			if(result.result.ok === 1)
-			{
-				console.log("inserted init document");
-				// success(true);
-				return insertDefaultSchedules();
-			}
-			else
-			{
-				// console.log("failed to insert init document");
-				failure(new Error("Result was not ok: " + result.result));
-			}
-		})
-		.then(function(result)
+			return true;
+		}
+		else
 		{
-			if(result === true)
-			{
-				success(true);
-			}
-			else
-			{
-				success(false);
-			}
-		});
-	})
-	.catch(function(error)
+			return new Error("Insert of default schedules result was not ok: " + result.result);
+		}
+	}
+	else
 	{
-		failure(error);
-	});
-}
+		// console.log("failed to insert init document");
+		return new Error("Result was not ok: " + result.result);
+	}
+});
 
-function deleteEverything()
+var deleteEverything = async (function()
 {
 	// console.log("deleteEverything");
-	return new Promise(function(success, failure)
-	{
-		return _db.collection("programinit")
-		.remove({})
-		.then(function(result)
-		{
-			if(result.result.ok === 1)
-			{
-				console.log("removeing all in schedule...");
-				return _db.collection('schedule')
-				.remove({});
-			}
-			else
-			{
-				failure("Result1 was not ok: " + result.result);
-			}
-		})
-		.then(function(result)
-		{
-			console.log("removed all schedules, result:", result.result.ok);
-			success(true);
-			return;
-			
-			if(result.result.ok === 1)
-			{
-				success(true);
-			}
-			else
-			{
-				failure("Result2 was no ok: " + result.result);
-			}
-		})
-		.catch(function(err)
-		{
-			failure(err);
-		});
-	});
-}
+	var result = await (_db.collection("programinit")
+	.remove({}));
 
-function initialize()
+	if(result.result.ok === 1)
+	{
+		console.log("removeing all in schedule...");
+		var deleteScheduleResult = await (_db.collection('schedule')
+		.remove({}));
+		if(result.result.ok === 1)
+		{
+			return true;
+		}
+		else
+		{
+			return new Error("Result2 was no ok: " + result.result);
+		}
+	}
+	else
+	{
+		return new Error("Result1 was not ok: " + result.result);
+	}
+});
+
+var initialize = async (function()
 {
 	console.log("initialize");
-	return new Promise(function(success, failure)
+	var isThere = await (programInitIsThere());
+	if(isThere === true)
 	{
-		return programInitIsThere()
-		.then(function(isThere)
-		{
-			console.log("isThere:", isThere);
-			if(isThere === true)
-			{
-				success(true);
-			}
-			else
-			{
-				return insertInitialization();
-			}
-		})
-		.then(function(injected)
-		{
-			if(injected === true)
-			{
-				success(true);
-			}
-			else
-			{
-				success(false);
-			}
-		});
-	})
-	.catch(function(error)
+		return true;
+	}
+	else
 	{
-		reject(error);
-	});
-}
+		var injected = await (insertInitialization());
+		if(injected === true)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+});
 
 var insertDefaultSchedules = async (function()
 {
