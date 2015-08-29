@@ -1,10 +1,10 @@
 var should = require('chai').should();
 var expect = require('chai').expect;
-var userCollection = require('./userCollection');
-var Client = require('../mongo/client');
+var user = require('./user');
+var Client = require('./client');
 var Promise = require('bluebird');
 
-describe('UserCollection API', function()
+describe('user API', function()
 {
 
   var client, db;
@@ -17,8 +17,8 @@ describe('UserCollection API', function()
     {
       console.log("Connected correctly to server");
       db = client.db;
-      userCollection.db = db;
-      return userCollection.removeAll();
+      user.db = db;
+      return user.removeAll();
     })
     .then(function()
     {
@@ -32,7 +32,7 @@ describe('UserCollection API', function()
 
   after(function(done)
   {
-    userCollection.removeAll()
+    user.removeAll()
     .then(function()
     {
       return client.close();
@@ -51,7 +51,7 @@ describe('UserCollection API', function()
 
   beforeEach(function(done)
   {
-    userCollection.removeAll()
+    user.removeAll()
     .then(function()
     {
       done();
@@ -62,49 +62,37 @@ describe('UserCollection API', function()
     });
   });
 
-  it('userCollection is there', function()
+  it('user is there', function()
   {
-    expect(userCollection).to.exist;
+    expect(user).to.exist;
   });
 
-  it('userCollection has a db instance', function()
+  it('user has a db instance', function()
   {
-    expect(userCollection.db).to.exist;
+    expect(user.db).to.exist;
   });
 
-  it("a Promise works", function(done)
+  it('user can add a user', function(done)
   {
-    new Promise(function(success, fail)
-    {
-      setTimeout(success, 100);
-    })
-    .then(function()
-    {
-      expect(true).to.be.true;
-      done();
-    });
-  });
-
-  it('userCollection can add a user', function(done)
-  {
-      userCollection.insertUser({firstName: 'Jesse'})
+      user.createUser('jesse@jessewarden.com', 'jesterxl', 'password')
       .then(function(result)
       {
-        expect(result.result.ok).to.equal(1);
+        result.should.be.true;
         done();
       });
   });
 
-  it('userCollection can add a user and then find it', function(done)
+  it('user can add a user and then find it', function(done)
   {
-      userCollection.insertUser({firstName: "Jesse", lastName: "Warden"})
+      user.createUser('jesse@jessewarden.com', 'jesterxl', 'password')
       .then(function(result)
       {
-        expect(result.result.ok).to.equal(1);
-        return userCollection.findUser({firstName: 'Jesse'});
+        result.should.be.true;
+        return user.findUser({username: 'jesterxl'});
       })
       .then(function(result)
       {
+        console.log("************* result:", result);
         expect(result.length).to.equal(1);
         done();
       })
@@ -114,28 +102,29 @@ describe('UserCollection API', function()
       });
   });
 
-  it('userCollection can add a user, then update their name', function(done)
+  it('user can add a user, then update their name', function(done)
   {
-    userCollection.insertUser({firstName: 'Jesse', lastName: 'Warden'})
+    user.createUser('jesse@jessewarden.com', 'jesterxl', 'password')
     .then(function(result)
     {
-      expect(result.result.ok).to.equal(1);
-      return userCollection.findUser({firstName: 'Jesse'});
+      result.should.be.true;
+      return user.findUser({username: "jesterxl"});
     })
     .then(function(result)
     {
-      expect(result.length).to.equal(1);
-      return userCollection.updateUser({firstName: 'Jesse'}, {firstName: 'Bruce'});
+      result.should.exist;
+      return user.updateUsername('jesterxl', 'Bruce');
     })
     .then(function(result)
     {
-      expect(result.result.ok).to.equal(1);
-      return userCollection.findUser({firstName: 'Bruce'});
+      result.should.be.true;
+      return user.findUser({username: 'Bruce'});
     })
     .then(function(result)
     {
-      expect(result.length).to.equal(1);
-      expect(result[0].firstName).to.equal('Bruce');
+      console.log("result:", result);
+      result.should.exist;
+      expect(result.username).to.equal('Bruce');
       done();
     })
     .catch(function(error)
@@ -144,35 +133,35 @@ describe('UserCollection API', function()
     });
   });
 
-  it('userCollection can add a user, then update its firstName with multiple items in there', function(done)
+  it('user can add a user, then update its firstName with multiple items in there', function(done)
   {
-    userCollection.insertUser({firstName: 'Jesse'})
+    user.createUser('jesse@jessewarden.com', 'Jesse', 'password')
     .then(function(result)
     {
-      return userCollection.insertUser({firstName: 'Clark'});
+      return user.createUser('clark@jessewarden.com', 'Clark', 'password');
     })
     .then(function(result)
     {
-      return userCollection.insertUser({firstName: 'Oliver'});
+      return user.insertUser('oliver@jessewarden.com', 'Oliver', 'password');
     })
     .then(function(result)
     {
-      return userCollection.findUser({firstName: 'Jesse'});
-    })
-    .then(function(result)
-    {
-      expect(result.length).to.equal(1);
-      return userCollection.updateUser({firstName: 'Jesse'}, {firstName: 'Grundy'});
-    })
-    .then(function(result)
-    {
-      expect(result.result.ok).to.equal(1);
-       return userCollection.findUser({firstName: 'Grundy'});
+      return user.findUser({username: 'Jesse'});
     })
     .then(function(result)
     {
       expect(result.length).to.equal(1);
-      expect(result[0].firstName).to.equal('Grundy');
+      return user.updateUsername('Jesse', 'Grundy');
+    })
+    .then(function(result)
+    {
+      result.should.be.true;
+       return user.findUser({firstName: 'Grundy'});
+    })
+    .then(function(result)
+    {
+      result.should.exist;
+      result.username.should.equal('Grundy');
       done();
     })
     .catch(function(error)
@@ -181,30 +170,30 @@ describe('UserCollection API', function()
     });
   });
 
-  it('userCollection can add a user, then update its name with multiple items of the same name in there', function(done)
+  it('user can add a user, then update its name with multiple items of the same name in there', function(done)
   {
-    userCollection.insertUser({firstName: 'Jesse'})
+    user.insertUser({firstName: 'Jesse'})
     .then(function(result)
     {
-      return userCollection.insertUser({firstName: 'Jesse'});
+      return user.insertUser({firstName: 'Jesse'});
     })
     .then(function(result)
     {
-      return userCollection.insertUser({firstName: 'Jesse'});
+      return user.insertUser({firstName: 'Jesse'});
     })
     .then(function(result)
     {
-      return userCollection.findUser({firstName: 'Jesse'});
+      return user.findUser({firstName: 'Jesse'});
     })
     .then(function(result)
     {
       expect(result.length).to.equal(3);
-      return userCollection.updateUser({firstName: 'Jesse'}, {firstName: 'Grundy'});
+      return user.updateUser({firstName: 'Jesse'}, {firstName: 'Grundy'});
     })
     .then(function(result)
     {
       expect(result.result.ok).to.equal(1);
-      return userCollection.findUser({firstName: 'Grundy'});
+      return user.findUser({firstName: 'Grundy'});
     })
     .then(function(result)
     {
@@ -217,23 +206,23 @@ describe('UserCollection API', function()
     });
   });
 
-  it('userCollection can add a user and then cannot find it', function(done)
+  it('user can add a user and then cannot find it', function(done)
   {
-      userCollection.insertUser({firstName: 'Jesse'})
+      user.insertUser({firstName: 'Jesse'})
       .then(function(result)
       {
         expect(result.result.ok).to.equal(1);
-        return userCollection.findUser({firstName: 'Jesse'});
+        return user.findUser({firstName: 'Jesse'});
       })
       .then(function(result)
       {
         expect(result.length).to.equal(1);
-        return userCollection.removeUser({firstName: 'Jesse'});
+        return user.removeUser({firstName: 'Jesse'});
       })
       .then(function(result)
       {
         expect(result.result.ok).to.equal(1);
-        return userCollection.findUser({firstName: 'Jesse'});
+        return user.findUser({firstName: 'Jesse'});
       })
       .then(function(result)
       {
@@ -246,13 +235,13 @@ describe('UserCollection API', function()
       });
   });
 
-  it('userCollection can add a user and then cannot find it if you use wrong filter', function(done)
+  it('user can add a user and then cannot find it if you use wrong filter', function(done)
   {
-      userCollection.insertUser({firstName: 'Jesse'})
+      user.insertUser({firstName: 'Jesse'})
       .then(function(result)
       {
         expect(result.result.ok).to.equal(1);
-        return userCollection.findUser({firstName: 'cow'});
+        return user.findUser({firstName: 'cow'});
       })
       .then(function(result)
       {
@@ -267,18 +256,18 @@ describe('UserCollection API', function()
 
   it('adding 3 users results in finding 3 users for getAllUsers via Promise', function(done)
   {
-      userCollection.insertUser({firstName: 'Jesse'})
+      user.insertUser({firstName: 'Jesse'})
       .then(function(result)
       {
-        return userCollection.insertUser({firstName: 'Oliver'});
+        return user.insertUser({firstName: 'Oliver'});
       })
       .then(function(result)
       {
-        return userCollection.insertUser({firstName: 'Bruce'});
+        return user.insertUser({firstName: 'Bruce'});
       })
       .then(function(result)
       {
-        return userCollection.getAllUsers();
+        return user.getAllUsers();
       })
       .then(function(result)
       {
@@ -293,10 +282,10 @@ describe('UserCollection API', function()
 
   it('adding 3 users results in finding 3 users for getAllUsers', function(done)
   {
-      userCollection.insertUser([{firstName: 'Jesse'}, {firstName: 'Oliver'}, {firstName: 'Bruce'}])
+      user.insertUser([{firstName: 'Jesse'}, {firstName: 'Oliver'}, {firstName: 'Bruce'}])
       .then(function(result)
       {
-        return userCollection.getAllUsers();
+        return user.getAllUsers();
       })
       .then(function(result)
       {
@@ -311,7 +300,7 @@ describe('UserCollection API', function()
 
   it('can create a user if none exist', function(done)
   {
-    userCollection.createUser('jesterxl@jessewarden.com', 'JesterXL', 'somepass')
+    user.createUser('jesterxl@jessewarden.com', 'JesterXL', 'somepass')
     .then(function(result)
     {
       expect(result.result.ok).to.equal(1);
@@ -325,11 +314,11 @@ describe('UserCollection API', function()
 
   it('cannot create a user if someone has same email address but different username', function(done)
   {
-    userCollection.createUser('jesterxl@jessewarden.com', 'JesterXL', 'somepass')
+    user.createUser('jesterxl@jessewarden.com', 'JesterXL', 'somepass')
     .then(function(result)
     {
       expect(result.result.ok).to.equal(1);
-      return userCollection.createUser('jesterxl@jessewarden.com', 'cow', 'moo');
+      return user.createUser('jesterxl@jessewarden.com', 'cow', 'moo');
     })
     .then(function()
     {

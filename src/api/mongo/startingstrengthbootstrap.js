@@ -99,9 +99,9 @@ var initialize = async (function()
 var insertDefaultSchedules = async (function()
 {
 	console.log("insertDefaultSchedules");
-	var level1schedule = require('./workouts/fixtures/level1schedule');
-	var level2schedule = require('./workouts/fixtures/level2schedule');
-	var level3schedule = require('./workouts/fixtures/level3schedule');
+	var level1schedule = require('./fixtures/level1schedule');
+	var level2schedule = require('./fixtures/level2schedule');
+	var level3schedule = require('./fixtures/level3schedule');
 
 	var result = await(_db.collection("schedule").insertMany([level1schedule, level2schedule, level3schedule]));
 	if(result.result.ok === 1)
@@ -125,7 +125,7 @@ var startingStrengthBootstrap = {
 	set db(newDB)
 	{
 		_db = newDB;
-	},
+	}
 };
 
 module.exports = startingStrengthBootstrap;
