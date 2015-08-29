@@ -7,9 +7,10 @@ var _db = null;
 var createUser = async (function(email, username, password)
 {
 	var foundUser = await (_db.collection("user").findOne({email: email}));
+	console.log("foundUser:", foundUser);
 	if(foundUser !== null)
 	{
-		return new Error('Email address already exists.');
+		throw new Error('Email address already exists.');
 	}
 	var result = await (_db.collection("user")
 	.insertOne({email: email, username: username, password: password, createdOn: new Date()}));
@@ -38,10 +39,10 @@ var getAllUsers = async (function()
 	return await (_db.collection("user").find({}).toArray());
 });
 
-var updateUsername = async (function(currentUsername, newUsername)
+var updateUsername = async (function(user, newUsername)
 {
 	var result = await (_db.collection("user")
-	.updateOne({username: currentUsername}, {$set: {username: newUsername}}, {upsert: true}));
+	.updateOne(user, {$set: {username: newUsername}}, {upsert: true}));
 	return result.result.ok === 1;
 });
 

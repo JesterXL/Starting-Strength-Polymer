@@ -92,8 +92,7 @@ describe('user API', function()
       })
       .then(function(result)
       {
-        console.log("************* result:", result);
-        expect(result.length).to.equal(1);
+        result.should.exist;
         done();
       })
       .catch(function(error)
@@ -113,7 +112,7 @@ describe('user API', function()
     .then(function(result)
     {
       result.should.exist;
-      return user.updateUsername('jesterxl', 'Bruce');
+      return user.updateUsername({username: 'jesterxl'}, 'Bruce');
     })
     .then(function(result)
     {
@@ -142,7 +141,7 @@ describe('user API', function()
     })
     .then(function(result)
     {
-      return user.insertUser('oliver@jessewarden.com', 'Oliver', 'password');
+      return user.createUser('oliver@jessewarden.com', 'Oliver', 'password');
     })
     .then(function(result)
     {
@@ -150,13 +149,13 @@ describe('user API', function()
     })
     .then(function(result)
     {
-      expect(result.length).to.equal(1);
-      return user.updateUsername('Jesse', 'Grundy');
+      result.should.exist;
+      return user.updateUsername({username: 'Jesse'}, 'Grundy');
     })
     .then(function(result)
     {
       result.should.be.true;
-       return user.findUser({firstName: 'Grundy'});
+      return user.findUser({username: 'Grundy'});
     })
     .then(function(result)
     {
@@ -172,32 +171,33 @@ describe('user API', function()
 
   it('user can add a user, then update its name with multiple items of the same name in there', function(done)
   {
-    user.insertUser({firstName: 'Jesse'})
+    user.createUser('jesse1@jessewarden.com', 'Jesse', 'password')
     .then(function(result)
     {
-      return user.insertUser({firstName: 'Jesse'});
+      return user.createUser('jesse2@jessewarden.com', 'Jesse', 'password');
     })
     .then(function(result)
     {
-      return user.insertUser({firstName: 'Jesse'});
+      return user.createUser('jesse3@jessewarden.com', 'Jesse', 'password');
     })
     .then(function(result)
     {
-      return user.findUser({firstName: 'Jesse'});
+      return user.findUser({email: 'jesse2@jessewarden.com'});
     })
     .then(function(result)
     {
-      expect(result.length).to.equal(3);
-      return user.updateUser({firstName: 'Jesse'}, {firstName: 'Grundy'});
+      result.should.exist;
+      return user.updateUsername({email: 'jesse2@jessewarden.com'}, 'Grundy');
     })
     .then(function(result)
     {
-      expect(result.result.ok).to.equal(1);
-      return user.findUser({firstName: 'Grundy'});
+      result.should.be.true;
+      return user.findUser({username: 'Grundy'});
     })
     .then(function(result)
     {
-      expect(result[0].firstName).to.equal('Grundy');
+      result.should.exist;
+      result.username.should.equal('Grundy');
       done();
     })
     .catch(function(error)
@@ -208,25 +208,25 @@ describe('user API', function()
 
   it('user can add a user and then cannot find it', function(done)
   {
-      user.insertUser({firstName: 'Jesse'})
+      user.createUser('jesse@jessewarden.com', 'Jesse', 'password')
       .then(function(result)
       {
-        expect(result.result.ok).to.equal(1);
-        return user.findUser({firstName: 'Jesse'});
+        result.should.be.true;
+        return user.findUser({username: 'Jesse'});
       })
       .then(function(result)
       {
-        expect(result.length).to.equal(1);
-        return user.removeUser({firstName: 'Jesse'});
+        result.should.exist;
+        return user.removeUser({email:'jesse@jessewarden.com'});
       })
       .then(function(result)
       {
-        expect(result.result.ok).to.equal(1);
-        return user.findUser({firstName: 'Jesse'});
+        result.should.be.true;
+        return user.createUser('jesse@jessewarden.com', 'Jesse', 'password');
       })
       .then(function(result)
       {
-        expect(result.length).to.equal(0);
+        result.should.be.true;
         done();
       })
       .catch(function(error)
@@ -237,15 +237,15 @@ describe('user API', function()
 
   it('user can add a user and then cannot find it if you use wrong filter', function(done)
   {
-      user.insertUser({firstName: 'Jesse'})
+      user.createUser('jesse@jessewarden.com', 'jesse', 'password')
       .then(function(result)
       {
-        expect(result.result.ok).to.equal(1);
-        return user.findUser({firstName: 'cow'});
+        result.should.be.true;
+        return user.findUser({username: 'cow'});
       })
       .then(function(result)
       {
-        expect(result.length).to.equal(0);
+        expect(result).to.be.null;
         done();
       })
       .catch(function(error)
@@ -256,14 +256,14 @@ describe('user API', function()
 
   it('adding 3 users results in finding 3 users for getAllUsers via Promise', function(done)
   {
-      user.insertUser({firstName: 'Jesse'})
+      user.createUser('jesse@jessewarden.com', 'jesse', 'password')
       .then(function(result)
       {
-        return user.insertUser({firstName: 'Oliver'});
+        return user.createUser('oliver@jessewarden.com', 'Oliver', 'password');
       })
       .then(function(result)
       {
-        return user.insertUser({firstName: 'Bruce'});
+        return user.createUser('bruce@jessewarden.com', 'Bruce', 'password');
       })
       .then(function(result)
       {
@@ -282,7 +282,9 @@ describe('user API', function()
 
   it('adding 3 users results in finding 3 users for getAllUsers', function(done)
   {
-      user.insertUser([{firstName: 'Jesse'}, {firstName: 'Oliver'}, {firstName: 'Bruce'}])
+      Promise.all([user.createUser('jesse@jessewarden.com', 'jesse', 'password'),
+          user.createUser('jesse@jessewarden.com', 'oliver', 'password'),
+          user.createUser('jesse@jessewarden.com', 'bruce', 'password')])
       .then(function(result)
       {
         return user.getAllUsers();
@@ -303,7 +305,7 @@ describe('user API', function()
     user.createUser('jesterxl@jessewarden.com', 'JesterXL', 'somepass')
     .then(function(result)
     {
-      expect(result.result.ok).to.equal(1);
+      result.should.exist;
       done();
     })
     .catch(function(error)
@@ -314,18 +316,22 @@ describe('user API', function()
 
   it('cannot create a user if someone has same email address but different username', function(done)
   {
+    console.log("1. create");
     user.createUser('jesterxl@jessewarden.com', 'JesterXL', 'somepass')
     .then(function(result)
     {
-      expect(result.result.ok).to.equal(1);
+      result.should.be.true;
+      console.log("2. create");
       return user.createUser('jesterxl@jessewarden.com', 'cow', 'moo');
     })
-    .then(function()
+    .then(function(result)
     {
+      console.log("result:", result);
       done(new Error('allowed 2 users with same email address through'));
     })
     .catch(function(error)
     {
+      console.log("3. error:", error);
       expect(error.message).to.equal('Email address already exists.');
       done();
     });
