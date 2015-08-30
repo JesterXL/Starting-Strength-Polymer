@@ -142,7 +142,7 @@ function getWorkoutBasedOnLastWorkout(lastWorkout)
 	// next workout for day
 	// ready to move week?
 	// ready to move level?
-	lastWorkout = {
+	var exampleLastWorkout = {
 		day: 'first',
 		week: 'a',
 		level: 2,
@@ -164,7 +164,7 @@ function getWorkoutBasedOnLastWorkout(lastWorkout)
 	};
 
 	var day = getNextDay(lastWorkout.day);
-	var isStartingNewWeek = startingNewWeek(nextDay);
+	var isStartingNewWeek = startingNewWeek(day);
 	var week = lastWorkout.week;
 	if(isStartingNewWeek)
 	{
@@ -176,7 +176,8 @@ function getWorkoutBasedOnLastWorkout(lastWorkout)
 	var workouts = getWorkoutsFromScheduleWeek(schedule, week);
 	var workout = getWorkoutFromDay(workouts, day);
 
-
+	// adjust goals
+	return workout;
 }
 
 
@@ -221,7 +222,10 @@ var removeAll = async (function()
 var workout = {
 
 	removeAll: removeAll,
+	getWorkoutFromProgram: getWorkoutFromProgram,
 	getWorkoutFromDay: getWorkoutFromDay,
+	getTodaysWorkout: getTodaysWorkout,
+	getWorkoutBasedOnLastWorkout: getWorkoutBasedOnLastWorkout,
 
 	get db()
 	{

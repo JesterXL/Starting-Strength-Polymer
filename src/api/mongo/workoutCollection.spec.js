@@ -6,6 +6,7 @@ var Promise = require('bluebird');
 var level1schedule = require("./fixtures/level1schedule");
 var level2schedule = require("./fixtures/level2schedule");
 var level3schedule = require("./fixtures/level3schedule");
+var _ = require("lodash");
 
 describe('#workout', function()
 {
@@ -107,6 +108,102 @@ describe('#workout', function()
       result.days.should.include('first');
       result.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
     });
+  });
+
+  describe('#getWorkoutFromProgram', function()
+  {
+    var programFixture = {
+      level: 1,
+      week: 'a',
+      day: 'first'
+    };
+    it('gets a basic workout from a basic program', function()
+    {
+      var workout = workoutCollection.getWorkoutFromProgram(programFixture);
+      workout.should.exist;
+      workout.days.should.include('first');
+      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+  });
+
+  describe("#getWorkoutBasedOnLastWorkout", function()
+  {
+    var lastWorkout = null;
+
+    beforeEach(function()
+    {
+      lastWorkout = _.cloneDeep({
+        day: 'first',
+        week: 'a',
+        level: 2,
+        notes: "Some notes about it.",
+        createdOn: new Date(),
+        exercises: [
+          {
+            name: 'Squat',
+            goalSets: 3,
+            goalReps: 5,
+            sets: [
+              {reps: 5, weight: 45},
+              {reps: 5, weight: 45},
+              {reps: 5, weight: 45}
+            ]
+          },
+          {
+            name: 'Overhead Press',
+            goalSets: 3,
+            goalReps: 5,
+            sets: [
+              {reps: 5, weight: 45},
+              {reps: 5, weight: 45},
+              {reps: 5, weight: 45}
+            ]
+          }
+        ]
+      });
+    });
+
+
+
+
+
+    it("gets a workout based on a fixture", function()
+    {
+      var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
+      workout.should.exist;
+      workout.days.should.include('second');
+      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+
+    it("gets first day based on last day", function()
+    {
+      lastWorkout.day = 'third';
+      var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
+      workout.should.exist;
+      workout.days.should.include('first');
+      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+
+    it("gets third day based on second day", function()
+    {
+      lastWorkout.day = 'second';
+      var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
+      workout.should.exist;
+      workout.days.should.include('third');
+      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+
+    it("gets week b based on finishing a", function()
+    {
+      lastWorkout.day = 'third';
+      lastWorkout.exercises[1].name.should.equal('Overhead Press');
+      var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
+      workout.should.exist;
+      workout.days.should.include('first');
+      workout.exercises[1].name.should.equal('Bench Press');
+      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+
   });
   
 
