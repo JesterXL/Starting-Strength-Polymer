@@ -1,6 +1,6 @@
 var workoutSchedule = {
     weekA: [{
-        days: [1, 5],
+        days: ['first', 'third'],
         exercises: [
             {
                 name: 'Squat',
@@ -23,7 +23,7 @@ var workoutSchedule = {
     },
 
     {
-        days: [3],
+        days: ['second'],
         exercises: [
             {
                 name: 'Squat',
@@ -46,7 +46,7 @@ var workoutSchedule = {
     }],
 
     weekB: [{
-        days: [3],
+        days: ['second'],
         exercises: [
             {
                 name: 'Squat',
@@ -69,7 +69,7 @@ var workoutSchedule = {
     },
 
     {
-        days: [1, 5],
+        days: ['first', 'third'],
         exercises: [
             {
                 name: 'Squat',
@@ -89,10 +89,6 @@ var workoutSchedule = {
                 reps: 5
             }
         ]
-    },
-    
-    {
-        days: [0, 2, 4, 6]
     }]
 };
 workoutSchedule.name = 'level3';

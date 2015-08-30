@@ -81,7 +81,7 @@ describe('#programCollection', function()
     {
       user.should.exist;
       userSaved = user;
-      return programCollection.setMonth(user, 1);
+      return programCollection.setLevel(user, 1);
     })
     .then(function(success)
     {
@@ -91,12 +91,12 @@ describe('#programCollection', function()
     .then(function(memento)
     {
       memento.should.exist;
-      memento.month.should.equal(1);
+      memento.level.should.equal(1);
       done();
     });
   });
 
-  it('setting month twice is ok', function(done)
+  it('setting level twice is ok', function(done)
   {
     console.log("1. createUser");
     var userSaved = null;
@@ -109,16 +109,16 @@ describe('#programCollection', function()
     })
     .then(function(user)
     {
-      console.log("3. setMonth");
+      console.log("3. setLevel");
       user.should.exist;
       userSaved = user;
-      return programCollection.setMonth(userSaved, 1);
+      return programCollection.setLevel(userSaved, 1);
     })
     .then(function(success)
     {
-      console.log("4. setMonth");
+      console.log("4. setLevel");
       success.should.be.true;
-      return programCollection.setMonth(userSaved, 2);
+      return programCollection.setLevel(userSaved, 2);
     })
     .then(function(success)
     {
@@ -131,7 +131,7 @@ describe('#programCollection', function()
       console.log("6. done");
       console.log("memento:", memento);
       memento.should.exist;
-      memento.month.should.equal(2);
+      memento.level.should.equal(2);
       done();
     })
     .catch(function(err)
@@ -260,7 +260,7 @@ describe('#programCollection', function()
     .then(function(memento)
     {
       memento.should.exist;
-      memento.month.should.equal(1);
+      memento.level.should.equal(1);
       memento.week.should.equal('a');
       memento.day.should.equal('first');
       done();
@@ -287,7 +287,7 @@ describe('#programCollection', function()
     .then(function(memento)
     {
       memento.should.exist;
-      memento.month.should.equal(1);
+      memento.level.should.equal(1);
       memento.week.should.equal('a');
       memento.day.should.equal('first');
       done();

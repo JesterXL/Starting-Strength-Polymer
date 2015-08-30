@@ -7,9 +7,9 @@ var _ = require("lodash");
 
 var _db = null;
 
-function validMonth(month)
+function validLevel(level)
 {
-	return _.isNumber(month) && _.includes([1, 2, 3], month);
+	return _.isNumber(level) && _.includes([1, 2, 3], level);
 }
 
 function validWeek(week)
@@ -34,11 +34,11 @@ var getUserMemento = async (function(user)
 	return await (_db.collection("program").findOne({userID: user._id}));
 });
 
-var setUserMemento = async (function(user, month, week, day)
+var setUserMemento = async (function(user, level, week, day)
 {
-	if(validMonth(month) === false)
+	if(validLevel(level) === false)
 	{
-		throw new Error("Invalid month");
+		throw new Error("Invalid level");
 	}
 	if(validWeek(week) === false)
 	{
@@ -49,19 +49,19 @@ var setUserMemento = async (function(user, month, week, day)
 		throw new Error("Invalid day");
 	}
 	var result = await (_db.collection("program")
-	.updateOne({userID: user._id}, {month: month, week: week, day: day, userID: user._id}, {upsert: true}));
+	.updateOne({userID: user._id}, {level: level, week: week, day: day, userID: user._id}, {upsert: true}));
 	return result.result.ok === 1;
 });
 
-// month is 1, 2, or 3.
-var setMonth = async (function(user, month)
+// level is 1, 2, or 3.
+var setLevel = async (function(user, level)
 {
-	if(validMonth(month) === false)
+	if(validLevel(level) === false)
 	{
-		throw new Error("Invalid month");
+		throw new Error("Invalid level");
 	}
 	var result = await (_db.collection("program")
-	.updateOne({userID: user._id}, {month: month, userID: user._id}, {upsert: true}));
+	.updateOne({userID: user._id}, {level: level, userID: user._id}, {upsert: true}));
 	return result.result.ok === 1;
 });
 
@@ -99,10 +99,13 @@ module.exports = {
 	hasUserMemento: hasUserMemento,
 	getUserMemento: getUserMemento,
 	setUserMemento: setUserMemento,
-	setMonth: setMonth,
+	setLevel: setLevel,
 	setWeek: setWeek,
 	setDay: setDay,
 	removeAll: removeAll,
+	validLevel: validLevel,
+	validWeek: validWeek,
+	validDay: validDay,
 
 	get db()
 	{
