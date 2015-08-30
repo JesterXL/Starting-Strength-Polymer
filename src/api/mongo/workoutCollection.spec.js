@@ -249,9 +249,9 @@ describe('#workout', function()
     });
   });
 
-  describe("#saveWorkout", function()
+  describe.only("#saveWorkout", function()
   {
-    it.only("works", function(done)
+    it("works", function(done)
     {
       var savedUser = null;
       getUserFixture().then(function(user)
@@ -272,6 +272,40 @@ describe('#workout', function()
       .then(function(result)
       {
         result.should.be.true;
+        done();
+      })
+      .catch(function(error)
+      {
+        console.error("saveWorkout error:", error);
+      });
+    });
+
+    it("saves it then you can read it out", function(done)
+    {
+      var savedUser = null;
+      var now = new Date();
+      getUserFixture().then(function(user)
+      {
+        savedUser = user;
+        return workoutCollection.getTodaysWorkout(user, new Date());
+      })
+      .then(function(workout)
+      {
+        workout.should.exist;
+        _.forEach(workout.exercises, function(exercise)
+        {
+          exercise.sets.push({reps: 5, weight: 45}, {reps: 5, weight: 45}, {reps: 5, weight: 45});
+        });
+        return workoutCollection.saveWorkout(savedUser, workout);
+      })
+      .then(function(result)
+      {
+        result.should.be.true;
+        return workoutCollection.getWorkout({userID: savedUser._id});
+      })
+      .then(function(readWorkout)
+      {
+        readWorkout.should.exist;
         done();
       })
       .catch(function(error)

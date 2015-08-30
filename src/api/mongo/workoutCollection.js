@@ -281,7 +281,7 @@ function validWorkoutExercises(workout)
 
 function isValidWorkout(workout)
 {
-	console.log("isValidWorkout, workout:", workout);
+	// console.log("isValidWorkout, workout:", workout);
 	var endResult = _.every([
 		_.isObject,
 		validWorkoutDay,
@@ -299,7 +299,7 @@ function isValidWorkout(workout)
 			}
 			return result;
 		});
-	console.log("isValidWorkout endResult:", endResult);
+	// console.log("isValidWorkout endResult:", endResult);
 	return endResult;
 }
 
@@ -366,6 +366,11 @@ var saveWorkout = async (function(user, workout)
 	}
 });
 
+var getWorkout = async (function(workoutQuery)
+{
+	return await (_db.collection("workout").findOne(workoutQuery));
+});
+
 var workout = {
 
 	removeAll: removeAll,
@@ -374,6 +379,7 @@ var workout = {
 	getTodaysWorkout: getTodaysWorkout,
 	getWorkoutBasedOnLastWorkout: getWorkoutBasedOnLastWorkout,
 	saveWorkout: saveWorkout,
+	getWorkout: getWorkout,
 
 	get db()
 	{
