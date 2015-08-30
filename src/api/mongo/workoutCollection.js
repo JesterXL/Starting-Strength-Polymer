@@ -176,7 +176,7 @@ function getWorkoutBasedOnLastWorkout(lastWorkout)
 	var workouts = getWorkoutsFromScheduleWeek(schedule, week);
 	var workout = getWorkoutFromDay(workouts, day);
 
-	// adjust goals
+	// TODO: adjust goals
 	return workout;
 }
 

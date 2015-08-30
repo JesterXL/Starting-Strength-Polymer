@@ -1,12 +1,16 @@
 var should = require('chai').should();
 var expect = require('chai').expect;
 var workoutCollection = require('./workoutCollection');
+var programCollection = require('./programCollection');
+var userCollection = require('./userCollection');
 var Client = require('./client');
 var Promise = require('bluebird');
 var level1schedule = require("./fixtures/level1schedule");
 var level2schedule = require("./fixtures/level2schedule");
 var level3schedule = require("./fixtures/level3schedule");
 var _ = require("lodash");
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 describe('#workout', function()
 {
@@ -43,7 +47,11 @@ describe('#workout', function()
     {
       db = client.db;
       workoutCollection.db = db;
-      return workoutCollection.removeAll();
+      programCollection.db = db;
+      userCollection.db = db;
+      return Promise.all([programCollection.removeAll(), 
+                          workoutCollection.removeAll(), 
+                          userCollection.removeAll()]);
     })
     .then(function()
     {
@@ -66,7 +74,9 @@ describe('#workout', function()
 
   after(function(done)
   {
-    workoutCollection.removeAll()
+    Promise.all([programCollection.removeAll(), 
+                          workoutCollection.removeAll(), 
+                          userCollection.removeAll()])
     .then(function()
     {
       return client.close();
@@ -204,6 +214,33 @@ describe('#workout', function()
       workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
     });
 
+  });
+
+  describe("#getTodaysWorkout", function()
+  {
+    var getUserFixture = async (function()
+    {
+      var created = await (userCollection.createUser("jesse@jessewarden.com", "JesterXL", "password"));
+      if(created === false)
+      {
+        throw new Error("Failed to create user fixtured.");
+      }
+      return await (userCollection.findUser({email: "jesse@jessewarden.com"}));
+    });
+
+    it("gets a default workout for a new user", function(done)
+    {
+      getUserFixture().then(function(user)
+      {
+        return workoutCollection.getTodaysWorkout(user, new Date());
+      })
+      .then(function(workout)
+      {
+        // console.log("workout:", workout);
+        workout.should.exist;
+        done();
+      });
+    });
   });
   
 
