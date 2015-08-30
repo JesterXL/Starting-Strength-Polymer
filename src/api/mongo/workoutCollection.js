@@ -212,8 +212,15 @@ var getLastWorkout = async (function(userID, date)
 	return workout;
 });
 
+var removeAll = async (function()
+{
+	var result = await (_db.collection("workout").remove({}));
+	return result.result.ok === 1;
+});
+
 var workout = {
 
+	removeAll: removeAll,
 	getWorkoutFromDay: getWorkoutFromDay,
 
 	get db()

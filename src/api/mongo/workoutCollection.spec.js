@@ -32,74 +32,84 @@ describe('#workout', function()
     ]
   };
 
-  // before(function(done)
-  // {
-    // client = new Client();
-    // client.connect()
-    // .then(function()
-    // {
-    //   // console.log("Connected correctly to server");
-    //   db = client.db;
-    //   workout.db = db;
-    //   done();
-    // })
-    // .error(function(err)
-    // {
-    //   done(err);
-    // })
-  // });
+  var client, db;
 
-  // after(function()
-  // {
-    // client.close();
-    // client = null;
-    // // console.log("after");
-    // bootstrap.deleteEverything()
-    // .then(function()
-    // {
-    //   // console.log("after deleted");
-    //   client.close();
-    //    client = null;
-    //   done();
-    // })
-    // .error(function(err)
-    // {
-    //   client = null;
-    //   done(err);
-    // });
-  // });
-
-  it('getWorkoutFromDay', function()
+  before(function(done)
   {
-    // var schedule = level1schedule.weekA;
-    var schedule = level2schedule.weekA;
-
-    var result = workoutCollection.getWorkoutFromDay(schedule, 'first');
-    console.log("result:", result);
-    true.should.be.true;
+    client = new Client();
+    client.connect()
+    .then(function()
+    {
+      db = client.db;
+      workoutCollection.db = db;
+      return workoutCollection.removeAll();
+    })
+    .then(function()
+    {
+      done();
+    })
+    .error(function(err)
+    {
+      done(err);
+    })
   });
 
-  // it('getLastWorkout returns null since none exist', function(done)
-  // {
-  //   workout.getLastWorkout()
-  //   .then(function(result)
-  //   {
-  //     console.log("result:", result);
-  //     true.should.be.true;
-  //     done();
-  //   });
-  // });
+  afterEach(function(done)
+  {
+    workoutCollection.removeAll()
+    .then(function()
+    {
+      done();
+    });
+  });
 
-  // it('getTodaysWorkout returns default workout since none exist', function(done)
-  // {
-  //   workout.getTodaysWorkout()
-  //   .then(function(result)
-  //   {
-  //     console.log("result:", result);
-  //     true.should.be.true;
-  //     done();
-  //   });
-  // });
+  after(function(done)
+  {
+    workoutCollection.removeAll()
+    .then(function()
+    {
+      return client.close();
+    })
+    .then(function()
+    {
+      client = null;
+      done();
+    })
+    .error(function(err)
+    {
+      client = null;
+      done(err);
+    });
+  });
+
+  describe('#getWorkoutFromDay', function()
+  {
+    it('works for level 1 first', function()
+    {
+      var result = workoutCollection.getWorkoutFromDay(level1schedule.weekA, 'first');
+      result.should.exist;
+      result.days.should.include('first');
+      result.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+
+    it('works for level 1 second', function()
+    {
+      var result = workoutCollection.getWorkoutFromDay(level1schedule.weekA, 'second');
+      result.should.exist;
+      result.days.should.include('second');
+      result.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+
+    it('works for level 2', function()
+    {
+      var result = workoutCollection.getWorkoutFromDay(level2schedule.weekA, 'first');
+      result.should.exist;
+      result.days.should.include('first');
+      result.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+    });
+  });
+  
+
 
 
 });
