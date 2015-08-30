@@ -1,5 +1,6 @@
 var should = require('chai').should();
 var expect = require('chai').expect;
+require('chai').use(require('chai-things'));
 var workoutCollection = require('./workoutCollection');
 var programCollection = require('./programCollection');
 var userCollection = require('./userCollection');
@@ -12,14 +13,17 @@ var _ = require("lodash");
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
+
 describe('#workout', function()
 {
 
   var client, db;
   var lastWorkout = {
-    day: 'first',
-    week: 'a',
-    level: 2,
+    program: {
+      day: 'first',
+      week: 'a',
+      level: 2,
+    },
     notes: "Some notes about it.",
     createdOn: new Date(),
     exercises: [
@@ -65,7 +69,9 @@ describe('#workout', function()
 
   afterEach(function(done)
   {
-    workoutCollection.removeAll()
+    Promise.all([programCollection.removeAll(), 
+                          workoutCollection.removeAll(), 
+                          userCollection.removeAll()])
     .then(function()
     {
       done();
@@ -91,6 +97,16 @@ describe('#workout', function()
       client = null;
       done(err);
     });
+  });
+
+  var getUserFixture = async (function()
+  {
+    var created = await (userCollection.createUser("jesse@jessewarden.com", "JesterXL", "password"));
+    if(created === false)
+    {
+      throw new Error("Failed to create user fixtured.");
+    }
+    return await (userCollection.findUser({email: "jesse@jessewarden.com"}));
   });
 
   describe('#getWorkoutFromDay', function()
@@ -127,12 +143,14 @@ describe('#workout', function()
       week: 'a',
       day: 'first'
     };
+
     it('gets a basic workout from a basic program', function()
     {
       var workout = workoutCollection.getWorkoutFromProgram(programFixture);
+      // console.log("workout:", workout);
       workout.should.exist;
       workout.days.should.include('first');
-      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+      workout.exercises.should.contain.a.thing.with.property('name', 'Squat');
     });
   });
 
@@ -143,9 +161,11 @@ describe('#workout', function()
     beforeEach(function()
     {
       lastWorkout = _.cloneDeep({
-        day: 'first',
-        week: 'a',
-        level: 2,
+        program: {
+          day: 'first',
+          week: 'a',
+          level: 2
+        },
         notes: "Some notes about it.",
         createdOn: new Date(),
         exercises: [
@@ -173,61 +193,47 @@ describe('#workout', function()
       });
     });
 
-
-
-
-
     it("gets a workout based on a fixture", function()
     {
       var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
       workout.should.exist;
       workout.days.should.include('second');
-      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+      workout.exercises.should.contain.a.thing.with.property('name', 'Squat');
     });
 
     it("gets first day based on last day", function()
     {
-      lastWorkout.day = 'third';
+      lastWorkout.program.day = 'third';
       var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
       workout.should.exist;
       workout.days.should.include('first');
-      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+      workout.exercises.should.contain.a.thing.with.property('name', 'Squat');
     });
 
     it("gets third day based on second day", function()
     {
-      lastWorkout.day = 'second';
+      lastWorkout.program.day = 'second';
       var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
       workout.should.exist;
       workout.days.should.include('third');
-      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+      workout.exercises.should.contain.a.thing.with.property('name', 'Squat');
     });
 
     it("gets week b based on finishing a", function()
     {
-      lastWorkout.day = 'third';
+      lastWorkout.program.day = 'third';
       lastWorkout.exercises[1].name.should.equal('Overhead Press');
       var workout = workoutCollection.getWorkoutBasedOnLastWorkout(lastWorkout);
       workout.should.exist;
       workout.days.should.include('first');
       workout.exercises[1].name.should.equal('Bench Press');
-      workout.exercises.should.include({ name: 'Squat', sets: 3, reps: 5 });
+      workout.exercises.should.contain.a.thing.with.property('name', 'Bench Press');
     });
 
   });
 
   describe("#getTodaysWorkout", function()
   {
-    var getUserFixture = async (function()
-    {
-      var created = await (userCollection.createUser("jesse@jessewarden.com", "JesterXL", "password"));
-      if(created === false)
-      {
-        throw new Error("Failed to create user fixtured.");
-      }
-      return await (userCollection.findUser({email: "jesse@jessewarden.com"}));
-    });
-
     it("gets a default workout for a new user", function(done)
     {
       getUserFixture().then(function(user)
@@ -239,6 +245,38 @@ describe('#workout', function()
         // console.log("workout:", workout);
         workout.should.exist;
         done();
+      });
+    });
+  });
+
+  describe("#saveWorkout", function()
+  {
+    it.only("works", function(done)
+    {
+      var savedUser = null;
+      getUserFixture().then(function(user)
+      {
+        savedUser = user;
+        return workoutCollection.getTodaysWorkout(user, new Date());
+      })
+      .then(function(workout)
+      {
+        // console.log("workout:", workout);
+        workout.should.exist;
+        _.forEach(workout.exercises, function(exercise)
+        {
+          exercise.sets.push({reps: 5, weight: 45}, {reps: 5, weight: 45}, {reps: 5, weight: 45});
+        });
+        return workoutCollection.saveWorkout(savedUser, workout);
+      })
+      .then(function(result)
+      {
+        result.should.be.true;
+        done();
+      })
+      .catch(function(error)
+      {
+        console.error("saveWorkout error:", error);
       });
     });
   });

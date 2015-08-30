@@ -11,7 +11,7 @@ var level3schedule = require("./fixtures/level3schedule");
 
 var _db = null;
 
-function isValidDate(date)
+function validDate(date)
 {
 	return _.isDate(date) && date.toString().toLowerCase() !== 'invalid date';
 }
@@ -20,7 +20,16 @@ function getWorkoutFromProgram(program)
 {
 	var schedule = getScheduleFromLevel(program.level);
 	var workouts = getWorkoutsFromScheduleWeek(schedule, program.week);
-	return getWorkoutFromDay(workouts);
+	var workout = _.cloneDeep(getWorkoutFromDay(workouts));
+	workout.program = program;
+	_.forEach(workout.exercises, function(exercise)
+	{
+		exercise.goalSets = exercise.sets;
+		exercise.goalReps = exercise.reps;
+		delete exercise.reps;
+		exercise.sets = [];
+	});
+	return workout;
 }
 
 function getScheduleFromLevel(level)
@@ -90,6 +99,11 @@ function getWorkoutFromDay(workouts, day)
 			match = workout;
 		}
 	});
+	if(_.isObject(match) === false)
+	{
+		throw new Error("Couldn't find a match.");
+	}
+
 	return match;
 }
 
@@ -142,6 +156,19 @@ function getWorkoutBasedOnLastWorkout(lastWorkout)
 	// next workout for day
 	// ready to move week?
 	// ready to move level?
+	var day = getNextDay(lastWorkout.day);
+	var isStartingNewWeek = startingNewWeek(day);
+	var week = lastWorkout.week;
+	if(isStartingNewWeek)
+	{
+		week = getNextWeek(lastWorkout.level, lastWorkout.week);
+	}
+	// TODO: intelligently predict next level
+	var level = lastWorkout.level;
+	var schedule = getScheduleFromLevel(level);
+	var workouts = getWorkoutsFromScheduleWeek(schedule, week);
+	var workout = _.cloneDeep(getWorkoutFromDay(workouts, day));
+
 	var exampleLastWorkout = {
 		day: 'first',
 		week: 'a',
@@ -163,28 +190,122 @@ function getWorkoutBasedOnLastWorkout(lastWorkout)
 		]
 	};
 
-	var day = getNextDay(lastWorkout.day);
-	var isStartingNewWeek = startingNewWeek(day);
-	var week = lastWorkout.week;
-	if(isStartingNewWeek)
-	{
-		week = getNextWeek(lastWorkout.level, lastWorkout.week);
-	}
-	// TODO: intelligently predict next level
-	var level = lastWorkout.level;
-	var schedule = getScheduleFromLevel(level);
-	var workouts = getWorkoutsFromScheduleWeek(schedule, week);
-	var workout = getWorkoutFromDay(workouts, day);
-
 	// TODO: adjust goals
+	workout.day = day;
+	workout.week = week;
+	workout.level = level;
+	// _.forEach(match.exercises, function(exercise)
+	// {
+	// });
+
+	
 	return workout;
 }
 
+function validWorkoutNotes(workout)
+{
+	if(_.isNull(workout.notes) || _.isUndefined(workout.notes))
+	{
+		return true;
+	}
+	if(_.isString(workout.notes))
+	{
+		return true;
+	}
+	return false;
+}
 
+function exercisesAreValid(exercises)
+{
+	if(_.isArray(exercises) === false)
+	{
+		return false;
+	}
+
+	return _.every(exercises, exerciseIsValid);
+}
+
+function exerciseIsValid(exercise)
+{
+	if(_.isObject(exercise) === false)
+	{
+		return false;
+	}
+	return _.every([
+			_.isString(exercise.name),
+			_.isArray(exercise.sets),
+			setsAreValid(exercise.sets)
+		]);
+}
+
+function setsAreValid(sets)
+{
+	return _.every(sets, setIsValid);
+}
+
+function setIsValid(set)
+{
+	return _.every([
+			_.isObject(set),
+			_.isNumber(set.reps),
+			_.isNumber(set.weight),
+			_.isNaN(set.reps) === false,
+			_.isNaN(set.weight) === false
+		]);
+}
+
+function validWorkoutDay(workout)
+{
+	return programCollection.validDay(workout.program.day);
+}
+
+function validWorkoutWeek(workout)
+{
+	return programCollection.validWeek(workout.program.week);
+}
+
+function validWorkoutLevel(workout)
+{
+	return programCollection.validLevel(workout.program.level);
+}
+
+function validWorkoutDate(workout)
+{
+	return validDate(workout.createdOn);
+}
+
+function validWorkoutExercises(workout)
+{
+	return exercisesAreValid(workout.exercises);
+}
+
+function isValidWorkout(workout)
+{
+	console.log("isValidWorkout, workout:", workout);
+	var endResult = _.every([
+		_.isObject,
+		validWorkoutDay,
+		validWorkoutWeek,
+		validWorkoutLevel,
+		validWorkoutNotes,
+		validWorkoutExercises,
+		validWorkoutExercises
+		], function(predicate)
+		{
+			var result = predicate(workout);
+			if(result === false)
+			{
+				console.warn("isValidWorkout predicate failed, predicate:", predicate);
+			}
+			return result;
+		});
+	console.log("isValidWorkout endResult:", endResult);
+	return endResult;
+}
 
 var getTodaysWorkout = async (function(user, date)
 {
-	if(isValidDate(date) === false)
+	if(validDate(date) === false)
 	{
 		throw new Error("date is invalid");
 	}
@@ -204,7 +325,7 @@ var getTodaysWorkout = async (function(user, date)
 
 var getLastWorkout = async (function(userID, date)
 {
-	if(isValidDate(date) === false)
+	if(validDate(date) === false)
 	{
 		throw new Error("date is invalid");
 	}
@@ -219,6 +340,32 @@ var removeAll = async (function()
 	return result.result.ok === 1;
 });
 
+var saveWorkout = async (function(user, workout)
+{
+	if(isValidWorkout(workout) === false)
+	{
+		throw new Error("Workout is invalid");
+	}
+
+	if(_.isString(workout._id) === false)
+	{
+		workout.userID = ObjectID(user._id);
+		var updateResult = await (_db.collection("workout")
+		.insertOne(workout));
+		return updateResult.result.ok === 1;
+	}
+	else
+	{
+		if(validDate(workout.createdOn) === false)
+		{
+			throw new Error("Existing workout is missing a createdOn Date property.");
+		}
+		var result = await (_db.collection("workout")
+		.updateOne({_id: workout._id}, workout, {upsert: false}));
+		return result.result.ok === 1;
+	}
+});
+
 var workout = {
 
 	removeAll: removeAll,
@@ -226,6 +373,7 @@ var workout = {
 	getWorkoutFromDay: getWorkoutFromDay,
 	getTodaysWorkout: getTodaysWorkout,
 	getWorkoutBasedOnLastWorkout: getWorkoutBasedOnLastWorkout,
+	saveWorkout: saveWorkout,
 
 	get db()
 	{
