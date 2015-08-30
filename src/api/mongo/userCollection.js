@@ -1,25 +1,38 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+var programCollection = require('./programCollection');
+var _ = require("lodash");
 
 var _db = null;
+
+var findUser = async (function(user)
+{
+	return await (_db.collection("user").findOne(user));
+});
 
 var createUser = async (function(email, username, password)
 {
 	var foundUser = await (_db.collection("user").findOne({email: email}));
-	console.log("foundUser:", foundUser);
 	if(foundUser !== null)
 	{
 		throw new Error('Email address already exists.');
 	}
 	var result = await (_db.collection("user")
 	.insertOne({email: email, username: username, password: password, createdOn: new Date()}));
-	return result.result.ok === 1;
-});
+	if(result.result.ok !== 1)
+	{
+		throw new Error("Failed to insert user: " + result.result);
+	}
 
-var findUser = async (function(user)
-{
-	return await (_db.collection("user").findOne(user));
+	var newUser = await (findUser({email: email}));
+	if(_.isObject(newUser) === false)
+	{
+		throw new Error("Couldn't find new user: " + newUser);
+	}
+
+	var mementoResult = await (programCollection.setUserMemento(newUser, 1, 'a', 'first'));
+	return mementoResult;
 });
 
 var removeUser = async (function(user)

@@ -1,6 +1,6 @@
 var should = require('chai').should();
 var expect = require('chai').expect;
-var user = require('./user');
+var user = require('./userCollection');
 var Client = require('./client');
 var Promise = require('bluebird');
 

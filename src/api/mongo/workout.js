@@ -4,6 +4,7 @@ var await = require('asyncawait/await');
 var _ = require('lodash');
 var ObjectID = require('mongodb').ObjectID;
 var defaultWorkout = require('./fixtures/defaultworkout');
+var user = require('./user');
 
 var _db = null;
 
