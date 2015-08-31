@@ -1,6 +1,17 @@
 console.log('Loading restify server...');
 
 var _ = require('lodash');
+var Client = require('./mongo/client');
+var userCollection = require('./mongo/userCollection');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+
+var client = new Client();
+var db = null;
+client.connect().then(function() {
+    db = client.db;
+    userCollection.db = db;
+});
 
 var restify = require('restify');
 var api = restify.createServer({name: 'starting-strength'});
@@ -68,6 +79,33 @@ api.post('/login', function(req, res)
     console.log("*** /login ***");
     res.json({result: true});
 });
+
+api.post('/register', async (function(req, res)
+{
+    console.log("*** /login ***");
+    var username = req.body.username;
+    var password = req.body.password;
+    var email = req.body.email;
+    var foundUser = await (userCollection.findUser({email: email}));
+    if(_.isObject(foundUser))
+    {
+        res.json({result: false, error: "User already exists, please choose a different email address."})
+    }
+    else
+    {
+        var createdResult = await (userCollection.createUser(email, username, password));
+        console.log("createdResult:", createdResult);
+        if(createdResult)
+        {
+            res.json({result: true});
+        }
+        else
+        {
+            res.json({result: false, error: createdResult});
+        }
+        
+    }
+}));
 
 api.get('/api/workouts/today', function(req, res)
 {

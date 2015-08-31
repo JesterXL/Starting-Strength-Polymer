@@ -1,6 +1,7 @@
 <link rel="import" href="common-styles.html">
 
 <link rel="import" href="login-view.html">
+<link rel="import" href="register-view.html">
 
 <dom-module id="app-view">
 
@@ -23,6 +24,7 @@
           </paper-toolbar>
 
           <iron-pages selected="{{selectedPageIndex}}">
+            <register-view></register-view>
             <login-view></login-view>
             <today-view on-exerciseselected="onShowExercise"></today-view>
             <exercise-view exercise="{{currentExercise}}"
@@ -34,13 +36,13 @@
       </paper-drawer-panel>
 
       <iron-ajax
-      id="registerService"
-      url="http://localhost:5000/register"
-      handle-as="json"
-      content-type="application/json"
-      method="POST"
-      on-response="registerResponse"
-      debounce-duration="300"></iron-ajax>
+        id="registerService"
+        url="http://localhost:5000/register"
+        handle-as="json"
+        content-type="application/json"
+        method="POST"
+        on-response="registerResponse"
+        debounce-duration="300"></iron-ajax>
 
   </template>
 

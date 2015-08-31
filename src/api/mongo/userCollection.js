@@ -75,5 +75,6 @@ module.exports = {
 	set db(newDB)
 	{
 		_db = newDB;
+		programCollection.db = newDB;
 	}
 };

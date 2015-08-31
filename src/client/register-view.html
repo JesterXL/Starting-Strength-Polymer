@@ -1,0 +1,85 @@
+<link rel="import" href="common-styles.html">
+
+<dom-module id="register-view">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+    min-width: 300px;
+  }
+
+  #registerButton {
+    color: #FF8A80;
+  }
+
+  </style>
+  
+  <template>
+    
+    <style include="common-styles"></style>
+
+    <h1>Register</h1>
+
+      <div class="layout vertical">
+        <form is="iron-form">
+          <paper-input id="email" type="email" label="Email Address"></paper-input>
+          <paper-input id="username" label="Username"></paper-input>
+          <paper-input id="password" type="password" label="Password" password></paper-input>
+        </form>
+      </div>
+      <div>&nbsp;</div>
+      <div class="layout horizontal bottom">
+        <div class="flex"></div>
+        <paper-button id="registerButton">Register</paper-button>
+      </div>
+      
+    <iron-ajax
+      id="registerService"
+      url="http://localhost:5000/register"
+      handle-as="json"
+      content-type="application/json"
+      method="POST"
+      on-response="registerResponse"
+      debounce-duration="300"></iron-ajax>
+
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: "register-view",
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+
+      },
+
+      listeners: {
+        'registerButton.tap': 'onRegister'
+      },
+
+      onRegister: function()
+      {
+        console.log("register-view::register");
+        this.$.registerService.body = JSON.stringify({username: this.$.username.value,
+                                                  password: this.$.password.value,
+                                                  email: this.$.email.value});
+        this.$.registerService.generateRequest();
+      },
+
+      registerResponse: function(response)
+      {
+        console.log("register-view::registerResponse, response:", response.detail.response);
+      }
+
+    });
+  </script>
+
+</dom-module>
