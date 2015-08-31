@@ -1,5 +1,7 @@
 <link rel="import" href="common-styles.html">
 
+<link rel="import" href="login-view.html">
+
 <dom-module id="app-view">
 
   <template>
@@ -21,14 +23,24 @@
           </paper-toolbar>
 
           <iron-pages selected="{{selectedPageIndex}}">
-              <today-view on-exerciseselected="onShowExercise"></today-view>
-              <exercise-view exercise="{{currentExercise}}"
-                on-exercise-saved="onExerciseSaved"></exercise-view>
+            <login-view></login-view>
+            <today-view on-exerciseselected="onShowExercise"></today-view>
+            <exercise-view exercise="{{currentExercise}}"
+              on-exercise-saved="onExerciseSaved"></exercise-view>
           </iron-pages>
         </paper-header-panel>
       </div>
 
       </paper-drawer-panel>
+
+      <iron-ajax
+      id="registerService"
+      url="http://localhost:5000/register"
+      handle-as="json"
+      content-type="application/json"
+      method="POST"
+      on-response="registerResponse"
+      debounce-duration="300"></iron-ajax>
 
   </template>
 
@@ -107,12 +119,27 @@
           console.log("onpopstate:", event);
           me.navigateIfExercise(history.state);
         };
+
+        // registerService.body = JSON.stringify({username: 'jesse', password: 'test'});
+        // registerService.generateRequest();
       },
 
       onExerciseSaved: function(event, exercise)
       {
         console.log("app-view::onExerciseSaved, exercise:", exercise);
+      },
+
+      registerResponse: function()
+      {
+        console.log("app-view::registerResponse:", arguments);
       }
+
+      // parseJWT: function(token)
+      // {
+      //   var base64Url = token.split('.')[1];
+      //   var base64 = base64Url.replace('-', '+').replace('_', '/');
+      //   return JSON.parse($window.atob(base64));
+      // }
 
 
     });

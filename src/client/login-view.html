@@ -1,0 +1,93 @@
+<link rel="import" href="common-styles.html">
+
+<dom-module id="login-view">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+  }
+
+  #registerButton {
+    color: #FF8A80;
+  }
+
+  </style>
+  
+  <template>
+    
+    <style include="common-styles"></style>
+
+    <h1>Login</h1>
+
+      <div class="layout vertical">
+        <form is="iron-form">
+          <paper-input id="username" label="Username"></paper-input>
+          <paper-input id="password" type="password" label="Password" password></paper-input>
+        </form>
+      </div>
+      <div>&nbsp;</div>
+      <div class="layout horizontal bottom">
+        <div class="layout vertical">
+         <div class="flex"></div>
+          <a href="#" id="registerButton">Need to register?</a>
+          <div class="flex"></div>
+        </div>
+        <div class="flex"></div>
+        <paper-button id="loginButton">Login</paper-button>
+      </div>
+      
+    <iron-ajax
+      id="loginService"
+      url="http://localhost:5000/login"
+      handle-as="json"
+      content-type="application/json"
+      method="POST"
+      on-response="loginResponse"
+      debounce-duration="300"></iron-ajax>
+
+
+  </template>
+
+  <script>
+
+    Polymer({
+      is: "login-view",
+
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+
+      },
+
+      listeners: {
+        'loginButton.tap': 'onLogin',
+        'registerButton.tap': 'onRegister'
+      },
+
+      onRegister: function()
+      {
+        this.fire("register");
+      },
+
+      onLogin: function()
+      {
+        console.log("login-view::login, this.$.username.value:", this.$.username.value);
+        this.$.loginService.body = JSON.stringify({username: this.$.username.value, password: this.$.password.value});
+        this.$.loginService.generateRequest();
+      },
+
+      loginResponse: function(response)
+      {
+        console.log("login-view::loginResponse, response:", response.detail.response);
+        
+      }
+
+    });
+  </script>
+
+</dom-module>
