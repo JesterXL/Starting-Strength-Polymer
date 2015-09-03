@@ -84,7 +84,16 @@
       loginResponse: function(response)
       {
         console.log("login-view::loginResponse, response:", response.detail.response);
-        
+        var response = response.detail.response;
+        if(response.result === true)
+        {
+          window.sessionStorage.token = response.token;
+          this.fire('login-success');
+        }
+        else
+        {
+          this.fire('login-failure');
+        }
       }
 
     });
