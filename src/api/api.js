@@ -138,6 +138,9 @@ api.post('/register', async (function(req, res)
 api.get('/isloggedin', function(req, res) {
     console.log("*** /isloggedin ***");
     console.log(req.headers);
+    var token = req.headers.authorization.split(' ')[1];
+    var decoded = jwt.decode(token);
+    console.log("decoded:", decoded);
     res.send(200);
 });
 
