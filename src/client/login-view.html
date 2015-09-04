@@ -84,6 +84,7 @@
       loginResponse: function(response)
       {
         console.log("login-view::loginResponse, response:", response.detail.response);
+        delete window.sessionStorage.token;
         var response = response.detail.response;
         if(response.result === true)
         {

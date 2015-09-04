@@ -41,7 +41,8 @@
         handle-as="json"
         content-type="application/json"
         method="GET"
-        on-response="loggedInService"
+        on-request="onLoginRequest"
+        on-response="onLoginResponse"
         debounce-duration="300"></iron-ajax>
 
   </template>
@@ -122,9 +123,24 @@
           me.navigateIfExercise(history.state);
         };
 
-        // registerService.body = JSON.stringify({username: 'jesse', password: 'test'});
-        // registerService.generateRequest();
-        loggedInService.generateRequest();
+        console.log("window.sessionStorage.token:", window.sessionStorage.token);
+        var loggedInService = this.$.loggedInService;
+        var makeRequest = function()
+        {
+          console.log("before:", loggedInService.headers);
+          if(window.sessionStorage.token)
+          {
+            loggedInService.headers = {"Authorization": "Bearer " + window.sessionStorage.token};
+          }
+          console.log("headers:", loggedInService.headers);
+          loggedInService.generateRequest();
+        };
+        makeRequest();
+
+        _.delay(function()
+        {
+          makeRequest();
+        }, 7 * 1000);
       },
 
       onExerciseSaved: function(event, exercise)
@@ -132,9 +148,14 @@
         console.log("app-view::onExerciseSaved, exercise:", exercise);
       },
 
-      loggedInService: function()
+      onLoginRequest: function()
       {
-        console.log("app-view::loggedInService:", arguments);
+        console.log("app-view::onLoginRequest:", arguments);
+      },
+
+      onLoginResponse: function()
+      {
+        console.log("app-view::onLoginResponse:", arguments);
       }
 
       // parseJWT: function(token)

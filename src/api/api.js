@@ -20,15 +20,53 @@ api.listen(process.env.PORT || 5000, function () {
     console.log('%s listening at %s', api.name, api.url)
 });
 
-api.pre(restify.CORS({
-    origins: ['*'],
-    credentials: false,
-    headers: ['X-Requested-With', 'Authorization']
-}));
+// api.pre(restify.CORS({
+//     origins: ['*', 'localhost', '127.0.0.1:5000', '127.0.0.1:5000', 'localhost:3000', 'localhost:8626'],
+//     credentials: false,
+//     headers: ['X-Requested-With', 
+//                 'Access-Control-Request-Method', 
+//                 'Access-Control-Request-Headers', 
+//                 'Access-Control-Allow-Origin',
+//                 'Authorization']
+// }));
+
+api.pre(restify.CORS());
+restify.CORS.ALLOW_HEADERS.push('authorization');
 api.pre(restify.fullResponse());
 api.use(restify.bodyParser());
 
+// function unknownMethodHandler(req, res) {
+//   if (req.method.toLowerCase() === 'options') {
+//       console.log('received an options method request');
+//     var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version', 'Origin', 'X-Requested-With']; // added Origin & X-Requested-With
+
+//     if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
+
+//     res.header('Access-Control-Allow-Credentials', true);
+//     res.header('Access-Control-Allow-Headers', allowHeaders.join(', '));
+//     res.header('Access-Control-Allow-Methods', res.methods.join(', '));
+//     res.header('Access-Control-Allow-Origin', req.headers.origin);
+
+//     return res.send(204);
+//   }
+//   else
+//     return res.send(new restify.MethodNotAllowedError());
+// }
+
+// api.on('MethodNotAllowed', unknownMethodHandler);
+
 var secret = 'moocow';
+
+var jwtRestify = require('restify-jwt');
+
+api.use(jwtRestify({ secret: secret}).unless({path: [
+                                                    '/ping', 
+                                                    '/', 
+                                                    '/login', 
+                                                    '/register',
+                                                    '/api/workouts/today']}));
+
+
 
 api.get('/ping', function (req, res, next) {
     console.log("ping called");
@@ -99,13 +137,15 @@ api.post('/register', async (function(req, res)
 
 api.get('/isloggedin', function(req, res) {
     console.log("*** /isloggedin ***");
-    res.send(req.user.profile);
+    console.log(req.headers);
+    res.send(200);
 });
 
 api.get('/api/workouts/today', function(req, res)
 {
     // TODO: calculate goal, for now hardcode
     console.log("*** /api/workouts ***");
+    console.log("authorization header:", req.headers.authorization);
     res.json([
             {
                 name: 'Squat',

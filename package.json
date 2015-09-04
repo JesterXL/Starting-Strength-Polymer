@@ -28,6 +28,7 @@
     "passport": "^0.3.0",
     "passport-jwt": "^1.1.1",
     "restify": "^4.0.0",
+    "restify-jwt": "^0.2.0",
     "rx": "^3.1.1"
   },
   "devDependencies": {
