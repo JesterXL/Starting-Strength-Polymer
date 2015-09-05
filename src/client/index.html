@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-us" ng-app="wdprGruntAngular">
+<html lang="en-us" ng-app="startingStrengthApp">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
     <meta charset="utf-8">
@@ -42,6 +42,15 @@
     <link rel="import" href="today-view.html">
     <link rel="import" href="app-view.html">
     <link rel="import" href="exercise-view.html">
+
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script src="node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
+
+    <script src="src/app.js"></script>
+    <script src="src/startingStrength/startingStrength.module.js"></script>
+    <script src="src/startingStrength/startingStrength.route.js"></script>
+    <script src="src/startingStrength/startingStrength.directive.js"></script>
+    <script src="src/startingStrength/startingStrength.controller.js"></script>
     
     <style>
 
@@ -63,7 +72,8 @@
 </head>
 <body class="fullbleed layout vertical">
     
-    <app-view></app-view>
+    <!-- <app-view></app-view> -->
+    <jxl-starting-strength></jxl-starting-strength>
 
     <script>
     // Rx.DOM.click($('#validateButton')).subscribe(function (x)

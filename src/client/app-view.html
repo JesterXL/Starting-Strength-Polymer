@@ -139,35 +139,35 @@
       attached: function()
       {
         console.log("app-view::attached");
-        console.log("history.state:", window.history.state);
-        var me = this;
-        window.onpopstate = function(event)
-        {
-          console.log("onpopstate:", event);
-          me.navigateIfExercise(window.history.state);
-        };
+        // console.log("history.state:", window.history.state);
+        // var me = this;
+        // window.onpopstate = function(event)
+        // {
+        //   console.log("onpopstate:", event);
+        //   me.navigateIfExercise(window.history.state);
+        // };
 
-        me.testIsLoggedIn().then(function(success)
-        {
-          if(success === true)
-          {
-            return me.getWorkoutToday();
-          }
-          else
-          {
-            window.history.pushState(null, 'Login', '#login');
-            me.selectedPageIndex = 1;
-          }
-        })
-        .then(function(workout)
-        {
-          me.currentWorkout = workout;
-          me.navigateIfExercise(history.state);
-        })
-        .catch(function(error)
-        {
-          console.log("app-view::attached, error:", error);
-        })
+        // me.testIsLoggedIn().then(function(success)
+        // {
+        //   if(success === true)
+        //   {
+        //     return me.getWorkoutToday();
+        //   }
+        //   else
+        //   {
+        //     window.history.pushState(null, 'Login', '#login');
+        //     me.selectedPageIndex = 1;
+        //   }
+        // })
+        // .then(function(workout)
+        // {
+        //   me.currentWorkout = workout;
+        //   me.navigateIfExercise(history.state);
+        // })
+        // .catch(function(error)
+        // {
+        //   console.log("app-view::attached, error:", error);
+        // })
       },
 
       getWorkoutToday: function()
