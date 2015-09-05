@@ -1,9 +1,5 @@
 <link rel="import" href="common-styles.html">
 
-<link rel="import" href="login-view.html">
-<link rel="import" href="register-view.html">
-<link rel="import" href="loading-view.html">
-
 <dom-module id="app-view">
 
   <template>
@@ -23,15 +19,16 @@
                   <div class="title">{{getTitle(breadcrumbs)}}</div>
               <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
           </paper-toolbar>
+          <div ui-view></content>
 
-          <iron-pages selected="{{selectedPageIndex}}">
+          <!-- <iron-pages selected="{{selectedPageIndex}}">
             <loading-view></loading-view>
             <login-view on-login-success="onLoginSuccess"></login-view>
             <register-view></register-view>
             <today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
             <exercise-view id="exerciseView" exercise="{{currentExercise}}"
               on-save-exercise="onSaveExercise"></exercise-view>
-          </iron-pages>
+          </iron-pages> -->
         </paper-header-panel>
       </div>
 

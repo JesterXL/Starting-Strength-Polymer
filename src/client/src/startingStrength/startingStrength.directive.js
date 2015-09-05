@@ -11,7 +11,7 @@
             restrict: 'E',
             scope: {},
             transclude: true,
-            template: '<app-view></app-view>',
+            templateUrl: 'src/startingStrength/startingStrength.directive.html',
             controller: 'jxlStartingStrengthController',
             controllerAs: 'vm'
         };
