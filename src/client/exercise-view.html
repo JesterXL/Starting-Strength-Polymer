@@ -60,14 +60,7 @@
         </div>
     </template>
 
-    <iron-ajax
-      id="saveExerciseService"
-      url="http://localhost:5000/api/workouts/exercise/save"
-      handle-as="json"
-      content-type="application/json"
-      method="POST"
-      on-response="onSaveExerciseResponse"
-      debounce-duration="1000"></iron-ajax>
+    
     
   </template>
 
@@ -107,8 +100,8 @@
           newSet = {
             reps: 0,
             weight: previousSet.weight,
-            goalReps: previousSet.goalReps,
-            goalWeight: previousSet.goalWeight
+            goalReps: this.exercise.goalReps,
+            goalWeight: previousSet.weight
           };
         }
         else
@@ -116,7 +109,7 @@
           newSet = {
             reps: 0,
             weight: 0,
-            goalReps: 0,
+            goalReps: this.exercise.goalReps,
             goalWeight: 0
           };
         }
@@ -132,16 +125,15 @@
       onSave: function()
       {
         console.log("exercise-view::onSave");
-        this.saving = true;
-        saveExerciseService.body = JSON.stringify(this.exercise);
-        saveExerciseService.generateRequest();
-      },
-
-      onSaveExerciseResponse: function(response)
-      {
-        console.log("today-view::onSaveExerciseResponse, response:", response.detail.response);
-        this.saving = false;
-        this.fire('exercise-saved', this.exercise);
+        var me = this;
+        me.saving = true;
+        me.exercise.sets = _.map(me.exercise.sets, function(aSet)
+        {
+          aSet.reps = parseInt(aSet.reps);
+          aSet.weight = parseInt(aSet.weight);
+          return aSet;
+        });
+        me.fire('save-exercise', {exercise: me.exercise});
       }
 
     });

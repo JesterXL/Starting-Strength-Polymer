@@ -28,9 +28,9 @@
             <loading-view></loading-view>
             <login-view on-login-success="onLoginSuccess"></login-view>
             <register-view></register-view>
-            <today-view on-exerciseselected="onShowExercise"></today-view>
+            <today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
             <exercise-view exercise="{{currentExercise}}"
-              on-exercise-saved="onExerciseSaved"></exercise-view>
+              on-save-exercise="onSaveExercise"></exercise-view>
           </iron-pages>
         </paper-header-panel>
       </div>
@@ -43,8 +43,26 @@
         handle-as="json"
         content-type="application/json"
         method="GET"
-        on-response="onIsLoggedInResponse"
-        on-error="onIsLoggedInError"
+        debounce-duration="300"></iron-ajax>
+
+      <iron-ajax
+        id="saveWorkoutService"
+        url="http://localhost:5000/api/workouts/save"
+        handle-as="json"
+        content-type="application/json"
+        method="POST"
+        on-response="onSaveWorkoutSuccess"
+        on-error="onSaveWorkoutError"
+        debounce-duration="1000"></iron-ajax>
+
+      <iron-ajax
+        id="workoutTodayService"
+        url="http://localhost:5000/api/workouts/today"
+        handle-as="json"
+        content-type="application/json"
+        method="GET"
+        on-response="onWorkoutTodaySuccess"
+        on-error="onWorkoutTodayError"
         debounce-duration="300"></iron-ajax>
 
   </template>
@@ -72,30 +90,17 @@
         currentExercise: {
           type: Object,
           value: null
+        },
+
+        currentWorkout: {
+          type: Object,
+          value: null
         }
       },
 
       getTitle: function(breadcrumbs)
       {
         return breadcrumbs.join(" > ")
-      },
-
-      onIsLoggedInResponse: function(event)
-      {
-        console.log("onLoginResponse, event:", event);
-        this.navigateIfExercise();
-      },
-
-      onIsLoggedInError: function(event)
-      {
-        console.error("onIsLoggedInError, error:", event.detail);
-        window.history.pushState(null, 'login', 'Login');
-        this.selectedPageIndex = 1;
-      },
-
-      onLoginSuccess: function()
-      {
-        this.navigateIfExercise();
       },
 
       onShowExercise: function(event, exercise)
@@ -135,7 +140,6 @@
       {
         console.log("app-view::attached");
         console.log("history.state:", history.state);
-        this.navigateIfExercise(history.state);
         var me = this;
         window.onpopstate = function(event)
         {
@@ -143,29 +147,111 @@
           me.navigateIfExercise(history.state);
         };
 
-        this.testIsLoggedIn();
+        me.testIsLoggedIn().then(function(success)
+        {
+          if(success === true)
+          {
+            return me.getWorkoutToday();
+          }
+          else
+          {
+            window.history.pushState(null, 'Login', '#login');
+            me.selectedPageIndex = 1;
+          }
+        })
+        .then(function(workout)
+        {
+          me.currentWorkout = workout;
+          me.navigateIfExercise(history.state);
+        })
+        .catch(function(error)
+        {
+          console.log("app-view::attached, error:", error);
+        })
       },
 
-      onExerciseSaved: function(event, exercise)
+      getWorkoutToday: function()
       {
-        console.log("app-view::onExerciseSaved, exercise:", exercise);
+        var me = this;
+        return new Promise(function(success, failure)
+        {
+          var workoutTodayService = me.$.workoutTodayService;
+          if(window.localStorage.token)
+          {
+            workoutTodayService.headers = {"Authorization": "Bearer " + window.localStorage.token};
+          }
+          var request = workoutTodayService.generateRequest();
+          request.completes.then(function(request)
+          {
+            console.log("app-view::workoutTodayService complete, response:", request.response);
+            success(request.response.workout);
+          })
+          .catch(function(request, error)
+          {
+            console.error("app-view::workoutTodayService catch, request:", error);
+            success(false);
+          });
+        });
       },
 
       testIsLoggedIn: function()
       {
-        console.log("window.sessionStorage.token:", window.sessionStorage.token);
+        console.log("window.localStorage.token:", window.localStorage.token);
         var loggedInService = this.$.loggedInService;
-        var makeRequest = function()
+        return new Promise(function(success, failure)
         {
-          console.log("before:", loggedInService.headers);
-          if(window.sessionStorage.token)
+          if(window.localStorage.token)
           {
-            loggedInService.headers = {"Authorization": "Bearer " + window.sessionStorage.token};
+            loggedInService.headers = {"Authorization": "Bearer " + window.localStorage.token};
           }
-          console.log("headers:", loggedInService.headers);
-          loggedInService.generateRequest();
-        };
-        makeRequest();
+          var request = loggedInService.generateRequest();
+          request.completes.then(function(request)
+          {
+            console.log("app-view::testIsLoggedIn complete, response:", request.response);
+            success(true);
+          })
+          .catch(function(request, error)
+          {
+            console.error("app-view::testIsLoggedIn catch, error:", error);
+            failure(error);
+          });
+        });
+      },
+
+      onSaveExercise: function()
+      {
+        console.log("app-view::onSaveExercise");
+        var me = this;
+        me.currentWorkout.exercises = _.map(me.currentWorkout.exercises, function(exercise)
+        {
+          if(exercise.name !== me.currentExercise.name)
+          {
+            return exercise;
+          }
+          else
+          {
+            return me.currentExercise;
+          }
+        });
+        if(window.localStorage.token)
+        {
+          saveWorkoutService.headers = {"Authorization": "Bearer " + window.localStorage.token};
+        }
+        console.log("saving workout:", this.currentWorkout);
+        saveWorkoutService.body = JSON.stringify({workout: this.currentWorkout});
+        saveWorkoutService.generateRequest();
+      },
+
+      onSaveWorkoutSuccess: function(event)
+      {
+        console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
+        this.saving = false;
+      },
+
+      onSaveWorkoutError: function(response)
+      {
+        console.log("today-view::onSaveWorkoutError, event:", event.detail.response);
+        this.saving = false;
       }
 
 

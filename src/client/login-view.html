@@ -87,11 +87,11 @@
       loginResponse: function(response)
       {
         console.log("login-view::loginResponse, response:", response.detail.response);
-        delete window.sessionStorage.token;
+        delete window.localStorage.token;
         var response = response.detail.response;
         if(response.result === true)
         {
-          window.sessionStorage.token = response.token;
+          window.localStorage.token = response.token;
           this.fire('login-success');
         }
         else
@@ -102,7 +102,7 @@
 
       onDeleteToken: function()
       {
-        delete window.sessionStorage.token;
+        delete window.localStorage.token;
       }
 
     });

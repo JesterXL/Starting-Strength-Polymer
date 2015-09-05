@@ -155,7 +155,7 @@ api.get('/api/workouts/today', function(req, res)
             }
             else
             {
-                res.json({result: false, error: 'Could not get todays workout.'});
+                res.send(500, 'Could not get todays workout.');
             }
         })
         .catch(function(error)
@@ -166,14 +166,48 @@ api.get('/api/workouts/today', function(req, res)
     });
 });
 
-api.post('/api/workouts/exercise/save', function(req, res)
+api.post('/api/workouts/save', function(req, res)
 {
-    console.log("*** /api/workouts/exercise/save ***");
-
-    _.delay(function()
+    console.log("*** /api/workouts/save ***");
+    var token = req.headers.authorization.split(' ')[1];
+    jwt.verify(token, secret, function(err, decoded)
     {
-        res.json({result: true});
-    }, 1000);
+        if(err)
+        {
+            console.error("/api/workouts/today failed to verify token:", err);
+            res.send(401);
+        }
+        startingStrength.userCollection.findUser({id: decoded._id})
+        .then(function(user)
+        {
+            if(_.isObject(user))
+            {
+                console.log("req.body:", req.body.workout);
+                return startingStrength.workoutCollection.saveWorkout(user, req.body.workout);
+            }
+            else
+            {
+                console.error("/api/workouts/save can't find user in token.");
+                res.send(401);
+            }
+        })
+        .then(function(saved)
+        {
+            if(saved === true)
+            {
+                res.json({result: true});
+            }
+            else
+            {
+                res.send(500, 'Could not save workout.');
+            }
+        })
+        .catch(function(error)
+        {
+            console.error("/api/workouts/save error:", error);
+            res.send(500);
+        });
+    });
 });
 
 

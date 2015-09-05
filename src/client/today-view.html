@@ -22,20 +22,9 @@
     <!-- TODO: fix image, need more coffee -->
     <div class="layout horizontal wrap">
        <template is="dom-repeat" items="{{exercises}}">
-          <today-exercise-card exercise="{{item}}"
-            on-cow="onSaveExercise"></today-exercise-card>
+          <today-exercise-card exercise="{{item}}"></today-exercise-card>
         </template>
     </div>
-
-    <iron-ajax
-      id="workoutTodayService"
-      url="http://localhost:5000/api/workouts/today"
-      handle-as="json"
-      content-type="application/json"
-      method="GET"
-      on-response="onWorkoutTodaySuccess"
-      on-error="onWorkoutTodayError"
-      debounce-duration="300"></iron-ajax>
 
   </template>
 
@@ -53,17 +42,13 @@
         exercises: {
           type: Array,
           value: []
-        }
-      },
+        },
 
-      attached: function()
-      {
-        var workoutTodayService = this.$.workoutTodayService;
-        if(window.sessionStorage.token)
-        {
-          workoutTodayService.headers = {"Authorization": "Bearer " + window.sessionStorage.token};
+        workout: {
+          type: Object,
+          value: null,
+          observer: '_onWorkoutSet'
         }
-        workoutTodayService.generateRequest();
       },
 
       getExerciseIcon: function(exerciseName)
@@ -87,23 +72,21 @@
         return image;
       },
 
-      onWorkoutTodaySuccess: function(event)
+      _onWorkoutSet: function(newValue, oldValue)
       {
-        // console.log("today-view::onWorkoutTodaySuccess, response:", event.detail.response);
+        console.log("today-view::onWorkoutTodaySuccess, newValue:", newValue);
+        if(_.isObject(newValue) === false)
+        {
+          return false;
+        }
         var me = this;
-        this.exercises = _.map(event.detail.response, function(exercise)
+        newValue.exercises = _.map(newValue.exercises, function(exercise)
         {
           exercise.imageURL = me.getExerciseIcon(exercise.name);
           return exercise;
         });
-      },
-
-      onWorkoutTodayError: function(event)
-      {
-        console.error("today-view::onWorkoutTodayError", event.detail.error);
+        me.exercises = newValue.exercises;
       }
-
-
 
     });
   </script>

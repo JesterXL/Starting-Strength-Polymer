@@ -350,6 +350,7 @@ var saveWorkout = async (function(user, workout)
 	if(_.isString(workout._id) === false)
 	{
 		workout.userID = ObjectID(user._id);
+		workout.createdOn = new Date();
 		var updateResult = await (_db.collection("workout")
 		.insertOne(workout));
 		return updateResult.result.ok === 1;
