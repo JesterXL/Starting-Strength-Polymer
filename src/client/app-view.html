@@ -147,27 +147,52 @@
           me.navigateIfExercise(window.history.state);
         };
 
-        me.testIsLoggedIn().then(function(success)
+        try
         {
-          if(success === true)
+          me.testIsLoggedIn().then(function(success)
           {
-            return me.getWorkoutToday();
-          }
-          else
+            console.log("app-view::testIsLoggedIn then, success:", success);
+            try
+            {
+              if(success === true)
+              {
+                return me.getWorkoutToday();
+              }
+              else
+              {
+                window.history.pushState(null, 'Login', '#login');
+                me.selectedPageIndex = 1;
+              }
+            }
+            catch(err)
+            {
+              console.log("me.testIsLoggedIn, fatal error:", err);
+            }
+          })
+          .then(function(workout)
           {
+            console.log("app-view::attached, workout:", workout);
+            try
+            {
+              me.currentWorkout = workout;
+              me.navigateIfExercise(window.history.state);
+            }
+            catch(err)
+            {
+              console.error("me.testIsLoggedIn setting workout, fatal error:", err);
+            }
+          })
+          .catch(function(error)
+          {
+            console.error("app-view::attached, error:", arguments);
             window.history.pushState(null, 'Login', '#login');
             me.selectedPageIndex = 1;
-          }
-        })
-        .then(function(workout)
+          })
+        }
+        catch(promiseError)
         {
-          me.currentWorkout = workout;
-          me.navigateIfExercise(history.state);
-        })
-        .catch(function(error)
-        {
-          console.log("app-view::attached, error:", error);
-        })
+          console.error("app-view::attached promise error:", promiseError);
+        }
       },
 
       getWorkoutToday: function()
@@ -186,7 +211,7 @@
             console.log("app-view::workoutTodayService complete, response:", request.response);
             success(request.response.workout);
           })
-          .catch(function(request, error)
+          .catch(function(error)
           {
             console.error("app-view::workoutTodayService catch, request:", error);
             success(false);
@@ -196,22 +221,27 @@
 
       testIsLoggedIn: function()
       {
-        console.log("window.localStorage.token:", window.localStorage.token);
+        console.log("app-view::testIsLoggedIn, window.localStorage.token:", window.localStorage.token);
         var loggedInService = this.$.loggedInService;
         return new Promise(function(success, failure)
         {
+          console.log("1");
           if(window.localStorage.token)
           {
             loggedInService.headers = {"Authorization": "Bearer " + window.localStorage.token};
           }
+          console.log("2");
           var request = loggedInService.generateRequest();
+          console.log("3");
           request.completes.then(function(request)
           {
+            console.log("4");
             console.log("app-view::testIsLoggedIn complete, response:", request.response);
             success(true);
           })
-          .catch(function(request, error)
+          .catch(function(error)
           {
+            console.log("5");
             console.error("app-view::testIsLoggedIn catch, error:", error);
             failure(error);
           });
