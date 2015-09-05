@@ -2,6 +2,8 @@ var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var userCollection = require('./userCollection');
+var programCollection = require('./programCollection');
+var workoutCollection = require('./workoutCollection');
 
 var _db = null;
 
@@ -74,6 +76,11 @@ var deleteEverything = async (function()
 	{
 		return new Error("Result1 was not ok: " + result.result);
 	}
+
+	var removedPrograms = await (programCollection.removeAll());
+	var removedWorkouts = await (workoutCollection.removeAll());
+	var removedUsers = await (userCollection.removeAll());
+	return _.every([removedPrograms, removedWorkouts, removedUsers]);
 });
 
 var initialize = async (function()
