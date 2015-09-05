@@ -1,1 +1,27 @@
-<app-view></app-view>
+<paper-drawer-panel>
+
+<div drawer class="layout vertical scrollable">
+<paper-item>Today</paper-item>
+</div>
+
+<div main>
+<paper-header-panel class="flex">
+  <paper-toolbar>
+      <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+          <div class="title">{{getTitle(breadcrumbs)}}</div>
+      <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+  </paper-toolbar>
+  <div ui-view></div>
+
+  <!-- <iron-pages selected="{{selectedPageIndex}}">
+    <loading-view></loading-view>
+    <login-view on-login-success="onLoginSuccess"></login-view>
+    <register-view></register-view>
+    <today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
+    <exercise-view id="exerciseView" exercise="{{currentExercise}}"
+      on-save-exercise="onSaveExercise"></exercise-view>
+  </iron-pages> -->
+</paper-header-panel>
+</div>
+
+</paper-drawer-panel>
