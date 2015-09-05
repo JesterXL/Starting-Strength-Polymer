@@ -86,6 +86,12 @@
         }
       },
 
+      attached: function()
+      {
+        console.log("exercise-view::attached");
+        this.saving = false;
+      },
+
       getSetNumber: function(index)
       {
         return "Set #" + (index + 1);

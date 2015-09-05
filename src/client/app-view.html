@@ -29,7 +29,7 @@
             <login-view on-login-success="onLoginSuccess"></login-view>
             <register-view></register-view>
             <today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
-            <exercise-view exercise="{{currentExercise}}"
+            <exercise-view id="exerciseView" exercise="{{currentExercise}}"
               on-save-exercise="onSaveExercise"></exercise-view>
           </iron-pages>
         </paper-header-panel>
@@ -114,7 +114,7 @@
         }
         else
         {
-          window.history.pushState(null, '');
+          window.history.pushState(null, 'Today', '#today');
           this.selectedPageIndex = 3;
         }
         // var list = _.toArray(this.breadcrumbs);
@@ -139,12 +139,12 @@
       attached: function()
       {
         console.log("app-view::attached");
-        console.log("history.state:", history.state);
+        console.log("history.state:", window.history.state);
         var me = this;
         window.onpopstate = function(event)
         {
           console.log("onpopstate:", event);
-          me.navigateIfExercise(history.state);
+          me.navigateIfExercise(window.history.state);
         };
 
         me.testIsLoggedIn().then(function(success)
@@ -245,13 +245,14 @@
       onSaveWorkoutSuccess: function(event)
       {
         console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
-        this.saving = false;
+        window.history.pushState(null, 'Today', '#today');
+        this.selectedPageIndex = 3;
+        this.$.exerciseView.saving = false;
       },
 
       onSaveWorkoutError: function(response)
       {
         console.log("today-view::onSaveWorkoutError, event:", event.detail.response);
-        this.saving = false;
       }
 
 
