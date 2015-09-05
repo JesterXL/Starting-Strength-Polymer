@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+var userCollection = require('./userCollection');
 
 var _db = null;
 
@@ -32,6 +33,7 @@ var insertInitialization = async (function()
 	{
 		console.log("inserted init document");
 		var defaultResult = await (insertDefaultSchedules());
+		var userResult = await (insertDefaultUsers());
 		if(defaultResult === true)
 		{
 			return true;
@@ -104,6 +106,21 @@ var insertDefaultSchedules = async (function()
 	var level3schedule = require('./fixtures/level3schedule');
 
 	var result = await(_db.collection("schedule").insertMany([level1schedule, level2schedule, level3schedule]));
+	if(result.result.ok === 1)
+	{
+		return true;
+	}
+	else
+	{
+		return new Error("Result was not ok: " + result.result);
+	}
+});
+
+var insertDefaultUsers = async (function()
+{
+	console.log("insertDefaultUsers");
+
+	var result = await(userCollection.createUser('jesse@jessewarden.com', 'jesse', 'test'));
 	if(result.result.ok === 1)
 	{
 		return true;

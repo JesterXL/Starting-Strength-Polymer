@@ -2,7 +2,7 @@ console.log('Loading restify server...');
 
 var _ = require('lodash');
 var Client = require('./mongo/client');
-var userCollection = require('./mongo/userCollection');
+var startingStrength = require('./mongo/startingStrength');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var jwt = require('jsonwebtoken');
@@ -11,7 +11,21 @@ var client = new Client();
 var db = null;
 client.connect().then(function() {
     db = client.db;
-    userCollection.db = db;
+    startingStrength.db = db;
+    startingStrength.bootstrap.deleteEverything()
+    .then(function(result)
+    {
+        console.log("startingStrengthBootstrap::deleteEverything, result:", result);
+        return startingStrength.bootstrap.initialize()
+    })
+    .then(function(result)
+    {
+        console.log("startingStrengthBootstrap::initialize, result:", result);
+    })
+    .catch(function(error)
+    {
+        console.error("startingStrengthBootstrap::initialize, error:", error);
+    });
 });
 
 var restify = require('restify');
@@ -20,40 +34,10 @@ api.listen(process.env.PORT || 5000, function () {
     console.log('%s listening at %s', api.name, api.url)
 });
 
-// api.pre(restify.CORS({
-//     origins: ['*', 'localhost', '127.0.0.1:5000', '127.0.0.1:5000', 'localhost:3000', 'localhost:8626'],
-//     credentials: false,
-//     headers: ['X-Requested-With', 
-//                 'Access-Control-Request-Method', 
-//                 'Access-Control-Request-Headers', 
-//                 'Access-Control-Allow-Origin',
-//                 'Authorization']
-// }));
-
 api.pre(restify.CORS());
 restify.CORS.ALLOW_HEADERS.push('authorization');
 api.pre(restify.fullResponse());
 api.use(restify.bodyParser());
-
-// function unknownMethodHandler(req, res) {
-//   if (req.method.toLowerCase() === 'options') {
-//       console.log('received an options method request');
-//     var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version', 'Origin', 'X-Requested-With']; // added Origin & X-Requested-With
-
-//     if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
-
-//     res.header('Access-Control-Allow-Credentials', true);
-//     res.header('Access-Control-Allow-Headers', allowHeaders.join(', '));
-//     res.header('Access-Control-Allow-Methods', res.methods.join(', '));
-//     res.header('Access-Control-Allow-Origin', req.headers.origin);
-
-//     return res.send(204);
-//   }
-//   else
-//     return res.send(new restify.MethodNotAllowedError());
-// }
-
-// api.on('MethodNotAllowed', unknownMethodHandler);
 
 var secret = 'moocow';
 
@@ -63,8 +47,7 @@ api.use(jwtRestify({ secret: secret}).unless({path: [
                                                     '/ping', 
                                                     '/', 
                                                     '/login', 
-                                                    '/register',
-                                                    '/api/workouts/today']}));
+                                                    '/register']}));
 
 
 
@@ -85,7 +68,7 @@ api.post('/login', async (function(req, res)
     {
         var username = req.body.username;
         var password = req.body.password;
-        var foundUser = await (userCollection.findUser({username: username, password: password}));
+        var foundUser = await (startingStrength.userCollection.findUser({username: username, password: password}));
         if(_.isObject(foundUser))
         {
             // TODO: encrypt passwords
@@ -121,7 +104,7 @@ api.post('/register', async (function(req, res)
     }
     else
     {
-        var createdResult = await (userCollection.createUser(email, username, password));
+        var createdResult = await (startingStrength.userCollection.createUser(email, username, password));
         console.log("createdResult:", createdResult);
         if(createdResult)
         {
@@ -137,83 +120,50 @@ api.post('/register', async (function(req, res)
 
 api.get('/isloggedin', function(req, res) {
     console.log("*** /isloggedin ***");
-    console.log(req.headers);
-    var token = req.headers.authorization.split(' ')[1];
-    var decoded = jwt.decode(token);
-    console.log("decoded:", decoded);
     res.send(200);
 });
 
 api.get('/api/workouts/today', function(req, res)
 {
-    // TODO: calculate goal, for now hardcode
     console.log("*** /api/workouts ***");
-    console.log("authorization header:", req.headers.authorization);
-    res.json([
+    var token = req.headers.authorization.split(' ')[1];
+    jwt.verify(token, secret, function(err, decoded)
+    {
+        if(err)
+        {
+            console.error("/api/workouts/today failed to verify token:", err);
+            res.send(401);
+        }
+        startingStrength.userCollection.findUser({id: decoded._id})
+        .then(function(user)
+        {
+            if(_.isObject(user))
             {
-                name: 'Squat',
-                sets: [
-                    {
-                        reps: null,
-                        weight: 45,
-                        goalReps: 5,
-                        goalWeight: 45
-                    },
-                    {
-                        reps: null,
-                        weight: 45,
-                        goalReps: 5,
-                        goalWeight: 45
-                    },
-                    {
-                        reps: null,
-                        weight: 45,
-                        goalReps: 5,
-                        goalWeight: 45
-                    }
-                ],
-                goalSets: 3
-            },
-
-            {
-                name: 'Bench Press',
-                sets: [
-                    {
-                        reps: null,
-                        weight: 45,
-                        goalReps: 5,
-                        goalWeight: 45
-                    },
-                    {
-                        reps: null,
-                        weight: 45,
-                        goalReps: 5,
-                        goalWeight: 45
-                    },
-                    {
-                        reps: null,
-                        weight: 45,
-                        goalReps: 5,
-                        goalWeight: 45
-                    }
-                ],
-                goalSets: 3
-            },
-
-            {
-                name: 'Deadlift',
-                sets: [
-                    {
-                        reps: null,
-                        weight: 45,
-                        goalReps: 5,
-                        goalWeight: 45
-                    }
-                ],
-                goalSets: 1
-
+                return startingStrength.workoutCollection.getTodaysWorkout(user, new Date());
             }
-        ]);
+            else
+            {
+                console.error("/api/workouts/today can't find user in token.");
+                res.send(401);
+            }
+        })
+        .then(function(workout)
+        {
+            if(_.isObject(workout))
+            {
+                res.json({result: true, workout: workout});
+            }
+            else
+            {
+                res.json({result: false, error: 'Could not get todays workout.'});
+            }
+        })
+        .catch(function(error)
+        {
+            console.error("/api/workouts/today error:", error);
+            res.send(401);
+        });
+    });
 });
 
 api.post('/api/workouts/exercise/save', function(req, res)

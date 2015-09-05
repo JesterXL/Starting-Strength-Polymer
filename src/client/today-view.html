@@ -28,13 +28,13 @@
     </div>
 
     <iron-ajax
-      auto
       id="workoutTodayService"
       url="http://localhost:5000/api/workouts/today"
       handle-as="json"
       content-type="application/json"
       method="GET"
-      on-response="handleResponse"
+      on-response="onWorkoutTodaySuccess"
+      on-error="onWorkoutTodayError"
       debounce-duration="300"></iron-ajax>
 
   </template>
@@ -54,6 +54,16 @@
           type: Array,
           value: []
         }
+      },
+
+      attached: function()
+      {
+        var workoutTodayService = this.$.workoutTodayService;
+        if(window.sessionStorage.token)
+        {
+          workoutTodayService.headers = {"Authorization": "Bearer " + window.sessionStorage.token};
+        }
+        workoutTodayService.generateRequest();
       },
 
       getExerciseIcon: function(exerciseName)
@@ -77,16 +87,23 @@
         return image;
       },
 
-      handleResponse: function(response)
+      onWorkoutTodaySuccess: function(event)
       {
-        // console.log("today-view::handleResponse, response:", response.detail.response);
+        // console.log("today-view::onWorkoutTodaySuccess, response:", event.detail.response);
         var me = this;
-        this.exercises = _.map(response.detail.response, function(exercise)
+        this.exercises = _.map(event.detail.response, function(exercise)
         {
           exercise.imageURL = me.getExerciseIcon(exercise.name);
           return exercise;
         });
+      },
+
+      onWorkoutTodayError: function(event)
+      {
+        console.error("today-view::onWorkoutTodayError", event.detail.error);
       }
+
+
 
     });
   </script>
