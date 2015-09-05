@@ -10,7 +10,7 @@
         return {
             restrict: 'E',
             scope: {},
-            transclude: false,
+            transclude: true,
             templateUrl: 'src/startingStrength/startingStrength.directive.html',
             controller: 'jxlStartingStrengthController',
             controllerAs: 'vm'

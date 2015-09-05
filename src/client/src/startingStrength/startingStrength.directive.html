@@ -1,3 +1,5 @@
+<!-- works in all browsers, flaky with ui-router when you don't deep link -->
+<!--
 <paper-drawer-panel>
 
 <div drawer class="layout vertical scrollable">
@@ -13,15 +15,12 @@
   </paper-toolbar>
   <div ui-view></div>
 
-  <!-- <iron-pages selected="{{selectedPageIndex}}">
-    <loading-view></loading-view>
-    <login-view on-login-success="onLoginSuccess"></login-view>
-    <register-view></register-view>
-    <today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
-    <exercise-view id="exerciseView" exercise="{{currentExercise}}"
-      on-save-exercise="onSaveExercise"></exercise-view>
-  </iron-pages> -->
 </paper-header-panel>
 </div>
 
 </paper-drawer-panel>
+-->
+
+<app-view>
+  <div ng-transclude></div>
+</app-view>
