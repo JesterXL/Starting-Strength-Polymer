@@ -1,0 +1,47 @@
+<link rel="import" href="common-styles.html">
+
+<dom-module id="loading-view">
+
+  <style>
+
+  :host{
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .spacer {
+    height: 2em;
+  }
+
+  </style>
+  
+  <template>
+    
+    <style include="common-styles"></style>
+
+    <div class="spacer"></div>
+    <div class="layout horizontal center">
+      <div class="flex"></div>
+      <paper-spinner active></paper-spinner>
+      <p>&nbsp;</p>
+      <h3>Loading...</h3>
+      <div class="flex"></div>
+    </div>
+
+  </template>
+
+
+
+  <script>
+
+    Polymer({
+      is: "loading-view"
+    });
+  </script>
+
+  
+
+</dom-module>

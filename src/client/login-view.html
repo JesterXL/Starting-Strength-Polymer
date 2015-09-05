@@ -50,16 +50,6 @@
       on-response="loginResponse"
       debounce-duration="300"></iron-ajax>
 
- <iron-ajax
-        id="loggedInService"
-        url="http://localhost:5000/isloggedin"
-        handle-as="json"
-        content-type="application/json"
-        method="GET"
-        on-request="onLoginRequest"
-        on-response="onLoginResponse"
-        debounce-duration="300"></iron-ajax>
-
   </template>
 
   <script>
@@ -113,33 +103,6 @@
       onDeleteToken: function()
       {
         delete window.sessionStorage.token;
-      },
-
-      testIsLoggedIn: function()
-      {
-        console.log("window.sessionStorage.token:", window.sessionStorage.token);
-        var loggedInService = this.$.loggedInService;
-        var makeRequest = function()
-        {
-          console.log("before:", loggedInService.headers);
-          if(window.sessionStorage.token)
-          {
-            loggedInService.headers = {"Authorization": "Bearer " + window.sessionStorage.token};
-          }
-          console.log("headers:", loggedInService.headers);
-          loggedInService.generateRequest();
-        };
-        makeRequest();
-      },
-
-      onLoginRequest: function()
-      {
-        console.log("login-view::onLoginRequest:", arguments);
-      },
-
-      onLoginResponse: function()
-      {
-        console.log("login-view::onLoginResponse:", arguments);
       }
 
     });
