@@ -3,7 +3,8 @@
 
     angular
         .module('startingStrength', [
-            'ui.router'
+            'ui.router',
+            'startingStrength.userModel'
             ])
         .run(init);
 
