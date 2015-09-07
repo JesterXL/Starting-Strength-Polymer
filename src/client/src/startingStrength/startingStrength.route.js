@@ -23,7 +23,7 @@
             })
             .state('today', {
                 url: '/today',
-                template: '<today-view></today-view>'
+                template: '<jxl-today></jxl-today>'
             })
             .state('exercise', {
                 url: '/exercise',

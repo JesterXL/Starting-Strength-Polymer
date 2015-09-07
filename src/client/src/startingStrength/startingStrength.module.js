@@ -4,7 +4,8 @@
     angular
         .module('startingStrength', [
             'ui.router',
-            'startingStrength.userModel'
+            'startingStrength.userModel',
+            'startingStrength.today'
             ])
         .run(init);
 
