@@ -3,6 +3,7 @@
 <link rel="import" href="login-view.html">
 <link rel="import" href="register-view.html">
 <link rel="import" href="loading-view.html">
+<link rel="import" href="angular-wrapper.html">
 
 <dom-module id="app-view">
 
@@ -65,6 +66,8 @@
         on-error="onWorkoutTodayError"
         debounce-duration="300"></iron-ajax>
 
+      <angular-wrapper></angular-wrapper>
+
   </template>
 
   <script>
@@ -98,6 +101,11 @@
         }
       },
 
+      created: function()
+      {
+        window.pubsub = new Rx.ReplaySubject();
+      },
+
       getTitle: function(breadcrumbs)
       {
         return breadcrumbs.join(" > ")
@@ -109,12 +117,12 @@
         this.currentExercise = _.cloneDeep(exercise);
         if(exercise)
         {
-          window.history.pushState({exercise: exercise}, exercise.name, '#' + exercise.name.toLowerCase());
+          //windowhistory.pushState({exercise: exercise}, exercise.name, '#' + exercise.name.toLowerCase());
           this.selectedPageIndex = 4;
         }
         else
         {
-          window.history.pushState(null, 'Today', '#today');
+          //windowhistory.pushState(null, 'Today', '#today');
           this.selectedPageIndex = 3;
         }
         // var list = _.toArray(this.breadcrumbs);
@@ -139,13 +147,12 @@
       attached: function()
       {
         console.log("app-view::attached");
-        console.log("history.state:", window.history.state);
         var me = this;
-        window.onpopstate = function(event)
+
+        var subscription1 = window.pubsub.subscribe(function(event)
         {
-          console.log("onpopstate:", event);
-          me.navigateIfExercise(window.history.state);
-        };
+          console.log("app-view::event:", event);
+        });
 
         try
         {
@@ -160,7 +167,7 @@
               }
               else
               {
-                window.history.pushState(null, 'Login', '#login');
+                //windowhistory.pushState(null, 'Login', '#login');
                 me.selectedPageIndex = 1;
               }
             }
@@ -185,7 +192,7 @@
           .catch(function(error)
           {
             console.error("app-view::attached, error:", arguments);
-            window.history.pushState(null, 'Login', '#login');
+            //windowhistory.pushState(null, 'Login', '#login');
             me.selectedPageIndex = 1;
           })
         }
@@ -275,7 +282,7 @@
       onSaveWorkoutSuccess: function(event)
       {
         console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
-        window.history.pushState(null, 'Today', '#today');
+        //windowhistory.pushState(null, 'Today', '#today');
         this.selectedPageIndex = 3;
         this.$.exerciseView.saving = false;
       },
