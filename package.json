@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/JesterXL/Starting-Strength-Polymer#readme",
   "dependencies": {
+    "angular": "^1.4.5",
     "asyncawait": "^0.7.4",
     "bluebird": "^2.9.34",
     "chai-things": "^0.2.0",
@@ -30,7 +31,8 @@
     "restify": "^4.0.0",
     "restify-jwt": "^0.2.0",
     "rx": "^3.1.1",
-    "serve-favicon": "^2.3.0"
+    "serve-favicon": "^2.3.0",
+    "ui-router": "0.0.1"
   },
   "devDependencies": {
     "browser-sync": "^2.8.2",
