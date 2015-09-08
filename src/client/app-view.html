@@ -109,13 +109,11 @@
         this.currentExercise = _.cloneDeep(exercise);
         if(exercise)
         {
-          //window.history.pushState({exercise: exercise}, exercise.name, '#' + exercise.name.toLowerCase());
-          this.selectedPageIndex = 4;
+          page('/today/exercise');
         }
         else
         {
-          //window.history.pushState(null, 'Today', '#today');
-          this.selectedPageIndex = 3;
+          page('/today');
         }
         // var list = _.toArray(this.breadcrumbs);
         // list.push(exercise.name);
@@ -142,21 +140,34 @@
         
         window.addEventListener('WebComponentsReady', function()
         {
-          page.base('/basic');
+          page.base('/#');
+
           page('/', function()
           {
-            console.log("***************** page default called:", arguments);
+            console.log("*** page /, index 0");
+            this.selectedPageIndex = 0;
           });
           page('/login', function()
           {
-            console.log("***************** page login called:", arguments);
+            console.log("*** page /login, index 1");
+            this.selectedPageIndex = 1;
+          });
+          page('/register', function()
+          {
+            console.log("*** page /register, index 2");
+            this.selectedPageIndex = 2;
+          });
+          page('/today', function()
+          {
+            console.log("*** page /today, index 3");
+            this.selectedPageIndex = 3;
+          });
+          page('/today/exercise', function()
+          {
+            console.log("*** page /today/exercise, index 4");
+            this.selectedPageIndex = 4;
           });
           page();
-
-          _.delay(function()
-          {
-            page('/login');
-          }, 3000);
         });
         
         var me = this;
@@ -180,7 +191,7 @@
               else
               {
                 //window.history.pushState(null, 'Login', '#login');
-                me.selectedPageIndex = 1;
+                page('/login');
               }
             }
             catch(err)
@@ -205,7 +216,7 @@
           {
             console.error("app-view::attached, error:", arguments);
             //window.history.pushState(null, 'Login', '#login');
-            me.selectedPageIndex = 1;
+            page('/login');
           })
         }
         catch(promiseError)
@@ -262,7 +273,7 @@
           {
             console.log("5");
             console.error("app-view::testIsLoggedIn catch, error:", error);
-            failure(error);
+            success(false);
           });
         });
       },
@@ -295,7 +306,7 @@
       {
         console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
         //window.history.pushState(null, 'Today', '#today');
-        this.selectedPageIndex = 3;
+        page('/today');
         this.$.exerciseView.saving = false;
       },
 
