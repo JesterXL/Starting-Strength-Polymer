@@ -109,12 +109,12 @@
         this.currentExercise = _.cloneDeep(exercise);
         if(exercise)
         {
-          window.history.pushState({exercise: exercise}, exercise.name, '#' + exercise.name.toLowerCase());
+          //window.history.pushState({exercise: exercise}, exercise.name, '#' + exercise.name.toLowerCase());
           this.selectedPageIndex = 4;
         }
         else
         {
-          window.history.pushState(null, 'Today', '#today');
+          //window.history.pushState(null, 'Today', '#today');
           this.selectedPageIndex = 3;
         }
         // var list = _.toArray(this.breadcrumbs);
@@ -139,13 +139,32 @@
       attached: function()
       {
         console.log("app-view::attached");
-        console.log("history.state:", window.history.state);
-        var me = this;
-        window.onpopstate = function(event)
+        
+        window.addEventListener('WebComponentsReady', function()
         {
-          console.log("onpopstate:", event);
-          me.navigateIfExercise(window.history.state);
-        };
+          page.base('/basic');
+          page('/', function()
+          {
+            console.log("***************** page default called:", arguments);
+          });
+          page('/login', function()
+          {
+            console.log("***************** page login called:", arguments);
+          });
+          page();
+
+          _.delay(function()
+          {
+            page('/login');
+          }, 3000);
+        });
+        
+        var me = this;
+        // window.onpopstate = function(event)
+        // {
+        //   console.log("onpopstate:", event);
+        //   me.navigateIfExercise(window.history.state);
+        // };
 
         try
         {
@@ -160,7 +179,7 @@
               }
               else
               {
-                window.history.pushState(null, 'Login', '#login');
+                //window.history.pushState(null, 'Login', '#login');
                 me.selectedPageIndex = 1;
               }
             }
@@ -185,7 +204,7 @@
           .catch(function(error)
           {
             console.error("app-view::attached, error:", arguments);
-            window.history.pushState(null, 'Login', '#login');
+            //window.history.pushState(null, 'Login', '#login');
             me.selectedPageIndex = 1;
           })
         }
@@ -275,7 +294,7 @@
       onSaveWorkoutSuccess: function(event)
       {
         console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
-        window.history.pushState(null, 'Today', '#today');
+        //window.history.pushState(null, 'Today', '#today');
         this.selectedPageIndex = 3;
         this.$.exerciseView.saving = false;
       },
