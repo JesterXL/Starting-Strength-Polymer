@@ -29,8 +29,6 @@
 
       <h2>{{exercise.name}}</h2>
 
-      <template is="dom-if" if="{{!saving}}">
-      
         <h4 class="listTitle">Sets</h4>
 
         <template is="dom-repeat" items="{{exercise.sets}}">
@@ -50,17 +48,8 @@
           <div class="flex"></div>
             <paper-button on-tap="onSave">Save</paper-button>
         </div>
-      </template>
 
     </div>
-
-    <template is="dom-if" if="{{saving}}">
-        <div class="layout horizontal center">
-          <paper-spinner active></paper-spinner><div class="loading">Saving...</div>
-        </div>
-    </template>
-
-    
     
   </template>
 
@@ -78,18 +67,12 @@
         exercise: {
           type: Object,
           value: null
-        },
-
-        saving: {
-          type: Boolean,
-          value: false
         }
       },
 
       attached: function()
       {
         console.log("exercise-view::attached");
-        this.saving = false;
       },
 
       getSetNumber: function(index)
@@ -132,7 +115,6 @@
       {
         console.log("exercise-view::onSave");
         var me = this;
-        me.saving = true;
         me.exercise.sets = _.map(me.exercise.sets, function(aSet)
         {
           aSet.reps = parseInt(aSet.reps);

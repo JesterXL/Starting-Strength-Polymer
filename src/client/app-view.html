@@ -112,7 +112,7 @@
 				page('/', function()
 				{
 					console.log("*** page /, index 0");
-					me.selectedPageIndex = 0;
+					page.redirect('/today');
 				});
 				page('/login', function()
 				{
@@ -173,6 +173,22 @@
 		onRegister: function()
 		{
 			page('/register');
+		},
+
+		onSaveExercise: function()
+		{
+			var serviceLocator = this.$.serviceLocator;
+			serviceLocator.getService('saveWorkoutService').saveWorkout(this.currentWorkout, this.currentExercise)
+			.then(function(workout)
+			{
+				me.currentWorkout = workout;
+				mc.currentExercise = null;
+				page('/today');
+			})
+			.catch(function(error)
+			{
+				page('/today');
+			});
 		}
 
 

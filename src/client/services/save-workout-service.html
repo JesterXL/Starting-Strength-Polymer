@@ -8,8 +8,6 @@
 			handle-as="json"
 			content-type="application/json"
 			method="POST"
-			on-response="onSaveWorkoutSuccess"
-			on-error="onSaveWorkoutError"
 			debounce-duration="1000"></iron-ajax>
 	</template>
 
@@ -24,10 +22,19 @@
 
 		saveWorkout: function(workout, currentExercise)
 		{
+			if(_.isObject(workout) === false)
+			{
+				throw new Error("workout cannot be null.")
+			}
+			if(_.isObject(currentExercise) === false)
+			{
+				throw new Error("currentExercise cannot be null.")
+			}
+			
 			var me = this;
 			var tokenService = document.createElement('token-service');
-			var loggedInService = this.$.saveWorkoutService;
-			var clonedWorkout = _.deepClone(workout);
+			var saveWorkoutService = this.$.saveWorkoutService;
+			var clonedWorkout = _.cloneDeep(workout);
 			clonedWorkout.exercises = _.map(workout.exercises, function(exercise)
 			{
 				if(exercise.name !== currentExercise.name)
@@ -39,34 +46,28 @@
 					return currentExercise;
 				}
 			});
-
 			saveWorkoutService.headers = tokenService.tokenHeaders;
 			saveWorkoutService.body = JSON.stringify({workout: clonedWorkout});
-			saveWorkoutService.generateRequest();
-		},
 
-		onSaveWorkoutSuccess: function(event)
-		{
-			try
+			return new Promise(function(success, failure)
 			{
-				if(event.detail.response.result === true)
+				var request = saveWorkoutService.generateRequest();
+				request.completes.then(function(response)
 				{
-					this.fire('save-workout-success', {workout: event.detail.response.workout});
-				}
-				else
+					try
+					{
+						success(response.response.workout);
+					}
+					catch(err)
+					{
+						failure("Failed to find workout in response:", err);
+					}
+				})
+				.catch(function(error)
 				{
-					this.fire('save-workout-error', {error: event.detail.response.error});
-				}
-			}
-			catch(error)
-			{
-				this.fire('save-workout-error', {error: error});
-			}
-		},
-
-		onSaveWorkoutError: function(response)
-		{
-			this.fire('save-workout-error', response);
+					failure(error);
+				});
+			});
 		}
 	});
 </script>
