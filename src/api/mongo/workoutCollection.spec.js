@@ -271,7 +271,7 @@ describe('#workout', function()
       })
       .then(function(result)
       {
-        result.should.be.true;
+        result.result.ok.should.equal(1);
         done();
       })
       .catch(function(error)
@@ -300,7 +300,7 @@ describe('#workout', function()
       })
       .then(function(result)
       {
-        result.should.be.true;
+        result.result.ok.should.equal(1);
         return workoutCollection.getWorkout({userID: savedUser._id});
       })
       .then(function(readWorkout)

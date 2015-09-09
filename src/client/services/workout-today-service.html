@@ -1,0 +1,44 @@
+<link rel="import" href="token-service.html">
+
+<dom-module id="workout-today-service">
+	<template>
+		<iron-ajax
+			id="workoutTodayService"
+			url="http://localhost:5000/api/workouts/today"
+			handle-as="json"
+			content-type="application/json"
+			method="GET"
+			debounce-duration="300"></iron-ajax>
+	</template>
+
+	<script>
+
+	Polymer({
+		is: "workout-today-service",
+
+		hostAttributes: {
+			hidden: true
+		},
+
+		getWorkoutToday: function()
+		{
+			var workoutTodayService = this.$.workoutTodayService;
+			var tokenService = document.createElement('token-service');
+			var me = this;
+			return new Promise(function(success, failure)
+			{
+				var request = workoutTodayService.generateRequest();
+				request.completes.then(function(request)
+				{
+					success(request.response.workout);
+				})
+				.catch(function(error)
+				{
+					failure(error);
+				});
+			});
+		},
+	});
+</script>
+
+</dom-module>

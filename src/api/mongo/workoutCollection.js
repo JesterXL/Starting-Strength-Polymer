@@ -351,9 +351,8 @@ var saveWorkout = async (function(user, workout)
 	{
 		workout.userID = ObjectID(user._id);
 		workout.createdOn = new Date();
-		var updateResult = await (_db.collection("workout")
+		return await (_db.collection("workout")
 		.insertOne(workout));
-		return updateResult.result.ok === 1;
 	}
 	else
 	{
@@ -361,9 +360,8 @@ var saveWorkout = async (function(user, workout)
 		{
 			throw new Error("Existing workout is missing a createdOn Date property.");
 		}
-		var result = await (_db.collection("workout")
+		return await (_db.collection("workout")
 		.updateOne({_id: workout._id}, workout, {upsert: false}));
-		return result.result.ok === 1;
 	}
 });
 

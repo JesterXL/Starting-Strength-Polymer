@@ -1,0 +1,36 @@
+<script>
+
+	Polymer({
+		is: "token-service",
+
+		hostAttributes: {
+			hidden: true
+		},
+
+		properties: {
+			token: {
+				type: String,
+				value: null,
+				notify: true,
+				observer: '_onTokenChange'
+			}
+		},
+
+		_onTokenChange: function(newValue, oldValue)
+		{
+			if(_.isString(newValue))
+			{
+				window.localStorage.token = newValue;
+			}
+			else
+			{
+				delete window.localStorage.token;
+			}
+		},
+
+		get tokenHeaders()
+		{
+			return {"Authorization": "Bearer " + window.localStorage.token};
+		}
+  });
+</script>

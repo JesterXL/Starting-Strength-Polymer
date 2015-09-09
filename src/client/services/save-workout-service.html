@@ -1,0 +1,74 @@
+<link rel="import" href="token-service.html">
+
+<dom-module id="save-workout-service">
+	<template>
+		<iron-ajax
+			id="saveWorkoutService"
+			url="http://localhost:5000/api/workouts/save"
+			handle-as="json"
+			content-type="application/json"
+			method="POST"
+			on-response="onSaveWorkoutSuccess"
+			on-error="onSaveWorkoutError"
+			debounce-duration="1000"></iron-ajax>
+	</template>
+
+	<script>
+
+	Polymer({
+		is: "save-workout-service",
+
+		hostAttributes: {
+			hidden: true
+		},
+
+		saveWorkout: function(workout, currentExercise)
+		{
+			var me = this;
+			var tokenService = document.createElement('token-service');
+			var loggedInService = this.$.saveWorkoutService;
+			var clonedWorkout = _.deepClone(workout);
+			clonedWorkout.exercises = _.map(workout.exercises, function(exercise)
+			{
+				if(exercise.name !== currentExercise.name)
+				{
+					return exercise;
+				}
+				else
+				{
+					return currentExercise;
+				}
+			});
+
+			saveWorkoutService.headers = tokenService.tokenHeaders;
+			saveWorkoutService.body = JSON.stringify({workout: clonedWorkout});
+			saveWorkoutService.generateRequest();
+		},
+
+		onSaveWorkoutSuccess: function(event)
+		{
+			try
+			{
+				if(event.detail.response.result === true)
+				{
+					this.fire('save-workout-success', {workout: event.detail.response.workout});
+				}
+				else
+				{
+					this.fire('save-workout-error', {error: event.detail.response.error});
+				}
+			}
+			catch(error)
+			{
+				this.fire('save-workout-error', {error: error});
+			}
+		},
+
+		onSaveWorkoutError: function(response)
+		{
+			this.fire('save-workout-error', response);
+		}
+	});
+</script>
+
+</dom-module>

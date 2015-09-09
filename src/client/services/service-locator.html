@@ -1,0 +1,29 @@
+<link rel="import" href="is-logged-in-service.html">
+<link rel="import" href="save-workout-service.html">
+<link rel="import" href="workout-today-service.html">
+
+<dom-module id="service-locator">
+	
+	<template>
+		<is-logged-in-service id="loggedInService"></is-logged-in-service>
+		<save-workout-service id="saveWorkoutService"></save-workout-service>
+		<save-workout-service id="workoutTodayService"></save-workout-service>
+	</template>
+
+	<script>
+
+	Polymer({
+		is: "service-locator",
+
+		hostAttributes: {
+		},
+
+		getService: function(name)
+		{
+			return this.$[name];
+		}
+	});
+
+    </script>
+
+</dom-module>

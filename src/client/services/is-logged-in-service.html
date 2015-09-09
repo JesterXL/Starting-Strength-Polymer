@@ -1,0 +1,44 @@
+<link rel="import" href="token-service.html">
+
+<dom-module id="is-logged-in-service">
+	<template>
+		<iron-ajax
+			id="loggedInService"
+			url="http://localhost:5000/isloggedin"
+			handle-as="json"
+			content-type="application/json"
+			method="GET"
+			debounce-duration="300"></iron-ajax>
+	</template>
+
+	<script>
+
+	Polymer({
+		is: "is-logged-in-service",
+
+		hostAttributes: {
+			hidden: true
+		},
+
+		loggedIn: function()
+		{
+			var tokenService = document.createElement('token-service');
+			var loggedInService = this.$.loggedInService;
+			return new Promise(function(success, failure)
+			{
+				loggedInService.headers = tokenService.tokenHeaders;
+				var request = loggedInService.generateRequest();
+				request.completes.then(function(request)
+				{
+				  success(true);
+				})
+				.catch(function(error)
+				{
+				  failure(error);
+				});
+			});
+		}
+  });
+</script>
+
+</dom-module>

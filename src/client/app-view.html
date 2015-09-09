@@ -3,320 +3,247 @@
 <link rel="import" href="login-view.html">
 <link rel="import" href="register-view.html">
 <link rel="import" href="loading-view.html">
+<link rel="import" href="services/service-locator.html">
 
 <dom-module id="app-view">
 
-  <template>
+<template>
 
-    <style include="common-styles"></style>
-    
-    <paper-drawer-panel>
+	<style include="common-styles"></style>
 
-      <div drawer class="layout vertical scrollable">
-        <paper-item>Today</paper-item>
-      </div>
+	<paper-drawer-panel>
 
-      <div main>
-        <paper-header-panel class="flex">
-          <paper-toolbar>
-              <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-                  <div class="title">{{getTitle(breadcrumbs)}}</div>
-              <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
-          </paper-toolbar>
+	<div drawer class="layout vertical scrollable">
+		<paper-item>Today</paper-item>
+	</div>
 
-          <iron-pages selected="{{selectedPageIndex}}">
-            <loading-view></loading-view>
-            <login-view on-login-success="onLoginSuccess"></login-view>
-            <register-view></register-view>
-            <today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
-            <exercise-view id="exerciseView" exercise="{{currentExercise}}"
-              on-save-exercise="onSaveExercise"></exercise-view>
-          </iron-pages>
-        </paper-header-panel>
-      </div>
+	<div main>
+		<paper-header-panel class="flex">
+		<paper-toolbar>
+		<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+		<div class="title">Title</div>
+		<paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+	</paper-toolbar>
 
-      </paper-drawer-panel>
+	<iron-pages selected="{{selectedPageIndex}}">
+	<loading-view></loading-view>
+	<login-view on-login-success="onLoginSuccess"></login-view>
+	<register-view></register-view>
+	<today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
+	<exercise-view id="exerciseView" exercise="{{currentExercise}}"
+	on-save-exercise="onSaveExercise"></exercise-view>
+</iron-pages>
+</paper-header-panel>
+</div>
 
-      <iron-ajax
-        id="loggedInService"
-        url="http://localhost:5000/isloggedin"
-        handle-as="json"
-        content-type="application/json"
-        method="GET"
-        debounce-duration="300"></iron-ajax>
+</paper-drawer-panel>
 
-      <iron-ajax
-        id="saveWorkoutService"
-        url="http://localhost:5000/api/workouts/save"
-        handle-as="json"
-        content-type="application/json"
-        method="POST"
-        on-response="onSaveWorkoutSuccess"
-        on-error="onSaveWorkoutError"
-        debounce-duration="1000"></iron-ajax>
+<service-locator id="serviceLocator"></service-locator>
 
-      <iron-ajax
-        id="workoutTodayService"
-        url="http://localhost:5000/api/workouts/today"
-        handle-as="json"
-        content-type="application/json"
-        method="GET"
-        on-response="onWorkoutTodaySuccess"
-        on-error="onWorkoutTodayError"
-        debounce-duration="300"></iron-ajax>
 
-  </template>
+</template>
 
-  <script>
+<script>
 
-    Polymer({
-      is: "app-view",
+	Polymer({
+		is: "app-view",
 
-      behaviors: [
-        Polymer.NeonAnimationRunnerBehavior
-      ],
+		behaviors: [
+		Polymer.NeonAnimationRunnerBehavior
+		],
 
-      properties: {
-        selectedPageIndex: {
-          type: Number,
-          value: 0
-        },
+		properties: {
+			selectedPageIndex: {
+				type: Number,
+				value: 0
+			},
 
-        breadcrumbs: {
-          type: Array,
-          value: ['Starting Strength']
-        },
+			breadcrumbs: {
+				type: Array,
+				value: ['Starting Strength']
+			},
 
-        currentExercise: {
-          type: Object,
-          value: null
-        },
+			currentExercise: {
+				type: Object,
+				value: null
+			},
 
-        currentWorkout: {
-          type: Object,
-          value: null
-        }
-      },
+			currentWorkout: {
+				type: Object,
+				value: null
+			}
+		},
 
-      getTitle: function(breadcrumbs)
-      {
-        return breadcrumbs.join(" > ")
-      },
+		onShowExercise: function(event, exercise)
+		{
+			console.log("app-view::onShowExercise, exercise:", exercise);
+			this.currentExercise = _.cloneDeep(exercise);
+			if(exercise)
+			{
+				page('/today/exercise');
+			}
+			else
+			{
+				page('/today');
+			}
+		},
 
-      onShowExercise: function(event, exercise)
-      {
-        console.log("app-view::onShowExercise, exercise:", exercise);
-        this.currentExercise = _.cloneDeep(exercise);
-        if(exercise)
-        {
-          page('/today/exercise');
-        }
-        else
-        {
-          page('/today');
-        }
-        // var list = _.toArray(this.breadcrumbs);
-        // list.push(exercise.name);
-        // this.breadcrumbs = list;
-        
-      },
+		navigateIfExercise: function(state)
+		{
+			console.log("app-view::navigateIfExercise, state:", state);
+			if(state)
+			{
+				this.onShowExercise(null, state.exercise);
+			}
+			else
+			{
+				this.onShowExercise(null, null);
+			}
+		},
 
-      navigateIfExercise: function(state)
-      {
-        console.log("app-view::navigateIfExercise, state:", state);
-        if(state)
-        {
-          this.onShowExercise(null, state.exercise);
-        }
-        else
-        {
-          this.onShowExercise(null, null);
-        }
-      },
+		attached: function()
+		{
+			window.addEventListener('WebComponentsReady', function()
+			{
+				page.base('/#');
 
-      attached: function()
-      {
-        console.log("app-view::attached");
-        
-        window.addEventListener('WebComponentsReady', function()
-        {
-          page.base('/#');
+				page('/', function()
+				{
+					console.log("*** page /, index 0");
+					this.selectedPageIndex = 0;
+				});
+				page('/login', function()
+				{
+					console.log("*** page /login, index 1");
+					this.selectedPageIndex = 1;
+				});
+				page('/register', function()
+				{
+					console.log("*** page /register, index 2");
+					this.selectedPageIndex = 2;
+				});
+				page('/today', function()
+				{
+					console.log("*** page /today, index 3");
+					this.selectedPageIndex = 3;
+				});
+				page('/today/exercise', function()
+				{
+					console.log("*** page /today/exercise, index 4");
+					this.selectedPageIndex = 4;
+				});
+				page();
+			});
 
-          page('/', function()
-          {
-            console.log("*** page /, index 0");
-            this.selectedPageIndex = 0;
-          });
-          page('/login', function()
-          {
-            console.log("*** page /login, index 1");
-            this.selectedPageIndex = 1;
-          });
-          page('/register', function()
-          {
-            console.log("*** page /register, index 2");
-            this.selectedPageIndex = 2;
-          });
-          page('/today', function()
-          {
-            console.log("*** page /today, index 3");
-            this.selectedPageIndex = 3;
-          });
-          page('/today/exercise', function()
-          {
-            console.log("*** page /today/exercise, index 4");
-            this.selectedPageIndex = 4;
-          });
-          page();
-        });
-        
-        var me = this;
-        // window.onpopstate = function(event)
-        // {
-        //   console.log("onpopstate:", event);
-        //   me.navigateIfExercise(window.history.state);
-        // };
+			var me = this;
+			var loggedInService = serviceLocator.getService('loggedInService');
+			loggedInService.loggedIn().then(function(success)
+			{
+				return me.getWorkoutToday();
+			})
+			.then(function(workout)
+			{
+				me.currentWorkout = workout;
+				page('/today');
+			})
+			.catch(function(error)
+			{
+				page('/login');
+			});
+		},
 
-        try
-        {
-          me.testIsLoggedIn().then(function(success)
-          {
-            console.log("app-view::testIsLoggedIn then, success:", success);
-            try
-            {
-              if(success === true)
-              {
-                return me.getWorkoutToday();
-              }
-              else
-              {
-                //window.history.pushState(null, 'Login', '#login');
-                page('/login');
-              }
-            }
-            catch(err)
-            {
-              console.log("me.testIsLoggedIn, fatal error:", err);
-            }
-          })
-          .then(function(workout)
-          {
-            console.log("app-view::attached, workout:", workout);
-            try
-            {
-              me.currentWorkout = workout;
-              me.navigateIfExercise(window.history.state);
-            }
-            catch(err)
-            {
-              console.error("me.testIsLoggedIn setting workout, fatal error:", err);
-            }
-          })
-          .catch(function(error)
-          {
-            console.error("app-view::attached, error:", arguments);
-            //window.history.pushState(null, 'Login', '#login');
-            page('/login');
-          })
-        }
-        catch(promiseError)
-        {
-          console.error("app-view::attached promise error:", promiseError);
-        }
-      },
+		getWorkoutToday: function()
+		{
+			var me = this;
+			return new Promise(function(success, failure)
+			{
+				var workoutTodayService = me.$.workoutTodayService;
+				if(window.localStorage.token)
+				{
+					workoutTodayService.headers = {"Authorization": "Bearer " + window.localStorage.token};
+				}
+				var request = workoutTodayService.generateRequest();
+				request.completes.then(function(request)
+				{
+					console.log("app-view::workoutTodayService complete, response:", request.response);
+					success(request.response.workout);
+				})
+				.catch(function(error)
+				{
+					console.error("app-view::workoutTodayService catch, request:", error);
+					success(false);
+				});
+			});
+		},
 
-      getWorkoutToday: function()
-      {
-        var me = this;
-        return new Promise(function(success, failure)
-        {
-          var workoutTodayService = me.$.workoutTodayService;
-          if(window.localStorage.token)
-          {
-            workoutTodayService.headers = {"Authorization": "Bearer " + window.localStorage.token};
-          }
-          var request = workoutTodayService.generateRequest();
-          request.completes.then(function(request)
-          {
-            console.log("app-view::workoutTodayService complete, response:", request.response);
-            success(request.response.workout);
-          })
-          .catch(function(error)
-          {
-            console.error("app-view::workoutTodayService catch, request:", error);
-            success(false);
-          });
-        });
-      },
+		testIsLoggedIn: function()
+		{
+			console.log("app-view::testIsLoggedIn, window.localStorage.token:", window.localStorage.token);
+			var loggedInService = this.$.loggedInService;
+			return new Promise(function(success, failure)
+			{
+				console.log("1");
+				if(window.localStorage.token)
+				{
+					loggedInService.headers = {"Authorization": "Bearer " + window.localStorage.token};
+				}
+				console.log("2");
+				var request = loggedInService.generateRequest();
+				console.log("3");
+				request.completes.then(function(request)
+				{
+					console.log("4");
+					console.log("app-view::testIsLoggedIn complete, response:", request.response);
+					success(true);
+				})
+				.catch(function(error)
+				{
+					console.log("5");
+					console.error("app-view::testIsLoggedIn catch, error:", error);
+					success(false);
+				});
+			});
+		},
 
-      testIsLoggedIn: function()
-      {
-        console.log("app-view::testIsLoggedIn, window.localStorage.token:", window.localStorage.token);
-        var loggedInService = this.$.loggedInService;
-        return new Promise(function(success, failure)
-        {
-          console.log("1");
-          if(window.localStorage.token)
-          {
-            loggedInService.headers = {"Authorization": "Bearer " + window.localStorage.token};
-          }
-          console.log("2");
-          var request = loggedInService.generateRequest();
-          console.log("3");
-          request.completes.then(function(request)
-          {
-            console.log("4");
-            console.log("app-view::testIsLoggedIn complete, response:", request.response);
-            success(true);
-          })
-          .catch(function(error)
-          {
-            console.log("5");
-            console.error("app-view::testIsLoggedIn catch, error:", error);
-            success(false);
-          });
-        });
-      },
+		onSaveExercise: function()
+		{
+			console.log("app-view::onSaveExercise");
+			var me = this;
+			me.currentWorkout.exercises = _.map(me.currentWorkout.exercises, function(exercise)
+			{
+				if(exercise.name !== me.currentExercise.name)
+				{
+					return exercise;
+				}
+				else
+				{
+					return me.currentExercise;
+				}
+			});
+			if(window.localStorage.token)
+			{
+				saveWorkoutService.headers = {"Authorization": "Bearer " + window.localStorage.token};
+			}
+			console.log("saving workout:", this.currentWorkout);
+			saveWorkoutService.body = JSON.stringify({workout: this.currentWorkout});
+			saveWorkoutService.generateRequest();
+		},
 
-      onSaveExercise: function()
-      {
-        console.log("app-view::onSaveExercise");
-        var me = this;
-        me.currentWorkout.exercises = _.map(me.currentWorkout.exercises, function(exercise)
-        {
-          if(exercise.name !== me.currentExercise.name)
-          {
-            return exercise;
-          }
-          else
-          {
-            return me.currentExercise;
-          }
-        });
-        if(window.localStorage.token)
-        {
-          saveWorkoutService.headers = {"Authorization": "Bearer " + window.localStorage.token};
-        }
-        console.log("saving workout:", this.currentWorkout);
-        saveWorkoutService.body = JSON.stringify({workout: this.currentWorkout});
-        saveWorkoutService.generateRequest();
-      },
-
-      onSaveWorkoutSuccess: function(event)
-      {
-        console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
+		onSaveWorkoutSuccess: function(event)
+		{
+			console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
         //window.history.pushState(null, 'Today', '#today');
         page('/today');
         this.$.exerciseView.saving = false;
-      },
+    },
 
-      onSaveWorkoutError: function(response)
-      {
-        console.log("today-view::onSaveWorkoutError, event:", event.detail.response);
-      }
+    onSaveWorkoutError: function(response)
+    {
+    	console.log("today-view::onSaveWorkoutError, event:", event.detail.response);
+    }
 
 
-    });
-  </script>
+});
+</script>
 
 </dom-module>
