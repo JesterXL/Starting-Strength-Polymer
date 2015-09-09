@@ -1,13 +1,15 @@
 <link rel="import" href="is-logged-in-service.html">
 <link rel="import" href="save-workout-service.html">
 <link rel="import" href="workout-today-service.html">
+<link rel="import" href="login-service.html">
 
 <dom-module id="service-locator">
 	
 	<template>
 		<is-logged-in-service id="loggedInService"></is-logged-in-service>
 		<save-workout-service id="saveWorkoutService"></save-workout-service>
-		<save-workout-service id="workoutTodayService"></save-workout-service>
+		<workout-today-service id="workoutTodayService"></workout-today-service>
+		<login-service id="loginService"></login-service>
 	</template>
 
 	<script>

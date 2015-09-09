@@ -7,17 +7,14 @@
 			hidden: true
 		},
 
-		properties: {
-			token: {
-				type: String,
-				value: null,
-				notify: true,
-				observer: '_onTokenChange'
-			}
+		get token()
+		{
+			return window.localStorage.token;
 		},
 
-		_onTokenChange: function(newValue, oldValue)
+		set token(newValue)
 		{
+			console.log("token-service::set token, newValue:", newValue);
 			if(_.isString(newValue))
 			{
 				window.localStorage.token = newValue;

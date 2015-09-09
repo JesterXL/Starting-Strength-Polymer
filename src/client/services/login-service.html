@@ -1,0 +1,52 @@
+<link rel="import" href="token-service.html">
+
+<dom-module id="login-service">
+	<template>
+		<iron-ajax
+			id="loginService"
+			url="http://localhost:5000/login"
+			handle-as="json"
+			content-type="application/json"
+			method="POST"
+			debounce-duration="300"></iron-ajax>
+	</template>
+
+	<script>
+
+	Polymer({
+		is: "login-service",
+
+		hostAttributes: {
+			hidden: true
+		},
+
+		login: function(username, password)
+		{
+			var tokenService = document.createElement('token-service');
+			var loginService = this.$.loginService;
+			loginService.body = JSON.stringify({username: username, password: password});
+			return new Promise(function(success, failure)
+			{
+				var request = loginService.generateRequest();
+				request.completes.then(function(response)
+				{
+					try
+					{
+						tokenService.token = response.response.token;
+						success(true);
+					}
+					catch(err)
+					{
+						failure("Failed to find token:", err);
+					}
+				})
+				.catch(function(error)
+				{
+					failure(error);
+				});
+			});
+		}
+  });
+</script>
+
+</dom-module>

@@ -22,8 +22,9 @@
 
 		getWorkoutToday: function()
 		{
-			var workoutTodayService = this.$.workoutTodayService;
 			var tokenService = document.createElement('token-service');
+			var workoutTodayService = this.$.workoutTodayService;
+			workoutTodayService.headers = tokenService.tokenHeaders;
 			var me = this;
 			return new Promise(function(success, failure)
 			{

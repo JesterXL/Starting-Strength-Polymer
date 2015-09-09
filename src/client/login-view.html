@@ -1,4 +1,5 @@
 <link rel="import" href="common-styles.html">
+<link rel="import" href="services/service-locator.html">
 
 <dom-module id="login-view">
 
@@ -19,6 +20,7 @@
   <template>
     
     <style include="common-styles"></style>
+    <service-locator id="serviceLocator"></service-locator>
 
     <h1>Login</h1>
 
@@ -32,7 +34,7 @@
       <div class="layout horizontal bottom">
         <div class="layout vertical">
          <div class="flex"></div>
-          <a href="#" id="registerButton">Need to register?</a>
+          <a id="registerButton">Need to register?</a>
           <div class="flex"></div>
         </div>
         <div class="flex"></div>
@@ -40,15 +42,6 @@
         <paper-button id="testIsLoggedIn">Test IsLoggedIn</paper-button>
         <paper-button id="loginButton">Login</paper-button>
       </div>
-      
-    <iron-ajax
-      id="loginService"
-      url="http://localhost:5000/login"
-      handle-as="json"
-      content-type="application/json"
-      method="POST"
-      on-response="loginResponse"
-      debounce-duration="300"></iron-ajax>
 
   </template>
 
@@ -79,25 +72,19 @@
 
       onLogin: function()
       {
-        console.log("login-view::login, this.$.username.value:", this.$.username.value);
-        this.$.loginService.body = JSON.stringify({username: this.$.username.value, password: this.$.password.value});
-        this.$.loginService.generateRequest();
-      },
-
-      loginResponse: function(response)
-      {
-        console.log("login-view::loginResponse, response:", response.detail.response);
-        delete window.localStorage.token;
-        var response = response.detail.response;
-        if(response.result === true)
+      	var me = this;
+        me.$.serviceLocator.getService('loginService').login(me.$.username.value, me.$.password.value)
+        .then(function(success)
         {
-          window.localStorage.token = response.token;
-          this.fire('login-success');
-        }
-        else
+        	console.log("login-view::onLogin success:", success);
+        	me.fire('login-success');
+        })
+        .catch(function(error)
         {
-          this.fire('login-failure');
-        }
+        	// TODO: show error
+        	console.error("login-view::onLogin error:", error);
+        	me.fire('login-failure');
+        });
       },
 
       onDeleteToken: function()

@@ -13,30 +13,31 @@
 
 	<paper-drawer-panel>
 
-	<div drawer class="layout vertical scrollable">
-		<paper-item>Today</paper-item>
-	</div>
+		<div drawer class="layout vertical scrollable">
+			<paper-item>Today</paper-item>
+		</div>
 
-	<div main>
-		<paper-header-panel class="flex">
-		<paper-toolbar>
-		<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-		<div class="title">Title</div>
-		<paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
-	</paper-toolbar>
+		<div main>
+			<paper-header-panel class="flex">
+				<paper-toolbar>
+					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+					<div class="title">Title</div>
+					<paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+				</paper-toolbar>
 
-	<iron-pages selected="{{selectedPageIndex}}">
-	<loading-view></loading-view>
-	<login-view on-login-success="onLoginSuccess"></login-view>
-	<register-view></register-view>
-	<today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
-	<exercise-view id="exerciseView" exercise="{{currentExercise}}"
-	on-save-exercise="onSaveExercise"></exercise-view>
-</iron-pages>
-</paper-header-panel>
-</div>
+				<iron-pages selected="{{selectedPageIndex}}">
+					<loading-view></loading-view>
+					<login-view on-login-success="onLoginSuccess"
+						on-register="onRegister"></login-view>
+					<register-view></register-view>
+					<today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
+					<exercise-view id="exerciseView" exercise="{{currentExercise}}"
+					on-save-exercise="onSaveExercise"></exercise-view>
+				</iron-pages>
+			</paper-header-panel>
+		</div>
 
-</paper-drawer-panel>
+	</paper-drawer-panel>
 
 <service-locator id="serviceLocator"></service-locator>
 
@@ -49,7 +50,7 @@
 		is: "app-view",
 
 		behaviors: [
-		Polymer.NeonAnimationRunnerBehavior
+			Polymer.NeonAnimationRunnerBehavior
 		],
 
 		properties: {
@@ -103,6 +104,7 @@
 
 		attached: function()
 		{
+			var me = this;
 			window.addEventListener('WebComponentsReady', function()
 			{
 				page.base('/#');
@@ -110,41 +112,39 @@
 				page('/', function()
 				{
 					console.log("*** page /, index 0");
-					this.selectedPageIndex = 0;
+					me.selectedPageIndex = 0;
 				});
 				page('/login', function()
 				{
 					console.log("*** page /login, index 1");
-					this.selectedPageIndex = 1;
+					me.selectedPageIndex = 1;
 				});
 				page('/register', function()
 				{
 					console.log("*** page /register, index 2");
-					this.selectedPageIndex = 2;
+					me.selectedPageIndex = 2;
 				});
 				page('/today', function()
 				{
 					console.log("*** page /today, index 3");
-					this.selectedPageIndex = 3;
+					me.selectedPageIndex = 3;
 				});
 				page('/today/exercise', function()
 				{
 					console.log("*** page /today/exercise, index 4");
-					this.selectedPageIndex = 4;
+					me.selectedPageIndex = 4;
 				});
 				page();
 			});
 
-			var me = this;
-			var loggedInService = serviceLocator.getService('loggedInService');
-			loggedInService.loggedIn().then(function(success)
+			var serviceLocator = this.$.serviceLocator;
+			serviceLocator.getService('loggedInService').loggedIn().then(function(success)
 			{
-				return me.getWorkoutToday();
+				return serviceLocator.getService('workoutTodayService').getWorkoutToday();
 			})
 			.then(function(workout)
 			{
-				me.currentWorkout = workout;
-				page('/today');
+				me.currentWorkout = workout;	
 			})
 			.catch(function(error)
 			{
@@ -152,95 +152,28 @@
 			});
 		},
 
-		getWorkoutToday: function()
+		onLoginSuccess: function()
 		{
+			console.log("app-view::onLoginSuccess");
 			var me = this;
-			return new Promise(function(success, failure)
+			this.$.serviceLocator.getService('workoutTodayService').getWorkoutToday()
+			.then(function(workout)
 			{
-				var workoutTodayService = me.$.workoutTodayService;
-				if(window.localStorage.token)
-				{
-					workoutTodayService.headers = {"Authorization": "Bearer " + window.localStorage.token};
-				}
-				var request = workoutTodayService.generateRequest();
-				request.completes.then(function(request)
-				{
-					console.log("app-view::workoutTodayService complete, response:", request.response);
-					success(request.response.workout);
-				})
-				.catch(function(error)
-				{
-					console.error("app-view::workoutTodayService catch, request:", error);
-					success(false);
-				});
+				console.log("workout:", workout);
+				me.currentWorkout = workout;
+				page('/today');
+			})
+			.catch(function(error)
+			{
+				console.log("no workout for you, you ain't logged in.");
+				page('/login');
 			});
 		},
 
-		testIsLoggedIn: function()
+		onRegister: function()
 		{
-			console.log("app-view::testIsLoggedIn, window.localStorage.token:", window.localStorage.token);
-			var loggedInService = this.$.loggedInService;
-			return new Promise(function(success, failure)
-			{
-				console.log("1");
-				if(window.localStorage.token)
-				{
-					loggedInService.headers = {"Authorization": "Bearer " + window.localStorage.token};
-				}
-				console.log("2");
-				var request = loggedInService.generateRequest();
-				console.log("3");
-				request.completes.then(function(request)
-				{
-					console.log("4");
-					console.log("app-view::testIsLoggedIn complete, response:", request.response);
-					success(true);
-				})
-				.catch(function(error)
-				{
-					console.log("5");
-					console.error("app-view::testIsLoggedIn catch, error:", error);
-					success(false);
-				});
-			});
-		},
-
-		onSaveExercise: function()
-		{
-			console.log("app-view::onSaveExercise");
-			var me = this;
-			me.currentWorkout.exercises = _.map(me.currentWorkout.exercises, function(exercise)
-			{
-				if(exercise.name !== me.currentExercise.name)
-				{
-					return exercise;
-				}
-				else
-				{
-					return me.currentExercise;
-				}
-			});
-			if(window.localStorage.token)
-			{
-				saveWorkoutService.headers = {"Authorization": "Bearer " + window.localStorage.token};
-			}
-			console.log("saving workout:", this.currentWorkout);
-			saveWorkoutService.body = JSON.stringify({workout: this.currentWorkout});
-			saveWorkoutService.generateRequest();
-		},
-
-		onSaveWorkoutSuccess: function(event)
-		{
-			console.log("today-view::onSaveWorkoutSuccess, event:", event.detail.response);
-        //window.history.pushState(null, 'Today', '#today');
-        page('/today');
-        this.$.exerciseView.saving = false;
-    },
-
-    onSaveWorkoutError: function(response)
-    {
-    	console.log("today-view::onSaveWorkoutError, event:", event.detail.response);
-    }
+			page('/register');
+		}
 
 
 });

@@ -97,7 +97,7 @@ api.post('/register', async (function(req, res)
     var username = req.body.username;
     var password = req.body.password;
     var email = req.body.email;
-    var foundUser = await (userCollection.findUser({email: email}));
+    var foundUser = await (startingStrength.userCollection.findUser({email: email}));
     if(_.isObject(foundUser))
     {
         res.json({result: false, error: "User already exists, please choose a different email address."})
