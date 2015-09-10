@@ -2,6 +2,7 @@ console.log('Loading restify server...');
 
 var _ = require('lodash');
 var Client = require('./mongo/client');
+var ObjectID = require('mongodb').ObjectID;
 var startingStrength = require('./mongo/startingStrength');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
@@ -193,14 +194,26 @@ api.post('/api/workouts/save', function(req, res)
         })
         .then(function(saved)
         {
-        	console.log("saved.insertedId:", saved.insertedId);
+        	console.log("saved:", saved);
             if(saved.result.ok === 1)
             {
-            	return startingStrength.workoutCollection.getWorkout({_id: saved.insertedId});
+            	if(_.isArray(saved.ops))
+            	{
+            		console.log("Found operations, so using new ID:", saved.insertedId);
+            		// it was a brand new insert
+            		return startingStrength.workoutCollection.getWorkout({_id: saved.insertedId});
+            	}
+            	else
+            	{
+            		console.log("Didn't find operations, so using existing ID:", req.body.workout._id);
+            		// an update, use passed in ID
+            		return startingStrength.workoutCollection.getWorkout({_id: ObjectID(req.body.workout._id)});
+            	}
+            	
             }
             else
             {
-                res.send(500, 'Could not save workout.');
+                res.send(500, 'Could not save workout, save failed:' + saved.result);
             }
         })
         .then(function(workout)
@@ -211,7 +224,7 @@ api.post('/api/workouts/save', function(req, res)
             }
             else
             {
-                res.send(500, 'Could not save workout.');
+                res.send(500, 'Could not save workout, get failed:' + workout);
             }
         })
         .catch(function(error)

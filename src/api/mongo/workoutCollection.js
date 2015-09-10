@@ -304,11 +304,27 @@ function isValidWorkout(workout)
 	return endResult;
 }
 
+var getWorkout = async (function(workoutQuery)
+{
+	return await (_db.collection("workout").findOne(workoutQuery));
+});
+
 var getTodaysWorkout = async (function(user, date)
 {
 	if(validDate(date) === false)
 	{
 		throw new Error("date is invalid");
+	}
+
+	// do we have a saved workout for today?
+	var yesterday = new Date();
+	yesterday.setDate(yesterday.getDate() - 1);
+	var tomorrow = new Date();
+	tomorrow.setDate(tomorrow.getDate() + 1);
+	var workouts = await(getWorkoutsWithinDateRange(user, yesterday, tomorrow));
+	if(workouts.length > 0)
+	{
+		return workouts[0];
 	}
 
 	var lastWorkout = await (getLastWorkout(user, date));
@@ -363,7 +379,8 @@ var saveWorkout = async (function(user, workout, createDate)
 		createDate = new Date();
 	}
 
-	if(_.isObject(workout._id) === false)
+	console.log("workout._id:", workout._id);
+	if(_.isObject(workout._id) === false && _.isString(workout._id) === false)
 	{
 		// before we allow people to save a new workout, we must
 		// ensure one doesn't already exist; we can't allow 2 workouts on the 
@@ -371,6 +388,7 @@ var saveWorkout = async (function(user, workout, createDate)
 		// like this somehow, we have a data issue elsewhere that needs to be fixed.
 		
 		// verify no workouts occur on this day for this user with this program
+		console.log("Checking for any workouts between yesterday and tomorrow...");
 		var yesterday = new Date();
 		yesterday.setDate(yesterday.getDate() - 1);
 		var tomorrow = new Date();
@@ -382,6 +400,7 @@ var saveWorkout = async (function(user, workout, createDate)
 			throw new Error("Only 1 workout can be saved per day.");
 		}
 
+		console.log("None found, creating new workout...");
 		workout.userID = ObjectID(user._id);
 		workout.createdOn = createDate;
 		return await (_db.collection("workout")
@@ -389,20 +408,27 @@ var saveWorkout = async (function(user, workout, createDate)
 	}
 	else
 	{
+		if(_.isString(workout._id) === true)
+		{
+			console.log("workout._id is a String, converting to ObjectID.");
+			workout._id = ObjectID(workout._id);
+		}
+		console.log("_id found, checking createdOn date...");
 		if(validDate(workout.createdOn) === false)
 		{
-			throw new Error("Existing workout is missing a createdOn Date property.");
+			console.warn("Existing workout is missing a createdOn Date property.");
+			workout.createdOn = createDate;
 		}
 		workout.updatedOn = new Date();
+		var originalWorkout = await(getWorkout({_id: workout._id}));
+		console.log("originalWorkout we're updating is:", originalWorkout);
+		console.log("Updating existing workout with _id:", workout._id);
 		return await (_db.collection("workout")
 		.updateOne({_id: workout._id}, workout, {upsert: false}));
 	}
 });
 
-var getWorkout = async (function(workoutQuery)
-{
-	return await (_db.collection("workout").findOne(workoutQuery));
-});
+
 
 var workout = {
 

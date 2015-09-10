@@ -134,6 +134,7 @@
 					console.log("*** page /today/exercise, index 4");
 					me.selectedPageIndex = 4;
 				});
+				page();
 			});
 
 			var serviceLocator = this.$.serviceLocator;
@@ -177,17 +178,21 @@
 
 		onSaveExercise: function()
 		{
-			var serviceLocator = this.$.serviceLocator;
-			serviceLocator.getService('saveWorkoutService').saveWorkout(this.currentWorkout, this.currentExercise)
+			console.log("app-view::onSaveExercise");
+			var me = this;
+			var serviceLocator = me.$.serviceLocator;
+			serviceLocator.getService('saveWorkoutService').saveWorkout(me.currentWorkout, me.currentExercise)
 			.then(function(workout)
 			{
+				console.log("app-view::onSaveExercise, save successful, setting workout and redirecting back to today.");
 				me.currentWorkout = workout;
-				mc.currentExercise = null;
+				me.currentExercise = null;
 				page('/today');
 			})
 			.catch(function(error)
 			{
-				page('/today');
+				console.error("app-view::onSaveExercise, save failed:", error);
+				// page('/today');
 			});
 		}
 

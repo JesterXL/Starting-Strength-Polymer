@@ -34,8 +34,7 @@
 			var me = this;
 			var tokenService = document.createElement('token-service');
 			var saveWorkoutService = this.$.saveWorkoutService;
-			var clonedWorkout = _.cloneDeep(workout);
-			clonedWorkout.exercises = _.map(workout.exercises, function(exercise)
+			workout.exercises = _.map(workout.exercises, function(exercise)
 			{
 				if(exercise.name !== currentExercise.name)
 				{
@@ -47,7 +46,7 @@
 				}
 			});
 			saveWorkoutService.headers = tokenService.tokenHeaders;
-			saveWorkoutService.body = JSON.stringify({workout: clonedWorkout});
+			saveWorkoutService.body = JSON.stringify({workout: workout});
 
 			return new Promise(function(success, failure)
 			{

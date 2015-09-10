@@ -106,23 +106,25 @@ describe('#workout exercises', function()
 		});
 	});
 
-	it("saving a workout twice updates it", async (function(done)
+	it.only("saving a workout twice updates it", async (function(done)
 	{
 		var savedUser = await(getUserFixture());
 		var workout = await(workoutCollection.getTodaysWorkout(savedUser, new Date()));
 		workout.should.exist;
-		_.forEach(workout.exercises, function(exercise)
-		{
-			exercise.sets.push({reps: 5, weight: 45}, {reps: 5, weight: 45}, {reps: 5, weight: 45});
-		});
 		var saveResult = await(workoutCollection.saveWorkout(savedUser, workout));
 		saveResult.result.ok.should.equal(1);
+		saveResult.ops.should.exist;
+		// console.log("saveResult:", saveResult);
 		var readWorkout = await(workoutCollection.getWorkout({_id: saveResult.insertedId}));
 		readWorkout.should.exist;
 		expect(readWorkout.updatedOn).to.not.exist;
-		var udpateResult = await(workoutCollection.saveWorkout(savedUser, workout));
+		readWorkout.exercises[0].sets.push({reps: 5, weight: 45}, {reps: 5, weight: 45}, {reps: 5, weight: 45});
+		var udpateResult = await(workoutCollection.saveWorkout(savedUser, readWorkout));
 		udpateResult.should.exist;
-		var updatedWorkout = await(workoutCollection.getWorkout({_id: saveResult.insertedId}));
+		expect(udpateResult.ops).to.not.exist;
+		// console.log("udpateResult:", udpateResult);
+		// console.log("saveResult.insertedId:", saveResult.insertedId);
+		var updatedWorkout = await(workoutCollection.getWorkout({_id: readWorkout._id}));
 		updatedWorkout.updatedOn.should.exist;
 		done();
 	}));
