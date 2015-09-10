@@ -134,7 +134,6 @@
 					console.log("*** page /today/exercise, index 4");
 					me.selectedPageIndex = 4;
 				});
-				page();
 			});
 
 			var serviceLocator = this.$.serviceLocator;
@@ -144,6 +143,7 @@
 			})
 			.then(function(workout)
 			{
+				console.log("workout:", workout);
 				me.currentWorkout = workout;	
 			})
 			.catch(function(error)

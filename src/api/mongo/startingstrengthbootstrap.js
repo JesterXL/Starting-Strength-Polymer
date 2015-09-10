@@ -4,17 +4,15 @@ var await = require('asyncawait/await');
 var userCollection = require('./userCollection');
 var programCollection = require('./programCollection');
 var workoutCollection = require('./workoutCollection');
+var _ = require('lodash');
 
 var _db = null;
 
 var programInitIsThere = async (function()
 {
 	// console.log("programInitIsThere");
-	var result = await (_db.collection("programinit")
-	.find({initialized: true})
-	.toArray());
-
-	if(result.length > 0)
+	var result = await (_db.collection("programinit").findOne({initialized: true}));
+	if(_.isObject(result))
 	{
 		// console.log("found an init document");
 		return true;
@@ -30,10 +28,13 @@ var insertInitialization = async (function()
 {
 	console.log("insertInitialization");
 	var result = await (_db.collection("programinit")
-	.insert({initialized: true}));
+	.insertOne({initialized: true}));
 	if(result.result.ok === 1)
 	{
 		console.log("inserted init document");
+		console.log("before we insert users, let's check..");
+		var users = await (userCollection.getAllUsers());
+		console.log("users found:", users);
 		var defaultResult = await (insertDefaultSchedules());
 		var userResult = await (insertDefaultUsers());
 		if(defaultResult === true)
@@ -80,6 +81,10 @@ var deleteEverything = async (function()
 	var removedPrograms = await (programCollection.removeAll());
 	var removedWorkouts = await (workoutCollection.removeAll());
 	var removedUsers = await (userCollection.removeAll());
+
+	console.log("before we return, let's check..");
+	var users = await (userCollection.getAllUsers());
+	console.log("we've deleted everything, users found:", users);
 	return _.every([removedPrograms, removedWorkouts, removedUsers]);
 });
 
@@ -128,6 +133,7 @@ var insertDefaultUsers = async (function()
 	console.log("insertDefaultUsers");
 
 	var result = await(userCollection.createUser('jesse@jessewarden.com', 'jesse', 'test'));
+	console.log("****************** result:", result);
 	if(result.result.ok === 1)
 	{
 		return true;
@@ -151,5 +157,13 @@ var startingStrengthBootstrap = {
 		_db = newDB;
 	}
 };
+
+process.argv.forEach(function (val, index, array)
+{
+	if(_.isString(array[2]) && array[2] === 'deleteall')
+	{
+		return deleteEverything();
+	}
+});
 
 module.exports = startingStrengthBootstrap;

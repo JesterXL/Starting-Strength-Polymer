@@ -3,6 +3,7 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var _ = require('lodash');
 var ObjectID = require('mongodb').ObjectID;
+var ISODate = require('mongodb').ISODate;
 var userCollection = require('./userCollection');
 var programCollection = require('./programCollection');
 var level1schedule = require("./fixtures/level1schedule");
@@ -334,23 +335,55 @@ var getLastWorkout = async (function(userID, date)
 	return workout;
 });
 
+var getWorkoutsWithinDateRange = async (function(user, startDate, endDate)
+{
+	if(_.every([startDate, endDate], validDate) === false)
+	{
+		throw new Error("start or end date is invalid");
+	}
+	return await (_db.collection("workout")
+	.find({userID: user._id, createdOn: {$gt: startDate, $lt: endDate}}).toArray());
+});
+
 var removeAll = async (function()
 {
 	var result = await (_db.collection("workout").remove({}));
 	return result.result.ok === 1;
 });
 
-var saveWorkout = async (function(user, workout)
+var saveWorkout = async (function(user, workout, createDate)
 {
 	if(isValidWorkout(workout) === false)
 	{
 		throw new Error("Workout is invalid");
 	}
 
-	if(_.isString(workout._id) === false)
+	if(_.isDate(createDate) === false)
 	{
+		createDate = new Date();
+	}
+
+	if(_.isObject(workout._id) === false)
+	{
+		// before we allow people to save a new workout, we must
+		// ensure one doesn't already exist; we can't allow 2 workouts on the 
+		// same day, regardless if new or not. If someone does manage to have 2 workouts
+		// like this somehow, we have a data issue elsewhere that needs to be fixed.
+		
+		// verify no workouts occur on this day for this user with this program
+		var yesterday = new Date();
+		yesterday.setDate(yesterday.getDate() - 1);
+		var tomorrow = new Date();
+		tomorrow.setDate(tomorrow.getDate() + 1);
+		var workouts = await(getWorkoutsWithinDateRange(user, yesterday, tomorrow));
+		if(workouts.length > 0)
+		{
+			// TODO: verify this is by program in the future
+			throw new Error("Only 1 workout can be saved per day.");
+		}
+
 		workout.userID = ObjectID(user._id);
-		workout.createdOn = new Date();
+		workout.createdOn = createDate;
 		return await (_db.collection("workout")
 		.insertOne(workout));
 	}
@@ -360,6 +393,7 @@ var saveWorkout = async (function(user, workout)
 		{
 			throw new Error("Existing workout is missing a createdOn Date property.");
 		}
+		workout.updatedOn = new Date();
 		return await (_db.collection("workout")
 		.updateOne({_id: workout._id}, workout, {upsert: false}));
 	}
@@ -379,6 +413,7 @@ var workout = {
 	getWorkoutBasedOnLastWorkout: getWorkoutBasedOnLastWorkout,
 	saveWorkout: saveWorkout,
 	getWorkout: getWorkout,
+	getWorkoutsWithinDateRange: getWorkoutsWithinDateRange,
 
 	get db()
 	{

@@ -196,7 +196,7 @@ api.post('/api/workouts/save', function(req, res)
         	console.log("saved.insertedId:", saved.insertedId);
             if(saved.result.ok === 1)
             {
-            	return startingStrength.workoutCollection.getWorkout({id: saved.insertedId});
+            	return startingStrength.workoutCollection.getWorkout({_id: saved.insertedId});
             }
             else
             {
