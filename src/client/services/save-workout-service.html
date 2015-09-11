@@ -46,7 +46,7 @@
 				}
 			});
 			saveWorkoutService.headers = tokenService.tokenHeaders;
-			saveWorkoutService.body = JSON.stringify({workout: workout});
+			saveWorkoutService.body = JSON.stringify({workout: workout, now: new Date()});
 
 			return new Promise(function(success, failure)
 			{

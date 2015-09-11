@@ -24,6 +24,7 @@
 		{
 			var tokenService = document.createElement('token-service');
 			var workoutTodayService = this.$.workoutTodayService;
+			workoutTodayService.params = {now: new Date()};
 			workoutTodayService.headers = tokenService.tokenHeaders;
 			var me = this;
 			return new Promise(function(success, failure)

@@ -39,6 +39,7 @@ api.pre(restify.CORS());
 restify.CORS.ALLOW_HEADERS.push('authorization');
 api.pre(restify.fullResponse());
 api.use(restify.bodyParser());
+api.use(restify.queryParser());
 
 var secret = 'moocow';
 
@@ -140,7 +141,16 @@ api.get('/api/workouts/today', function(req, res)
         {
             if(_.isObject(user))
             {
-                return startingStrength.workoutCollection.getTodaysWorkout(user, new Date());
+            	var today;
+            	if(_.isDate(req.params.now) && req.params.now.toString() !== 'Invalid Date')
+            	{
+            		today = req.params.now;
+            	}
+            	else
+            	{
+            		today = new Date();
+            	}
+                return startingStrength.workoutCollection.getTodaysWorkout(user, today);
             }
             else
             {
