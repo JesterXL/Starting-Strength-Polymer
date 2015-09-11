@@ -7,6 +7,18 @@
 
 <dom-module id="app-view">
 
+<style>
+
+h3 {
+	padding-left: 12px;
+}
+
+h4 {
+	padding-left: 30px;
+	font-weight: normal;
+}
+</style>
+
 <template>
 
 	<style include="common-styles"></style>
@@ -14,7 +26,12 @@
 	<paper-drawer-panel>
 
 		<div drawer class="layout vertical scrollable">
-			<paper-item>Today</paper-item>
+			<paper-item id="menuItemToday">Today</paper-item>
+			<template is="dom-repeat" items="{{currentWorkout.exercises}}">
+				<h4 data-exercise="{{item.name}}" on-tap="onTapNavigateTo">{{item.name}}</h4>
+			</template>
+			<paper-item id="menuItemRegister">Register</paper-item>
+			<paper-item id="menuItemLogin">Login</paper-item>
 		</div>
 
 		<div main>
@@ -53,6 +70,12 @@
 			Polymer.NeonAnimationRunnerBehavior
 		],
 
+		listeners: {
+			'menuItemToday.tap': 'onTapNavigateTo',
+			'menuItemRegister.tap': 'onTapNavigateTo',
+			'menuItemLogin.tap': 'onTapNavigateTo'
+		},
+
 		properties: {
 			selectedPageIndex: {
 				type: Number,
@@ -78,10 +101,10 @@
 		onShowExercise: function(event, exercise)
 		{
 			console.log("app-view::onShowExercise, exercise:", exercise);
-			this.currentExercise = _.cloneDeep(exercise);
+			// this.currentExercise = _.cloneDeep(exercise);
 			if(exercise)
 			{
-				page('/today/exercise');
+				page('/today/' + exercise.name);
 			}
 			else
 			{
@@ -105,6 +128,7 @@
 		attached: function()
 		{
 			var me = this;
+			var serviceLocator = me.$.serviceLocator;
 			window.addEventListener('WebComponentsReady', function()
 			{
 				page.base('/#');
@@ -126,42 +150,85 @@
 					me.titleString = 'Register';
 					me.selectedPageIndex = 2;
 				});
-				page('/today', function()
-				{
-					console.log("*** page /today, index 3");
-					me.titleString = "Today's Workout";
-					me.selectedPageIndex = 3;
-				});
-				page('/today/exercise', function()
-				{
-					console.log("*** page /today/exercise, index 4");
-					if(_.isObject(me.currentExercise))
+				page('/today', function(context, next)
 					{
-						me.titleString = me.currentExercise.name;
-						me.selectedPageIndex = 4;
-					}
-					else
+						console.log("*** page /today, first, index 3");
+						serviceLocator.getService('loggedInService').loggedIn().then(function(success)
+						{
+							return serviceLocator.getService('workoutTodayService').getWorkoutToday();
+						})
+						.then(function(workout)
+						{
+							console.log("workout:", workout);
+							me.currentWorkout = workout;
+							next();
+						})
+						.catch(function(error)
+						{
+							page.redirect('/login');
+						});
+					}, 
+					function()
 					{
-						page.redirect('/today');
-					}
-				});
+						console.log("*** page /today, second, index 3");
+						me.titleString = "Today's Workout";
+						me.selectedPageIndex = 3;
+					});
+				page('/today/:exercise', function(context, next)
+					{
+						serviceLocator.getService('loggedInService').loggedIn().then(function(success)
+						{
+							if(_.isObject(me.currentWorkout) === false)
+							{
+								return serviceLocator.getService('workoutTodayService').getWorkoutToday();
+							}
+							else
+							{
+								return Promise.resolve(me.currentWorkout);
+							}
+						})
+						.then(function(workout)
+						{
+							me.currentWorkout = workout;
+							me.currentExercise = _.find(me.currentWorkout.exercises, function(exercise)
+							{
+								return exercise.name.toLowerCase() === context.params.exercise.toLowerCase();
+							});
+							next();
+						})
+						.catch(function(error)
+						{
+							page.redirect('/login');
+						});
+					}, 
+					function()
+					{
+						console.log("*** page /today/exercise, index 4");
+						if(_.isObject(me.currentExercise))
+						{
+							me.titleString = me.currentExercise.name;
+							me.selectedPageIndex = 4;
+						}
+						else
+						{
+							page.redirect('/today');
+						}
+					});
 				page();
 			});
 
-			var serviceLocator = this.$.serviceLocator;
-			serviceLocator.getService('loggedInService').loggedIn().then(function(success)
+			
+		},
+
+		onTapNavigateTo: function(event)
+		{
+			switch(event.target.innerText)
 			{
-				return serviceLocator.getService('workoutTodayService').getWorkoutToday();
-			})
-			.then(function(workout)
-			{
-				console.log("workout:", workout);
-				me.currentWorkout = workout;	
-			})
-			.catch(function(error)
-			{
-				page('/login');
-			});
+				case "Today": page("/today"); return;
+				case "Login": page("/login"); return;
+				case "Register": page("/register"); return;
+			}
+
 		},
 
 		onLoginSuccess: function()
