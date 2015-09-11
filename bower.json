@@ -35,6 +35,7 @@
     "paper-fab": "PolymerElements/paper-fab#~1.0.3",
     "iron-pages": "PolymerElements/iron-pages#~1.0.3",
     "paper-drawer-panel": "PolymerElements/paper-drawer-panel#~1.0.3",
-    "paper-header-panel": "PolymerElements/paper-header-panel#~1.0.4"
+    "paper-header-panel": "PolymerElements/paper-header-panel#~1.0.4",
+    "iron-media-query": "PolymerElements/iron-media-query#~1.0.2"
   }
 }

@@ -9,6 +9,8 @@
     position: relative;
     display: inline-block;
     padding: 12px;
+    width: 100%;
+    height: 100%;
   }
 
   .removeIcon {
@@ -19,37 +21,97 @@
     opacity: 0.87;
   }
 
+  .defaultPadding {
+  	padding: 12px;
+  }
+
+  .leftPadding {
+  	padding-left: 12px;
+  }
+
+  .rightPadding {
+  	padding-right: 24px;
+  }
+
   </style>
   
   <template>
     
     <style include="common-styles"></style>
 
-    <div class="layout vertical">
+    <!-- TODO: refactor to components -->
+  
+	<template is="dom-if" if="{{queryMatches}}">
+    	<div class="layout horizontal">
 
-      <h2>{{exercise.name}}</h2>
+		    <div class="layout vertical flex-6">
 
-        <h4 class="listTitle">Sets</h4>
+		        <h4 class="listTitle">Sets</h4>
 
-        <template is="dom-repeat" items="{{exercise.sets}}">
-          <div class="layout horizontal center">
-            <h3 class="setTitle">[[getSetNumber(index)]]</h3>
-            <set-input current-set="{{item}}"></set-input>
-            <iron-icon icon="icons:remove-circle" class="removeIcon" on-tap="removeSet"></iron-icon>
-          </div>
-        </template>
+		        <template is="dom-repeat" items="{{exercise.sets}}">
+		          <div class="layout horizontal center">
+		            <!-- <h3 class="setTitle">[[getSetNumber(index)]]</h3> -->
+		            <set-input current-set="{{item}}"></set-input>
+		            <iron-icon icon="icons:remove-circle" class="removeIcon" on-tap="removeSet"></iron-icon>
+		          </div>
+		        </template>
 
-        <div class="layout horizontal">
-          <paper-fab icon="add" on-tap="onAddSet"></paper-fab>
+		        <div class="layout horizontal">
+		          <paper-fab icon="add" on-tap="onAddSet"></paper-fab>
+		          <div class="flex"></div>
+		        </div>
+
+
+				<div class="layout horizontal defaultPadding">
+		        	<div class="flex"></div>
+		        	<paper-button raised on-tap="onSave">Save</paper-button>
+		        </div>
+
+		    </div>
+
+		    <div class="layout vertical flex-6 leftPadding rightPadding">
+			    <h4 class="listTitle">Notes</h4>
+			    <paper-textarea label="Any problems, challenges, wins?">{{exercise.notes}}</paper-textarea>
+			</div>
+
+		</div>
+
+	</template>
+
+	<template is="dom-if" if="{{!queryMatches}}">
+		<div class="layout vertical flex-12">
+		    <div class="layout vertical">
+
+		        <h4 class="listTitle">Sets</h4>
+
+		        <template is="dom-repeat" items="{{exercise.sets}}">
+		          <div class="layout horizontal center">
+		            <!-- <h3 class="setTitle">[[getSetNumber(index)]]</h3> -->
+		            <set-input current-set="{{item}}"></set-input>
+		            <iron-icon icon="icons:remove-circle" class="removeIcon" on-tap="removeSet"></iron-icon>
+		          </div>
+		        </template>
+
+		        <div class="layout horizontal">
+		          <paper-fab icon="add" on-tap="onAddSet"></paper-fab>
+		          <div class="flex"></div>
+		        </div>
+
+		    </div>
+
+		    <div class="layout vertical rightPadding">
+			    <h4 class="listTitle">Notes</h4>
+			    <paper-textarea label="Any problems, challenges, wins?">{{exercise.notes}}</paper-textarea>
+			</div>
+		</div>
+
+		 <div class="layout horizontal defaultPadding">
           <div class="flex"></div>
+            <paper-button on-tap="onSave" raised>Save</paper-button>
         </div>
+	</template>
 
-        <div class="layout horizontal">
-          <div class="flex"></div>
-            <paper-button on-tap="onSave">Save</paper-button>
-        </div>
-
-    </div>
+	<iron-media-query query="(min-width: 720px)" query-matches="{{queryMatches}}"></iron-media-query>
     
   </template>
 
