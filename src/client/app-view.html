@@ -4,6 +4,8 @@
 <link rel="import" href="register-view.html">
 <link rel="import" href="loading-view.html">
 <link rel="import" href="services/service-locator.html">
+<!-- <link rel="import" href="reset-password-view.html"> -->
+<link rel="import" href="help-view.html">
 
 <dom-module id="app-view">
 
@@ -28,10 +30,11 @@ h4 {
 		<div drawer class="layout vertical scrollable">
 			<paper-item id="menuItemToday">Today</paper-item>
 			<template is="dom-repeat" items="{{currentWorkout.exercises}}">
-				<h4 data-exercise="{{item.name}}" on-tap="onTapNavigateTo">{{item.name}}</h4>
+				<h4 on-tap="onTapNavigateTo">{{item.name}}</h4>
 			</template>
 			<paper-item id="menuItemRegister">Register</paper-item>
 			<paper-item id="menuItemLogin">Login</paper-item>
+			<paper-item id="menuItemHelp">Help</paper-item>
 		</div>
 
 		<div main>
@@ -39,7 +42,7 @@ h4 {
 				<paper-toolbar>
 					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
 					<div class="title">{{titleString}}</div>
-					<paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+					<paper-icon-button icon="help" on-tap="onTapNavigateTo">Help</paper-icon-button>
 				</paper-toolbar>
 
 				<iron-pages selected="{{selectedPageIndex}}">
@@ -50,6 +53,8 @@ h4 {
 					<today-view workout="{{currentWorkout}}" on-exerciseselected="onShowExercise"></today-view>
 					<exercise-view id="exerciseView" exercise="{{currentExercise}}"
 					on-save-exercise="onSaveExercise"></exercise-view>
+					<!-- <reset-password-view on-reset-password-success="onResetPasswordSuccess"></reset-password-view> -->
+					<help-view></help-view>
 				</iron-pages>
 			</paper-header-panel>
 		</div>
@@ -73,7 +78,8 @@ h4 {
 		listeners: {
 			'menuItemToday.tap': 'onTapNavigateTo',
 			'menuItemRegister.tap': 'onTapNavigateTo',
-			'menuItemLogin.tap': 'onTapNavigateTo'
+			'menuItemLogin.tap': 'onTapNavigateTo',
+			'menuItemHelp.tap': 'onTapNavigateTo'
 		},
 
 		properties: {
@@ -194,6 +200,16 @@ h4 {
 							page.redirect('/today');
 						}
 					});
+				// page('/resetpassword', function()
+				// {
+				// 	me.titleString = "Reset Password";
+				// 	me.selectedPageIndex = 5;
+				// });
+				page('/help', function()
+				{
+					me.titleString = "Help";
+					me.selectedPageIndex = 5;
+				});
 				page();
 			});
 
@@ -202,15 +218,16 @@ h4 {
 
 		onTapNavigateTo: function(event)
 		{
+			console.log("app-view::onTapNavigateTo, event.target.innerText:", event.target.innerText);
 			switch(event.target.innerText)
 			{
 				case "Today": page("/today"); return;
 				case "Login": page("/login"); return;
 				case "Register": page("/register"); return;
+				case "Help": page("/help"); return;
 			}
 			console.log("app-view::onTapNavigateTo, Tapped an exercise, going to: " + 'today/' + event.target.innerText);
 			page('/today/' + event.target.innerText);
-
 		},
 
 		onLoginSuccess: function()
@@ -235,6 +252,11 @@ h4 {
 		{
 			page('/register');
 		},
+
+		// onResetPasswordSuccess: function()
+		// {
+		// 	page('/login');
+		// },
 
 		onSaveExercise: function()
 		{

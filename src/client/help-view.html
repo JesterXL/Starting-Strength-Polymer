@@ -1,0 +1,109 @@
+<link rel="import" href="common-styles.html">
+
+<dom-module id="help-view">
+
+	<style>
+
+	:host{
+		position: relative;
+		display: inline-block;
+		padding: 12px;
+		width: 100%;
+		
+	}
+
+	h2 {
+		display: inline-block;
+		opacity: 0.87;
+	}
+
+	.marginRight {
+		margin-right: 12px;
+	}
+
+	
+
+	</style>
+  
+  <template>
+    
+    <style include="common-styles"></style>
+
+	<div class="layout vertical marginRight">
+		<h2>What is Starting Strength?</h2>
+		<p>A beginner training program to make you strong. 3 days a week. Done in 45 minutes to 1 hour. Mainly uses barbells. Little cardio. Lasts as long as you like.</p>
+		<span>&nbsp;</span>
+		<div>
+			<paper-button raised id="learnMoreButton">Learn More</paper-button>
+		</div>
+		<span>&nbsp;</span>
+
+		<h2>How do I get started?</h2>
+		<p>Buy the <a href="http://aasgaardco.com/store/books/starting-strength-basic-barbell-training-413">book</a> and find a gym that has a <a href="https://www.google.com/search?q=squat+rack&es_sm=91&source=lnms&tbm=isch&sa=X&ved=0CAgQ_AUoAmoVChMItNfLzPzvxwIVgzo-Ch3k-w_w&biw=1121&bih=1166">squat rack</a> or <a href="https://www.google.com/search?q=squat+rack&es_sm=91&source=lnms&tbm=isch&sa=X&ved=0CAgQ_AUoAmoVChMItNfLzPzvxwIVgzo-Ch3k-w_w&biw=1121&bih=1166#tbm=isch&q=power+rack">power rack</a>. Mark Rippeteo's website has plenty of articles and resources to <a href="http://startingstrength.com/site/about#start">help you get started</a>.</p>
+		<span style="width: 200px; height: 262px;"><a href="http://aasgaardco.com/store/books/starting-strength-basic-barbell-training-413"><iron-image style="width: 200px; height: 262px;" src="images/starting-strength.jpg" fade></iron-image></a></span>
+
+		<h2>What's the schedule like?</h2>
+		<p>You do the <a href="http://rippedbody.jp/the-big-3-routine/">"Big 3"</a> for a couple weeks, then incorporate the Press for a month or so, then incorporate the Clean. After you plateau on most of the lifts, Starting Strength has a bunch of supplementary exercises to add. These types of schedules can last your entire life.</p>
+
+		<h2>Is this bodybuilding, weightlifting, powerlifting, or olympic lifting?</h2>
+		<p>Starting Strength is primarely powerlifting: slow, steady, and heavy. It's for developing strength, not as much force.</p>
+
+		<p>Olympic/weightlifting is fast. Starting Strength is only fast for Cleans.</p>
+
+		<p>Bodybuilding is lower intensity (not as heavy), higher volume (more reps and more days at the gym).</p>
+
+		<h2>How To Squat</h2>
+		<p><iframe width="420" height="315" src="https://www.youtube.com/embed/yha2XAc2qu8" frameborder="0" allowfullscreen></iframe></p>
+
+		<h2>How To Bench Press</h2>
+		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/Qd0TLjHcSgY" frameborder="0" allowfullscreen></iframe></p>
+
+		<h2>How To Deadlift</h2>
+		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/Y1IGeJEXpF4" frameborder="0" allowfullscreen></iframe></p>
+
+		<h2>How To Overhead Press</h2>
+		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/CnBmiBqp-AI" frameborder="0" allowfullscreen></iframe></p>
+
+		<h2>How To Power Clean</h2>
+		<p>This one is hard and will take a lot of practice.</p>
+		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/_uh83e_4vl4" frameborder="0" allowfullscreen></iframe></p>
+		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/uNPvRRXlVck" frameborder="0" allowfullscreen></iframe></p>
+		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/mPsxlNjv7Aw" frameborder="0" allowfullscreen></iframe></p>
+
+		
+	</div>
+	
+  </template>
+
+  <script>
+
+    Polymer({
+		is: "help-view",
+
+		behaviors: [
+			Polymer.NeonAnimationRunnerBehavior
+		],
+
+		properties: {
+
+		},
+
+		listeners: {
+			'learnMoreButton.tap': 'learnMore',
+			'buyTheBookButton.tap': 'buyTheBookLink'
+		},
+
+		learnMore: function()
+		{
+			window.location = "http://startingstrength.com/";
+		}
+
+
+
+
+
+
+    });
+  </script>
+
+</dom-module>
