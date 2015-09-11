@@ -106,7 +106,7 @@ describe('#workout exercises', function()
 		});
 	});
 
-	it.only("saving a workout twice updates it", async (function(done)
+	it("saving a workout twice updates it", async (function(done)
 	{
 		var savedUser = await(getUserFixture());
 		var workout = await(workoutCollection.getTodaysWorkout(savedUser, new Date()));
@@ -123,6 +123,34 @@ describe('#workout exercises', function()
 		udpateResult.should.exist;
 		expect(udpateResult.ops).to.not.exist;
 		// console.log("udpateResult:", udpateResult);
+		// console.log("saveResult.insertedId:", saveResult.insertedId);
+		var updatedWorkout = await(workoutCollection.getWorkout({_id: readWorkout._id}));
+		updatedWorkout.updatedOn.should.exist;
+		done();
+	}));
+
+	it("saving a JSON workout functions the same", async (function(done)
+	{
+		var savedUser = await(getUserFixture());
+		var workout = await(workoutCollection.getTodaysWorkout(savedUser, new Date()));
+		workout.should.exist;
+		var saveResult = await(workoutCollection.saveWorkout(savedUser, workout));
+		saveResult.result.ok.should.equal(1);
+		saveResult.ops.should.exist;
+		// console.log("saveResult:", saveResult);
+		var readWorkout = await(workoutCollection.getWorkout({_id: saveResult.insertedId}));
+		readWorkout.should.exist;
+		expect(readWorkout.updatedOn).to.not.exist;
+		var workoutString = JSON.stringify(readWorkout);
+		var parsedWorkout = JSON.parse(workoutString);
+		parsedWorkout.exercises[0].sets.push({reps: 5, weight: 45}, {reps: 5, weight: 45}, {reps: 5, weight: 45});
+		var udpateResult = await(workoutCollection.saveWorkout(savedUser, parsedWorkout));
+		udpateResult.should.exist;
+		expect(udpateResult.ops).to.not.exist;
+		udpateResult.matchedCount.should.not.equal(0);
+		// console.log("udpateResult:", udpateResult.matchedCount);
+		done();
+		return;
 		// console.log("saveResult.insertedId:", saveResult.insertedId);
 		var updatedWorkout = await(workoutCollection.getWorkout({_id: readWorkout._id}));
 		updatedWorkout.updatedOn.should.exist;
@@ -204,6 +232,20 @@ describe('#workout exercises', function()
 			done();
 		}));
 
+		it.only('3 consecutive days of workouts finds the 1 in the middle', async(function(done)
+		{
+			var yesterday = getDate(-1);
+			var tomorrow = getDate(1);
+			var today = getDate();
+			var savedUser = await(getUserFixture());
+			var result1 = await(saveAWorkoutFixture(savedUser, yesterday));
+			var result2 = await(saveAWorkoutFixture(savedUser, tomorrow));
+			var result3 = await(saveAWorkoutFixture(savedUser, today));
+			var workouts = await(workoutCollection.getWorkoutsWithinDateRange(savedUser, yesterday, tomorrow));
+			workouts.should.have.length(1);
+			done();
+		}));
+
 		it('trying to save 2 different workouts in 1 day fails', async(function(done)
 		{
 			var twoDaysAgo = getDate(-2);
@@ -223,6 +265,7 @@ describe('#workout exercises', function()
 				done();
 			});
 		}));
+
 
 
 	});

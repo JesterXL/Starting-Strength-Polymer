@@ -4,7 +4,7 @@ var user = require('./userCollection');
 var Client = require('./client');
 var Promise = require('bluebird');
 
-describe('user API', function()
+describe('#userCollection', function()
 {
 
   var client, db;
@@ -79,6 +79,25 @@ describe('user API', function()
       {
         result.should.be.true;
         done();
+      });
+  });
+
+  it('user can add a user and then find it', function(done)
+  {
+      user.createUser('jesse@jessewarden.com', 'jesterxl', 'password')
+      .then(function(result)
+      {
+        result.should.be.true;
+        return user.findUser({username: 'jesterxl'});
+      })
+      .then(function(result)
+      {
+        result.should.exist;
+        done();
+      })
+      .catch(function(error)
+      {
+        done(error);
       });
   });
 

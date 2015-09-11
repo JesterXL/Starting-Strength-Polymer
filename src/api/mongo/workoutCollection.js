@@ -9,6 +9,8 @@ var programCollection = require('./programCollection');
 var level1schedule = require("./fixtures/level1schedule");
 var level2schedule = require("./fixtures/level2schedule");
 var level3schedule = require("./fixtures/level3schedule");
+var fixID = require("./mongoUtils").fixID;
+var moment = require('moment');
 
 var _db = null;
 
@@ -317,15 +319,19 @@ var getTodaysWorkout = async (function(user, date)
 	}
 
 	// do we have a saved workout for today?
-	var yesterday = new Date();
+	var yesterday = new Date(date.valueOf());
 	yesterday.setDate(yesterday.getDate() - 1);
-	var tomorrow = new Date();
+	var tomorrow = new Date(date.valueOf());
 	tomorrow.setDate(tomorrow.getDate() + 1);
+	console.log("Looking for existing workouts today...");
 	var workouts = await(getWorkoutsWithinDateRange(user, yesterday, tomorrow));
 	if(workouts.length > 0)
 	{
+		console.log("Found one!");
 		return workouts[0];
 	}
+
+	console.log("None found, looking for yesterdays to make you a new one.");
 
 	var lastWorkout = await (getLastWorkout(user, date));
 	if(lastWorkout === null)
@@ -357,8 +363,33 @@ var getWorkoutsWithinDateRange = async (function(user, startDate, endDate)
 	{
 		throw new Error("start or end date is invalid");
 	}
-	return await (_db.collection("workout")
-	.find({userID: user._id, createdOn: {$gt: startDate, $lt: endDate}}).toArray());
+	console.log("startDate:", startDate);
+	console.log("endDate:", endDate);
+	// NOTE: I cannot get Mongo's date query to work, so I try it, and if it fails,
+	// I fall back to Moment
+	var results = await (_db.collection("workout")
+	.find({userID: user._id.str, createdOn: {$gt: startDate, $lt: endDate}}).toArray());
+	if(results.length < 1)
+	{
+		console.log("None found, falling back to using moment...");
+		var weekPrior = new Date(startDate.valueOf());
+		weekPrior.setDate(weekPrior.getDate() - 7);
+		var nextWeek = new Date(endDate.valueOf());
+		nextWeek.setDate(nextWeek.getDate() + 7);
+		var allResults = await (_db.collection("workout")
+			.find({userID: user._id.str}).toArray());
+		results = _.filter(allResults, function(workout)
+		{
+			return moment(workout.createdOn).isBetween(startDate, endDate);
+		});
+		console.log("moment found " + results.length + " results.");
+		return results;
+	}
+	else
+	{
+		console.log("found " + results.length + " results.");
+		return results;
+	}
 });
 
 var removeAll = async (function()
@@ -379,7 +410,6 @@ var saveWorkout = async (function(user, workout, createDate)
 		createDate = new Date();
 	}
 
-	console.log("workout._id:", workout._id);
 	if(_.isObject(workout._id) === false && _.isString(workout._id) === false)
 	{
 		// before we allow people to save a new workout, we must
@@ -389,9 +419,10 @@ var saveWorkout = async (function(user, workout, createDate)
 		
 		// verify no workouts occur on this day for this user with this program
 		console.log("Checking for any workouts between yesterday and tomorrow...");
-		var yesterday = new Date();
+		var now = new Date(createDate.valueOf());
+		var yesterday = new Date(now.valueOf());
 		yesterday.setDate(yesterday.getDate() - 1);
-		var tomorrow = new Date();
+		var tomorrow = new Date(now.valueOf());
 		tomorrow.setDate(tomorrow.getDate() + 1);
 		var workouts = await(getWorkoutsWithinDateRange(user, yesterday, tomorrow));
 		if(workouts.length > 0)
@@ -413,6 +444,7 @@ var saveWorkout = async (function(user, workout, createDate)
 			console.log("workout._id is a String, converting to ObjectID.");
 			workout._id = ObjectID(workout._id);
 		}
+		workout._id = fixID(workout._id);
 		console.log("_id found, checking createdOn date...");
 		if(validDate(workout.createdOn) === false)
 		{
