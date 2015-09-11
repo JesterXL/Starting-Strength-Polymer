@@ -34,7 +34,7 @@ h4 {
 			</template>
 			<paper-item id="menuItemRegister">Register</paper-item>
 			<paper-item id="menuItemLogin">Login</paper-item>
-			<paper-item id="menuItemHelp">Help</paper-item>
+			<paper-item on-tap="onShowHelp">Help</paper-item>
 		</div>
 
 		<div main>
@@ -42,7 +42,7 @@ h4 {
 				<paper-toolbar>
 					<paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
 					<div class="title">{{titleString}}</div>
-					<paper-icon-button icon="help" on-tap="onTapNavigateTo">Help</paper-icon-button>
+					<paper-icon-button icon="help" on-tap="onShowHelp">Help</paper-icon-button>
 				</paper-toolbar>
 
 				<iron-pages selected="{{selectedPageIndex}}">
@@ -78,8 +78,7 @@ h4 {
 		listeners: {
 			'menuItemToday.tap': 'onTapNavigateTo',
 			'menuItemRegister.tap': 'onTapNavigateTo',
-			'menuItemLogin.tap': 'onTapNavigateTo',
-			'menuItemHelp.tap': 'onTapNavigateTo'
+			'menuItemLogin.tap': 'onTapNavigateTo'
 		},
 
 		properties: {
@@ -219,15 +218,20 @@ h4 {
 		onTapNavigateTo: function(event)
 		{
 			console.log("app-view::onTapNavigateTo, event.target.innerText:", event.target.innerText);
+			console.log(event);
 			switch(event.target.innerText)
 			{
 				case "Today": page("/today"); return;
 				case "Login": page("/login"); return;
 				case "Register": page("/register"); return;
-				case "Help": page("/help"); return;
 			}
 			console.log("app-view::onTapNavigateTo, Tapped an exercise, going to: " + 'today/' + event.target.innerText);
 			page('/today/' + event.target.innerText);
+		},
+
+		onShowHelp: function()
+		{
+			page("/help");
 		},
 
 		onLoginSuccess: function()

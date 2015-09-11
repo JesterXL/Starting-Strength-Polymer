@@ -51,24 +51,35 @@
 		<p>Olympic/weightlifting is fast. Starting Strength is only fast for Cleans.</p>
 
 		<p>Bodybuilding is lower intensity (not as heavy), higher volume (more reps and more days at the gym).</p>
+		<div>&nbsp;</div>
 
-		<h2>How To Squat</h2>
-		<p><iframe width="420" height="315" src="https://www.youtube.com/embed/yha2XAc2qu8" frameborder="0" allowfullscreen></iframe></p>
+		<template is="dom-if" if="{{!showHowTo}}">
+			<h2>How To Videos</h2>
+			<div class="layout horizontal">
+        		<paper-button class="flex" raised on-tap="onShowHowTo">Show How To Videos</paper-button>
+        		<div style="margin-right: 12px;">&nbsp;</div>
+        	</div>
+		</template>
 
-		<h2>How To Bench Press</h2>
-		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/Qd0TLjHcSgY" frameborder="0" allowfullscreen></iframe></p>
+		<template is="dom-if" if="{{showHowTo}}">
+			<h2>How To Squat</h2>
+			<p><iframe width="420" height="315" src="https://www.youtube.com/embed/yha2XAc2qu8" frameborder="0" allowfullscreen></iframe></p>
 
-		<h2>How To Deadlift</h2>
-		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/Y1IGeJEXpF4" frameborder="0" allowfullscreen></iframe></p>
+			<h2>How To Bench Press</h2>
+			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/Qd0TLjHcSgY" frameborder="0" allowfullscreen></iframe></p>
 
-		<h2>How To Overhead Press</h2>
-		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/CnBmiBqp-AI" frameborder="0" allowfullscreen></iframe></p>
+			<h2>How To Deadlift</h2>
+			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/Y1IGeJEXpF4" frameborder="0" allowfullscreen></iframe></p>
 
-		<h2>How To Power Clean</h2>
-		<p>This one is hard and will take a lot of practice.</p>
-		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/_uh83e_4vl4" frameborder="0" allowfullscreen></iframe></p>
-		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/uNPvRRXlVck" frameborder="0" allowfullscreen></iframe></p>
-		<p><iframe width="560" height="315" src="https://www.youtube.com/embed/mPsxlNjv7Aw" frameborder="0" allowfullscreen></iframe></p>
+			<h2>How To Overhead Press</h2>
+			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/CnBmiBqp-AI" frameborder="0" allowfullscreen></iframe></p>
+
+			<h2>How To Power Clean</h2>
+			<p>This one is hard and will take a lot of practice.</p>
+			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/_uh83e_4vl4" frameborder="0" allowfullscreen></iframe></p>
+			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/uNPvRRXlVck" frameborder="0" allowfullscreen></iframe></p>
+			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/mPsxlNjv7Aw" frameborder="0" allowfullscreen></iframe></p>
+		</template>
 
 		
 	</div>
@@ -85,7 +96,10 @@
 		],
 
 		properties: {
-
+			showHowTo: {
+				type: Boolean,
+				value: false
+			}
 		},
 
 		listeners: {
@@ -96,12 +110,22 @@
 		learnMore: function()
 		{
 			window.location = "http://startingstrength.com/";
+		},
+
+		onShowHowTo: function()
+		{
+			this.showHowTo = true;
+		},
+
+		created: function()
+		{
+			console.log("help-view::created");
+		},
+
+		deatched: function()
+		{
+			console.log("help-view::deatched");
 		}
-
-
-
-
-
 
     });
   </script>
