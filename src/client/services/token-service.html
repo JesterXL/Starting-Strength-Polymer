@@ -21,13 +21,18 @@
 			}
 			else
 			{
-				delete window.localStorage.token;
+				this.deleteToken();
 			}
 		},
 
 		get tokenHeaders()
 		{
 			return {"Authorization": "Bearer " + window.localStorage.token};
+		},
+
+		deleteToken: function()
+		{
+			delete window.localStorage.token;
 		}
   });
 </script>

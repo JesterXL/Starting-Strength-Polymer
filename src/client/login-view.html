@@ -9,6 +9,7 @@
     position: relative;
     display: inline-block;
     padding: 12px;
+    width: 400px;
   }
 
   #registerButton {
@@ -24,24 +25,22 @@
 
     <h1>Login</h1>
 
-      <div class="layout vertical">
-        <form is="iron-form">
-          <paper-input id="username" label="Username"></paper-input>
-          <paper-input id="password" type="password" label="Password" password></paper-input>
-        </form>
-      </div>
-      <div>&nbsp;</div>
-      <div class="layout horizontal bottom">
-        <div class="layout vertical">
-         <div class="flex"></div>
-          <a id="registerButton">Need to register?</a>
-          <div class="flex"></div>
-        </div>
-        <div class="flex"></div>
-        <paper-button id="deleteButton">Delete Token</paper-button>
-        <paper-button id="testIsLoggedIn">Test IsLoggedIn</paper-button>
-        <paper-button id="loginButton">Login</paper-button>
-      </div>
+	<div class="layout vertical">
+		<form is="iron-form">
+			<paper-input id="username" label="Username"></paper-input>
+			<paper-input id="password" type="password" label="Password" password></paper-input>
+		</form>
+	</div>
+	<div>&nbsp;</div>
+	<div class="layout horizontal bottom">
+		<div class="layout vertical">
+			<div class="flex"></div>
+				<a id="registerButton">Need to register?</a>
+			<div class="flex"></div>
+		</div>
+		<div class="flex"></div>
+		<paper-button raised id="loginButton">Login</paper-button>
+	</div>
 
   </template>
 
@@ -60,9 +59,7 @@
 
       listeners: {
         'loginButton.tap': 'onLogin',
-        'registerButton.tap': 'onRegister',
-        'deleteButton.tap': 'onDeleteToken',
-        'testIsLoggedIn.tap': 'testIsLoggedIn'
+        'registerButton.tap': 'onRegister'
       },
 
       onRegister: function()
@@ -85,11 +82,6 @@
         	console.error("login-view::onLogin error:", error);
         	me.fire('login-failure');
         });
-      },
-
-      onDeleteToken: function()
-      {
-        delete window.localStorage.token;
       }
 
     });

@@ -140,6 +140,7 @@ h4 {
 						{
 							console.log("workout:", workout);
 							me.currentWorkout = workout;
+							me.currentExercise = null;
 							next();
 						})
 						.catch(function(error)

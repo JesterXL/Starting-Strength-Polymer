@@ -61,20 +61,23 @@
 		          <div class="flex"></div>
 		        </div>
 
-
-				<div class="layout horizontal defaultPadding">
-		        	<div class="flex"></div>
-		        	<paper-button raised on-tap="onSave">Save</paper-button>
-		        </div>
-
 		    </div>
 
 		    <div class="layout vertical flex-6 leftPadding rightPadding">
 			    <h4 class="listTitle">Notes</h4>
-			    <paper-textarea label="Any problems, challenges, wins?">{{exercise.notes}}</paper-textarea>
+			    <paper-textarea label="Any problems, challenges, wins?" value="{{exercise.notes}}"></paper-textarea>
 			</div>
 
 		</div>
+
+		<div>&nbsp;</div>
+		<div>&nbsp;</div>
+		<div>&nbsp;</div>
+		<div class="layout horizontal">
+			<div class="flex-1"></div>
+        	<paper-button class="flex-10" raised on-tap="onSave">Save</paper-button>
+        	<div class="flex-1"></div>
+        </div>
 
 	</template>
 
@@ -98,6 +101,9 @@
 		        </div>
 
 		    </div>
+
+		    <div>&nbsp;</div>
+			<div>&nbsp;</div>
 
 		    <div class="layout vertical rightPadding">
 			    <h4 class="listTitle">Notes</h4>

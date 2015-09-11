@@ -218,6 +218,19 @@ function validWorkoutNotes(workout)
 	return false;
 }
 
+function exerciseNotesAreValid(exercise)
+{
+	if(_.isNull(exercise.notes) || _.isUndefined(exercise.notes))
+	{
+		return true;
+	}
+	if(_.isString(exercise.notes))
+	{
+		return true;
+	}
+	return false;
+}
+
 function exercisesAreValid(exercises)
 {
 	if(_.isArray(exercises) === false)
@@ -237,7 +250,8 @@ function exerciseIsValid(exercise)
 	return _.every([
 			_.isString(exercise.name),
 			_.isArray(exercise.sets),
-			setsAreValid(exercise.sets)
+			setsAreValid(exercise.sets),
+			exerciseNotesAreValid
 		]);
 }
 
@@ -291,7 +305,6 @@ function isValidWorkout(workout)
 		validWorkoutWeek,
 		validWorkoutLevel,
 		validWorkoutNotes,
-		validWorkoutExercises,
 		validWorkoutExercises
 		], function(predicate)
 		{
