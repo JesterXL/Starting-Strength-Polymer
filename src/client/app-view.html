@@ -101,28 +101,7 @@ h4 {
 		onShowExercise: function(event, exercise)
 		{
 			console.log("app-view::onShowExercise, exercise:", exercise);
-			// this.currentExercise = _.cloneDeep(exercise);
-			if(exercise)
-			{
-				page('/today/' + exercise.name);
-			}
-			else
-			{
-				page('/today');
-			}
-		},
-
-		navigateIfExercise: function(state)
-		{
-			console.log("app-view::navigateIfExercise, state:", state);
-			if(state)
-			{
-				this.onShowExercise(null, state.exercise);
-			}
-			else
-			{
-				this.onShowExercise(null, null);
-			}
+			page('/today/' + exercise.name);
 		},
 
 		attached: function()
@@ -228,6 +207,8 @@ h4 {
 				case "Login": page("/login"); return;
 				case "Register": page("/register"); return;
 			}
+			console.log("app-view::onTapNavigateTo, Tapped an exercise, going to: " + 'today/' + event.target.innerText);
+			page('/today/' + event.target.innerText);
 
 		},
 
