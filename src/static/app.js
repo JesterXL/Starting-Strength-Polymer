@@ -24,6 +24,7 @@ app.use(function(req, res, next) {
 });
 
 var port = process.env.PORT || 8626;
+console.log("Express port I'll use:", port);
 app.listen(port, function() {
     console.log('Demo server started on port ' + port);
 });

@@ -31,7 +31,9 @@ client.connect().then(function() {
 
 var restify = require('restify');
 var api = restify.createServer({name: 'starting-strength'});
-api.listen(process.env.PORT || 5000, function () {
+var restifyPort = process.env.PORT || 9037;
+console.log("Restify port I'll use:", restifyPort);
+api.listen(restifyPort, function () {
     console.log('%s listening at %s', api.name, api.url)
 });
 
