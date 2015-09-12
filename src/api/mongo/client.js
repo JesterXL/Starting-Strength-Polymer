@@ -5,7 +5,7 @@ function Client()
     var client           = {};
 
     client.__MongoClient = null;
-    client.__url         = 'mongodb://localhost:27017/mydb';
+    client.__url         = process.env.MONGO_URL || 'mongodb://localhost:27017/mydb';
     client.__db            = null;
 
     Object.defineProperty(client, "db", {
@@ -31,7 +31,8 @@ function Client()
                 }
                 console.log("Connected correctly to server");
                 // console.log(client.__MongoClient.db("startingstrength"))
-                var newDB = dbInstance.db('startingstrength');
+                var dbName = process.env.MONGO_DB || 'startingstrength';
+                var newDB = dbInstance.db(dbName);
                 client.__db = newDB;
                 resolve();
             });
