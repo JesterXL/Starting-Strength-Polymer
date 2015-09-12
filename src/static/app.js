@@ -23,7 +23,7 @@ app.use(function(req, res, next) {
     // next();
 });
 
-var port = 8626;
+var port = process.env.PORT || 8626;
 app.listen(port, function() {
     console.log('Demo server started on port ' + port);
 });
