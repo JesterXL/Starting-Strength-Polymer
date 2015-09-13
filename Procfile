@@ -1,1 +1,1 @@
-web: node src/static/app.js
+web: node src/static/app.js --prod
