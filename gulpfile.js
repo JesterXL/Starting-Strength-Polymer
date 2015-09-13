@@ -1,5 +1,4 @@
 var gulp                = require('gulp');
-var browserSync         = require('browser-sync');
 var del                 = require('del');
 var vinylPaths          = require('vinyl-paths');
 var concat              = require('gulp-concat');
