@@ -1,4 +1,3 @@
-var moment = require('moment');
 var Promise = require('bluebird');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');

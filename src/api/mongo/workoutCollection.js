@@ -10,7 +10,7 @@ var level1schedule = require("./fixtures/level1schedule");
 var level2schedule = require("./fixtures/level2schedule");
 var level3schedule = require("./fixtures/level3schedule");
 var fixID = require("./mongoUtils").fixID;
-var moment = require('moment');
+// var moment = require('moment');
 
 var _db = null;
 
@@ -382,27 +382,27 @@ var getWorkoutsWithinDateRange = async (function(user, startDate, endDate)
 	// I fall back to Moment
 	var results = await (_db.collection("workout")
 	.find({userID: user._id.str, createdOn: {$gt: startDate, $lt: endDate}}).toArray());
-	if(results.length < 1)
-	{
-		console.log("None found, falling back to using moment...");
-		var weekPrior = new Date(startDate.valueOf());
-		weekPrior.setDate(weekPrior.getDate() - 7);
-		var nextWeek = new Date(endDate.valueOf());
-		nextWeek.setDate(nextWeek.getDate() + 7);
-		var allResults = await (_db.collection("workout")
-			.find({userID: user._id.str}).toArray());
-		results = _.filter(allResults, function(workout)
-		{
-			return moment(workout.createdOn).isBetween(startDate, endDate);
-		});
-		console.log("moment found " + results.length + " results.");
-		return results;
-	}
-	else
-	{
-		console.log("found " + results.length + " results.");
-		return results;
-	}
+	// if(results.length < 1)
+	// {
+	// 	console.log("None found, falling back to using moment...");
+	// 	var weekPrior = new Date(startDate.valueOf());
+	// 	weekPrior.setDate(weekPrior.getDate() - 7);
+	// 	var nextWeek = new Date(endDate.valueOf());
+	// 	nextWeek.setDate(nextWeek.getDate() + 7);
+	// 	var allResults = await (_db.collection("workout")
+	// 		.find({userID: user._id.str}).toArray());
+	// 	results = _.filter(allResults, function(workout)
+	// 	{
+	// 		return moment(workout.createdOn).isBetween(startDate, endDate);
+	// 	});
+	// 	console.log("moment found " + results.length + " results.");
+	// 	return results;
+	// }
+	// else
+	// {
+	// 	console.log("found " + results.length + " results.");
+	// 	return results;
+	// }
 });
 
 var removeAll = async (function()
