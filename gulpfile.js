@@ -30,7 +30,7 @@ var CONFIG              = require('./build.config');
 gulp.task('hello', function()
 {
 	console.log('Waaazzuuuuuppp');
-	});
+});
 
 // **********************************************************************
 // **********************************************************************
@@ -106,48 +106,18 @@ gulp.task('copy', ['clean'], function()
 			.on('end', resolve)
 			.on('error', reject);
 			});
-		})
-	.then(function()
-	{
-		return new Promise(function(resolve, reject)
-		{
-			gulp.src('./node_modules/**/*')
-			.pipe(gulp.dest('./build/node_modules'))
-			.on('end', resolve)
-			.on('error', reject);
-			});
-		})
-	.then(function()
-	{
-		return new Promise(function(resolve, reject)
-		{
-			gulp.src('./bower_components/**/*')
-			.pipe(gulp.dest('./build/bower_components'))
-			.on('end', resolve)
-			.on('error', reject);
-			});
 		});
-	});
+});
 
-// injects all your files into index.html
-gulp.task('inject', ['copy'], function()
-{
-	var sources = gulp.src(CONFIG.client.sourceFiles, {read: false});
-	return gulp.src('./build/index.html')
-	.pipe(inject(sources, {ignorePath: '/src/client/'}))
-	.pipe(gulp.dest('./build'));
-	});
-
-gulp.task('jxlVulcan', function (done) {
+gulp.task('jxlVulcan', ['copy'], function (done) {
 	
-	var devTag = '<link rel="import" href="app-view.html">';
-	var prodTag = '<link rel="import" href="src/client/app-view.html">';
-
+	// TODO: dynamically read wiredep for excludes
 	var vulcan = new Vulcanize({
 		abspath: './',
-		excludes: ['node_modules/moment/moment.js',
+		excludes: [
+		'bower_components/web-animations-js/web-animations.min.js',
+		'bower_components/promise-polyfill/Promise.js',
 		'node_modules/page/page.js',
-		'node_modules/rx/dist/rx.all.js',
 		'bower_components/webcomponentsjs/webcomponents.js',
 		'node_modules/lodash/index.js'
 		],
@@ -160,57 +130,50 @@ gulp.task('jxlVulcan', function (done) {
 	  	inputUrl: ''
 	  });
 
+	var devTag = '<link rel="import" href="app-view.html">';
+	var prodTag = '<span></span>';
+	var starttag = '<!-- polymer:begininject -->';
+	var endtag = '<!-- polymer:endinject -->';
 	vulcan.process('src/client/index.html', function(err, inlinedHtml)
 	{
-		function escapeForRegExp (str) {
-			return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-		}
-		function getInjectorTagsRegExp (starttag, endtag) {
-			return new RegExp('([\t ]*)(' + escapeForRegExp(starttag) + ')(\\n|\\r|.)*?(' + escapeForRegExp(endtag) + ')', 'gi');
-		}
-		var re = getInjectorTagsRegExp(starttag, endtag);
-		inlinedHtml = inlinedHtml.replace(re, function (match, indent, starttag, content, endtag) {
-			return indent + starttag + devTag + endtag;
-		});
-		// fix for image, lol #insanity
-		inlinedHtml = inlinedHtml.split('src="/src/client/images/starting-strength.jpg"').join('src="images/starting-strength.jpg"');
-		fs.writeFile("./build/index.html", inlinedHtml, function(err)
+		console.log("Vulcanize process complete, injecting...");
+
+		try
 		{
-		    if(err)
-		    {
-		        done(err);
-		        return;
-		    }
-		    done();
-		});
+			function escapeForRegExp (str) {
+				return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+			}
+			function getInjectorTagsRegExp (starttag, endtag) {
+				return new RegExp('([\t ]*)(' + escapeForRegExp(starttag) + ')(\\n|\\r|.)*?(' + escapeForRegExp(endtag) + ')', 'gi');
+			}
+			var re = getInjectorTagsRegExp(starttag, endtag);
+			inlinedHtml = inlinedHtml.replace(re, function (match, indent, starttag, content, endtag) {
+				return indent + starttag + prodTag + endtag;
+			});
+			// fix for image, lol #insanity
+			inlinedHtml = inlinedHtml.split('src="/src/client/images/starting-strength.jpg"').join('src="images/starting-strength.jpg"');
+			fs.writeFile("./build/index.html", inlinedHtml, function(err)
+			{
+			    if(err)
+			    {
+			    	console.error("jxlVulcan done with error:", err);
+			        done(err);
+			        return;
+			    }
+			    console.log("jxlVulcan done");
+			    done();
+			});
+		}
+		catch(error)
+		{
+			console.error("jxlVulcan injection error:", error);
+			done(error);
+		}
 	});
 
 });
 
-var concat = require('gulp-concat');
-
-gulp.task('scripts', function() {
-	return gulp.src(CONFIG.client.sourceFiles)
-	.pipe(concat('all.html'))
-	.pipe(gulp.dest('./build/'));
-	});
-
-// starts nodemon to watch files and reboot your static and api web server when they change
-gulp.task('start', function (done)
-{
-	nodemon({
-		script: 'src/static/app.js',
-		ext: 'js html',
-		ignore: ['gulpfile.js', 'node_modules', 'bower_components'],
-		env: { 'NODE_ENV': 'development' },
-		tasks: ['clean', 'copy', 'inject']
-		});
-	done();
-	});
-
 // git-r-done
 gulp.task('default', [
-	'clean', 
-	'copy', 
-	'inject'
+	'jxlVulcan'
 	]);
