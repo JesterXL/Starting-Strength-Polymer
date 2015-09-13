@@ -35,7 +35,6 @@
     "serve-favicon": "^2.3.0"
   },
   "devDependencies": {
-    "browser-sync": "^2.9.3",
     "chai": "^3.2.0",
     "chai-things": "^0.2.0",
     "del": "^2.0.2",
