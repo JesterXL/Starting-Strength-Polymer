@@ -8,16 +8,9 @@
 
     <title>Basic Project</title>
 
-    <!-- bower:js -->	
-	<!-- endbower -->
-
-	<!-- inject:js -->
-	<!-- endinject -->
-
-    <script src="/node_modules/lodash/index.js"></script>
-    <script src="/node_modules/page/page.js"></script>
-
-    <script src="/bower_components/webcomponentsjs/webcomponents.js"></script>
+	<!-- injector:js -->
+	<script src="combinedBowerAndNPMLibraries.js"></script>
+	<!-- endinjector -->
     
     <script>(function () {
 function resolve() {
@@ -22538,6 +22531,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 			var workoutTodayService = this.$.workoutTodayService;
 			workoutTodayService.params = {now: new Date()};
 			workoutTodayService.headers = tokenService.tokenHeaders;
+			console.log("workoutTodayService.headers:", workoutTodayService.headers);
 			var me = this;
 			return new Promise(function(success, failure)
 			{
@@ -22583,6 +22577,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 					try
 					{
 						tokenService.token = response.response.token;
+						// console.log("loginService::complete, setting token:", tokenService.token);
 						success(true);
 					}
 					catch(err)

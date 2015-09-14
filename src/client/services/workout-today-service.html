@@ -26,6 +26,7 @@
 			var workoutTodayService = this.$.workoutTodayService;
 			workoutTodayService.params = {now: new Date()};
 			workoutTodayService.headers = tokenService.tokenHeaders;
+			console.log("workoutTodayService.headers:", workoutTodayService.headers);
 			var me = this;
 			return new Promise(function(success, failure)
 			{

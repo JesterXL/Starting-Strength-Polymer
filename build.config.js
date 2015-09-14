@@ -15,14 +15,23 @@ var config = {
                       '!*index.html', 
                       '!*.spec.js', 
                       '!**/*.spec.js', 
-                      '!gulpfile.js'],
+                      '!gulpfile.js',
+                      '!Gruntfile.js'],
     testFiles:       ['*.spec.js', '**/*.spec.js'],
     globals: ['_', 'Rx'],
     buildDirectory:  'build',
+    buildImagesDirectory: 'build/images',
     coverageDirectory: 'coverage',
+    imageDirectory: 'src/client/images',
     imageFiles: ['src/client/images/*.png', 'src/client/images/*.jpg'],
     sourceIndexFile: 'src/client/index.html',
     buildIndexFile: 'build/index.html',
+    combinedBowerAndNPMLibraries: 'build/combinedBowerAndNPMLibraries.js',
+    npmClasses: ['node_modules/lodash/index.js', 
+    			'node_modules/page/page.js',
+    			'bower_components/promise-polyfill/Promise.js',
+    			'bower_components/webcomponentsjs/webcomponents.js',
+    			'bower_components/web-animations-js/web-animations.min.js'],
     injectorFiles: {
                     'build/index.html': ['src/client/*.js',
                                           'src/client/**/*.js',
@@ -35,6 +44,7 @@ var config = {
                                           '!src/client/**/*.spec.js', 
                                           '!gulpfile.js']
                     }
+
   },
 
   prefixPath: function(listOfFiles, prefix)

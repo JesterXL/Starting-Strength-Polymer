@@ -104,8 +104,32 @@ gulp.task('copy', ['clean'], function()
 			.pipe(gulp.dest('./build/images'))
 			.on('end', resolve)
 			.on('error', reject);
-			});
 		});
+	})
+	.then(function()
+	{
+		// manually copy scripts because I'm tired
+		return new Promise(function(resolve, reject)
+		{
+			gulp.src(['bower_components/web-animations-js/web-animations.min.js',
+						'bower_components/promise-polyfill/Promise.js',
+						'bower_components/webcomponentsjs/webcomponents.js'], {base: './bower_components'})
+			.pipe(gulp.dest('./build', {cwd: './build/bower_components'}))
+			.on('end', resolve)
+			.on('error', reject);
+		});
+	});
+});
+
+gulp.task('test', ['clean'], function(done)
+{
+	return new Promise(function(resolve, reject)
+	{
+		gulp.src('bower_components/web-animations-js/web-animations.min.js', {base: './'})
+		.pipe(gulp.dest('./build/bower_components'))
+		.on('end', resolve)
+		.on('error', reject);
+	});
 });
 
 gulp.task('jxlVulcan', ['copy'], function (done) {

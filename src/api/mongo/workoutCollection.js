@@ -338,6 +338,7 @@ var getTodaysWorkout = async (function(user, date)
 	tomorrow.setDate(tomorrow.getDate() + 1);
 	console.log("Looking for existing workouts today...");
 	var workouts = await(getWorkoutsWithinDateRange(user, yesterday, tomorrow));
+	console.log("workouts:", workouts);
 	if(workouts.length > 0)
 	{
 		console.log("Found one!");
@@ -382,6 +383,7 @@ var getWorkoutsWithinDateRange = async (function(user, startDate, endDate)
 	// I fall back to Moment
 	var results = await (_db.collection("workout")
 	.find({userID: user._id.str, createdOn: {$gt: startDate, $lt: endDate}}).toArray());
+	return results;
 	// if(results.length < 1)
 	// {
 	// 	console.log("None found, falling back to using moment...");

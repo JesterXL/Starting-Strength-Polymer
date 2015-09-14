@@ -33,6 +33,7 @@
 					try
 					{
 						tokenService.token = response.response.token;
+						// console.log("loginService::complete, setting token:", tokenService.token);
 						success(true);
 					}
 					catch(err)
