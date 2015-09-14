@@ -21,6 +21,19 @@
 		margin-right: 12px;
 	}
 
+	.howToButton {
+		background: #FF5252;
+		color: #FFFFFF;
+	}
+
+	.startedParagraph {
+		display:inherit;
+	}
+
+	.startedText {
+		padding-right: 24px;
+	}
+
 	
 
 	</style>
@@ -34,13 +47,12 @@
 		<p>A beginner training program to make you strong. 3 days a week. Done in 45 minutes to 1 hour. Mainly uses barbells. Little cardio. Lasts as long as you like.</p>
 		<span>&nbsp;</span>
 		<div>
-			<paper-button raised id="learnMoreButton">Learn More</paper-button>
+			<paper-button raised class="howToButton" id="learnMoreButton">Learn More</paper-button>
 		</div>
 		<span>&nbsp;</span>
 
 		<h2>How do I get started?</h2>
-		<p>Buy the <a href="http://aasgaardco.com/store/books/starting-strength-basic-barbell-training-413">book</a> and find a gym that has a <a href="https://www.google.com/search?q=squat+rack&es_sm=91&source=lnms&tbm=isch&sa=X&ved=0CAgQ_AUoAmoVChMItNfLzPzvxwIVgzo-Ch3k-w_w&biw=1121&bih=1166">squat rack</a> or <a href="https://www.google.com/search?q=squat+rack&es_sm=91&source=lnms&tbm=isch&sa=X&ved=0CAgQ_AUoAmoVChMItNfLzPzvxwIVgzo-Ch3k-w_w&biw=1121&bih=1166#tbm=isch&q=power+rack">power rack</a>. Mark Rippeteo's website has plenty of articles and resources to <a href="http://startingstrength.com/site/about#start">help you get started</a>.</p>
-		<span style="width: 200px; height: 262px;"><a href="http://aasgaardco.com/store/books/starting-strength-basic-barbell-training-413"><iron-image style="width: 200px; height: 262px;" src="images/starting-strength.jpg" fade></iron-image></a></span>
+		<p div="layout horizontal wrap" class="startedParagraph"><span class="startedText">Buy the <a href="http://aasgaardco.com/store/books/starting-strength-basic-barbell-training-413">book</a> and find a gym that has a <a href="https://www.google.com/search?q=squat+rack&es_sm=91&source=lnms&tbm=isch&sa=X&ved=0CAgQ_AUoAmoVChMItNfLzPzvxwIVgzo-Ch3k-w_w&biw=1121&bih=1166">squat rack</a> or <a href="https://www.google.com/search?q=squat+rack&es_sm=91&source=lnms&tbm=isch&sa=X&ved=0CAgQ_AUoAmoVChMItNfLzPzvxwIVgzo-Ch3k-w_w&biw=1121&bih=1166#tbm=isch&q=power+rack">power rack</a>. Mark Rippeteo's website has plenty of articles and resources to <a href="http://startingstrength.com/site/about#start">help you get started</a>.</span><paper-material style="width: 200px; height: 262px; display: inline-block; margin-right: 12px;" elevation="3"><a href="http://aasgaardco.com/store/books/starting-strength-basic-barbell-training-413"><iron-image style="width: 200px; height: 262px;" src="images/starting-strength.jpg" fade></iron-image></a></paper-material></p>
 
 		<h2>What's the schedule like?</h2>
 		<p>You do the <a href="http://rippedbody.jp/the-big-3-routine/">"Big 3"</a> for a couple weeks, then incorporate the Press for a month or so, then incorporate the Clean. After you plateau on most of the lifts, Starting Strength has a bunch of supplementary exercises to add. These types of schedules can last your entire life.</p>
@@ -48,7 +60,7 @@
 		<h2>Is this bodybuilding, weightlifting, powerlifting, or olympic lifting?</h2>
 		<p>Starting Strength is primarely powerlifting: slow, steady, and heavy. It's for developing strength, not as much force.</p>
 
-		<p>Olympic/weightlifting is fast. Starting Strength is only fast for Cleans.</p>
+		<p>Olympic/weightlifting is fast with advanced lifts. Starting Strength is only fast for Cleans.</p>
 
 		<p>Bodybuilding is lower intensity (not as heavy), higher volume (more reps and more days at the gym).</p>
 		<div>&nbsp;</div>
@@ -56,8 +68,8 @@
 		<template is="dom-if" if="{{!showHowTo}}">
 			<h2>How To Videos</h2>
 			<div class="layout horizontal">
-        		<paper-button class="flex" raised on-tap="onShowHowTo">Show How To Videos</paper-button>
-        		<div style="margin-right: 12px;">&nbsp;</div>
+        		<paper-button class="flex-6 howToButton" raised on-tap="onShowHowTo">Show How To Videos</paper-button>
+        		<div style="margin-right: 12px;" class="flex-6">&nbsp;</div>
         	</div>
 		</template>
 
@@ -76,9 +88,11 @@
 
 			<h2>How To Power Clean</h2>
 			<p>This one is hard and will take a lot of practice.</p>
-			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/_uh83e_4vl4" frameborder="0" allowfullscreen></iframe></p>
-			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/uNPvRRXlVck" frameborder="0" allowfullscreen></iframe></p>
-			<p><iframe width="560" height="315" src="https://www.youtube.com/embed/mPsxlNjv7Aw" frameborder="0" allowfullscreen></iframe></p>
+			<div class="layout horizontal wrap">
+				<p><iframe width="560" height="315" src="https://www.youtube.com/embed/_uh83e_4vl4" frameborder="0" allowfullscreen></iframe></p>
+				<p><iframe width="560" height="315" src="https://www.youtube.com/embed/uNPvRRXlVck" frameborder="0" allowfullscreen></iframe></p>
+				<p><iframe width="560" height="315" src="https://www.youtube.com/embed/mPsxlNjv7Aw" frameborder="0" allowfullscreen></iframe></p>
+			</div>
 		</template>
 
 		
@@ -103,8 +117,7 @@
 		},
 
 		listeners: {
-			'learnMoreButton.tap': 'learnMore',
-			'buyTheBookButton.tap': 'buyTheBookLink'
+			'learnMoreButton.tap': 'learnMore'
 		},
 
 		learnMore: function()
