@@ -1,0 +1,63 @@
+
+<dom-module id="jxl-fun">
+
+	<style>
+
+	:host {
+		display: block;
+		width: 330px;
+		height: 400px;
+		text-align: center;
+	}
+
+	</style>
+
+	<template>
+
+		<style include="common-styles"></style>
+
+		<div id="main" class="layout vertical">
+
+		</div>
+
+
+	</template>
+
+	<script>
+	Polymer({
+
+		is: "jxl-fun",
+
+
+		properties: {
+
+			
+		},
+
+		attached: function()
+		{
+			var ROWS = 6;
+			var COLS = 7;
+			var btn;
+			var rowDiv;
+			for(var r = 0; r<ROWS; r++)
+			{
+				rowDiv = document.createElement('div');
+				this.$.main.appendChild(rowDiv);
+				rowDiv.setAttribute('class', 'layout horizontal');
+				for(var c = 0; c<COLS; c++)
+				{
+					btn = document.createElement('paper-button');
+					btn.textContent = "r: " + r + ", c: " + c;
+
+					rowDiv.appendChild(btn);
+				}
+			}
+		}
+
+
+	});
+
+	</script>
+
+</dom-module>

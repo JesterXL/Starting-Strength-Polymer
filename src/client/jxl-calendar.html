@@ -111,13 +111,14 @@
 				<span class="flex weekdayItem">F</span>
 				<span class="flex weekdayItem">S</span>
 			</div>
-			<div class="layout horizontal wrap">
+			<!-- <div class="layout horizontal wrap">
 				<template is="dom-repeat" items="{{getDays(currentDate)}}">
 					<paper-button class$="{{getDayButtonClass(item)}}" 
 						data-datestring$="{{item.dateString}}"
 						on-tap="onSelectDay">{{item.label}}</paper-button>
 				</template>
-			</div>
+			</div> -->
+			<div id="daysContent" class="layout vertical"></div>
 		</div>
 
 	</template>
@@ -126,6 +127,10 @@
 	Polymer({
 
 		is: "jxl-calendar",
+
+		behaviors: [
+			Polymer.NeonAnimationRunnerBehavior
+		],
 
 		properties: {
 
@@ -150,45 +155,148 @@
 			}
 		},
 
+		animationConfig: {
+			value: function()
+			{
+				return {
+					'entry': [
+						{
+							name: 'fade-in-animation',
+							node: this,
+							timing: {duration: 1000}
+						}
+					],
+					'exit': [
+						{
+							name: 'fade-out-animation',
+							node: this,
+							timing: {duration: 1000}
+						}
+					],
+				};
+			}
+		},
+
+		listeners: {
+			// this event is fired when the animation finishes
+			'neon-animation-finish': '_onNeonAnimationFinish'
+		},
+
+		_dayButtons: [],
+
+
+	  _onNeonAnimationFinish: function()
+	  {
+	  	console.log("_onNeonAnimationFinish");
+	  },
+
+	  _validDate: function(obj)
+	  {
+	  	// return _.isDate(obj) && obj.toString() !== 'Invalid Date';
+	  	return _.isObject(obj) && moment.isMoment(obj);
+	  },
+
 		_todayChanged: function(newValue, oldValue)
 		{
+			if(this._validDate(newValue))
+			{
+				this.setDate(newValue);
+			}
 		},
 
 		_currentDateChanged: function(newValue, oldValue)
 		{
-
+			// var me = this;
+			// _.delay(function()
+			// {
+			// 	console.log("playing");
+			// 	me.playAnimation('entry');
+			// }, 2000);
+			if(this._validDate(newValue))
+			{
+				this.setDate(newValue);
+			}
 		},
 
 		_selectedDateChanged: function(newValue, oldValue)
 		{
-
+			if(this._validDate(newValue))
+			{
+				this.setDate(newValue);
+			}
 		},
 
-		getDays: function(date)
+		attached: function()
 		{
-			console.log("getdays, date:", date);
+			this._draw();
+		},
+
+		_draw: function()
+		{
+			console.log("jxl-calendar::_draw");
 			var me = this;
+			var ROWS = 6;
+			var COLS = 7;
+			var btn;
+			var rowDiv;
+			for(var r = 0; r<ROWS; r++)
+			{
+				rowDiv = document.createElement('div');
+				Polymer.dom(rowDiv).setAttribute('class', 'layout horizontal');
+				Polymer.dom.flush();
+				Polymer.dom(me.$.daysContent).appendChild(rowDiv);
+				Polymer.dom.flush();
+				for(var c = 0; c<COLS; c++)
+				{
+					btn = document.createElement('paper-button');
+					// btn.textContent = "r: " + r + ", c: " + c;
+					btn.addEventListener("tap", me.onSelectDay);
+					Polymer.dom(rowDiv).appendChild(btn);
+					Polymer.dom.flush();
+					me._dayButtons.push(btn);
+				}
+			}
+			me.setDate(me.currentDate);
+		},
+
+		setDate: function(date)
+		{
+			console.log("jxl-calendar::setDate, date:", date);
+			var me = this;
+			if(me._dayButtons.length < 1)
+			{
+				return;
+			}
+
+			for(var i = 0; i<42; i++)
+			{
+				me._dayButtons[i].style.visibility = "hidden";
+			}
+			
 			var days = [];
 			var start = me.currentDate.clone().startOf('month').day(0);
 		   	var end = me.currentDate.clone().endOf('month').day(6);
+		   	var index = -1;
+		   	var isCurrentDate, isSelected, isToday;
 		   	moment()
 		   	.range(start, end)
 		   	.by('days', function(moment)
 		   	{
-		   		console.log("********");
-		   		console.log("me.selectedDate:", me.selectedDate);
-		   		console.log("moment:", moment);
-		   		console.log("moment.isSame(me.selectedDate, 'day'):", moment.isSame(me.selectedDate, 'day'));
-		   		days.push({
-		   			dateString: moment.toISOString(),
-		   			label: moment.format('D'),
-		   			isSelected: me.isDateSame(moment, me.selectedDate, 'day'),
-		   			isToday: moment.isSame(me.today, 'day'),
-		   			isCurrentDate: moment.isSame(me.currentDate, 'month') ? 'dayActive': 'dayFade'
-		   		});
+		   		index++;
+		   		var btn = me._dayButtons[index];
+		   		
+		   		btn.dataset.dateString = moment.toISOString();
+		   		isCurrentDate = moment.isSame(me.currentDate, 'month') ? 'dayActive': 'dayFade';
+		   		isSelected = me.isDateSame(moment, me.selectedDate, 'day');
+	   			isToday = moment.isSame(me.today, 'day');
+	   			btn.style.visibility = "visible";
+	   			Polymer.dom(btn).setAttribute('class', me.getDayButtonClass(isCurrentDate, isSelected, isToday));
+		   		Polymer.dom.flush();
+		   		Polymer.dom(btn).textContent = moment.format('D');
+		   		Polymer.dom.flush();
 		   	});
-		   	console.log("days.length:", days.length);
-		   	return days;
+		   	me.distributeContent();
+
 		},
 
 		notDefined: function(obj)
@@ -213,14 +321,14 @@
 			}
 		},
 
-		getDayButtonClass: function(item)
+		getDayButtonClass: function(isCurrentDate, isSelected, isToday)
 		{
-			var str = "dayItem dayPaperButton " + item.isCurrentDate;
-			if(item.isSelected)
+			var str = "dayItem dayPaperButton " + isCurrentDate;
+			if(isSelected)
 			{
 				str += " dayIsSelected";
 			}
-			else if(item.isToday)
+			else if(isToday)
 			{
 				str += " dayIsToday";
 			}
