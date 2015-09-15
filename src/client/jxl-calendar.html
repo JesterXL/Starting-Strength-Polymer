@@ -290,13 +290,17 @@
 		   		isSelected = me.isDateSame(moment, me.selectedDate, 'day');
 	   			isToday = moment.isSame(me.today, 'day');
 	   			btn.style.visibility = "visible";
-	   			Polymer.dom(btn).setAttribute('class', me.getDayButtonClass(isCurrentDate, isSelected, isToday));
+	   			// Polymer.dom(btn).setAttribute('class', me.getDayButtonClass(isCurrentDate, isSelected, isToday));
+		   		_.forEach(me.getDayButtonClass(isCurrentDate, isSelected, isToday).split(" "), function(clazz)
+		   		{
+		   			me.toggleClass(clazz, true, btn);
+		   		});
 		   		Polymer.dom.flush();
 		   		Polymer.dom(btn).textContent = moment.format('D');
 		   		Polymer.dom.flush();
 		   	});
 		   	me.distributeContent();
-
+		   	Polymer.dom.flush();
 		},
 
 		notDefined: function(obj)
