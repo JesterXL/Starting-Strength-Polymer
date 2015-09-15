@@ -88,7 +88,7 @@
 		-moz-user-select: none;
 		-ms-user-select: none; /* IE10+ */
 		user-select: none;
-		line-height: 18px;
+		line-height: 20px;
 	}
 
 	.dayPaperButton
@@ -100,6 +100,12 @@
 	.dayActive
 	{
 		opacity: 1;
+	}
+
+	.dayIsToday
+	{
+		color: #FF1744;
+		background-color: #EEEEEE;
 	}
 
 	.dayFade
@@ -209,6 +215,7 @@
 			var start = this.today.clone().startOf('month').day(0);
 		   	var end = this.today.clone().endOf('month').day(6);
 		   	var month = this.today.month();
+		   	var date = this.today.date();
 		   	this.type = 'days';
 		   	moment()
 		   	.range(start, end)
@@ -217,6 +224,7 @@
 		   		days.push({
 		   			value: moment.format('D'),
 		   			label: moment.format('D'),
+		   			isToday: moment.date() === date ? ' dayIsToday' : '',
 		   			cssClass: moment.month() === month ? 'dayActive': 'dayFade'
 		   		});
 		   	});
@@ -225,7 +233,17 @@
 
 		getDayButtonClass: function(item)
 		{
-			return "dayItem dayPaperButton " + item.cssClass;  
+			return "dayItem dayPaperButton " + item.cssClass + item.isToday;
+		},
+
+		previous: function()
+		{
+			this.today = moment(this.today).hours(-24);
+		},
+
+		next: function()
+		{
+			this.today = moment(this.today).hours(24);
 		}
 
 	});
