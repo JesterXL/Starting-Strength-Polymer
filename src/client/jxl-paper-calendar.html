@@ -14,15 +14,15 @@
 		opacity: 0.84;
 		font-size: 1em;
 		color: #FFFFFF;
-		padding: 8px;
+		padding: 2px 8px 2px 8px;
 		text-align: left;
 	}
 
 	.dateHeading
 	{
-		font-size: 2em;
+		font-size: 2.2em;
 		color: #FFFFFF;
-		padding: 8px;
+		padding: 2px 8px 2px 8px;
 		text-align: left;
 	}
 
@@ -45,8 +45,21 @@
 
 	.monthStepper
 	{
-		height: 40px;
-		line-height: 40px;
+		height: 44px;
+		line-height: 44px;
+	}
+
+	.weekdayItem.weekdayItemButton
+	{
+		padding: 0px;
+	}
+	.weekdayItem.weekdayItemButton.previousButton
+	{
+		margin-left: 0px;
+	}
+	.weekdayItem.weekdayItemButton.nextButton
+	{
+		margin-right: 0px;
 	}
 
 	.weekdayItem
@@ -55,6 +68,7 @@
 		min-width: 40px;
 		max-width: 40px;
 		margin: 1px 2px;
+		border-radius: 50%;
 		width: 40px;
 		height: 40px;
 		line-height: 40px;
@@ -126,9 +140,9 @@
 			</div>
 			<div class="layout vertical calendarBackground">
 				<div class="layout horizontal center-center monthStepper">
-					<iron-icon class="marginLeft5" icon="hardware:keyboard-arrow-left" on-click="previous"></iron-icon>
+					<paper-icon-button class="marginLeft5 weekdayItem weekdayItemButton previousButton" icon="hardware:keyboard-arrow-left" on-click="previous"></paper-icon-button>
 					<div class="flex monthHeader" >{{getMonth(today)}}</div>
-					<iron-icon class="marginRight5" icon="hardware:keyboard-arrow-right" on-click="next"></iron-icon>
+					<paper-icon-button class="marginRight5 weekdayItem weekdayItemButton nextButton" icon="hardware:keyboard-arrow-right" on-click="next"></paper-icon-button>
 				</div>
 				<div class="layout horizontal">
 					<span class="flex weekdayItem">S</span>
@@ -141,7 +155,7 @@
 				</div>
 				<div class="layout horizontal wrap">
 					<template is="dom-repeat" items="{{getDays(today)}}">
-						<paper-button class="dayItem dayPaperButton">{{item.label}}</paper-button>
+						<paper-button class$="{{getDayButtonClass(item)}}">{{item.label}}</paper-button>
 					</template>
 				</div>
 			</div>
@@ -207,6 +221,11 @@
 		   		});
 		   	});
 		   	return days;
+		},
+
+		getDayButtonClass: function(item)
+		{
+			return "dayItem dayPaperButton " + item.cssClass;  
 		}
 
 	});
