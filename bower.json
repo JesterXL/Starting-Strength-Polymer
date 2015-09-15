@@ -38,6 +38,8 @@
     "iron-media-query": "PolymerElements/iron-media-query#~1.0.2",
     "iron-image": "PolymerElements/iron-image#~1.0.2",
     "webcomponentsjs": "~0.7.12",
-    "lodash": "~3.10.1"
+    "lodash": "~3.10.1",
+    "moment-range": "~2.0.3",
+    "moment": "~2.10.6"
   }
 }

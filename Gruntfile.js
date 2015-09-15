@@ -112,7 +112,7 @@ module.exports = function(grunt)
     });
     // ************************************************************
     // ** development tasks **/
-    grunt.registerTask('dev', ['wiredep', 'injector:dev']);
+    grunt.registerTask('dev', ['injector:dev']);
     grunt.registerTask('stage', ['clean', 'copy', 'jxlVulcan', 'concat', 'injector:prod']);
     grunt.registerTask('prod', ['clean', 'copy', 'jxlVulcan', 'concat', 'uglify', 'injector:prod']);
 

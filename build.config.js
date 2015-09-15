@@ -29,6 +29,8 @@ var config = {
     combinedBowerAndNPMLibraries: 'build/combinedBowerAndNPMLibraries.js',
     npmClasses: ['node_modules/lodash/index.js', 
     			'node_modules/page/page.js',
+    			'bower_components/moment/moment.js',
+    			'bower_components/moment-range/dist/moment-range.min.js',
     			'bower_components/promise-polyfill/Promise.js',
     			'bower_components/webcomponentsjs/webcomponents.js',
     			'bower_components/web-animations-js/web-animations.min.js'],
