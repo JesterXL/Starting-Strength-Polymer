@@ -108,6 +108,12 @@
 		background-color: #EEEEEE;
 	}
 
+	.dayIsSelected
+	{
+		color: #FFFFFF;
+		background-color: #FF8A80;
+	}
+
 	.dayFade
 	{
 		opacity: 0.54;
@@ -146,9 +152,9 @@
 			</div>
 			<div class="layout vertical calendarBackground">
 				<div class="layout horizontal center-center monthStepper">
-					<paper-icon-button class="marginLeft5 weekdayItem weekdayItemButton previousButton" icon="hardware:keyboard-arrow-left" on-click="previousMonth"></paper-icon-button>
+					<paper-icon-button class="marginLeft5 weekdayItem weekdayItemButton previousButton" icon="hardware:keyboard-arrow-left" on-click="onPreviousMonth"></paper-icon-button>
 					<div class="flex monthHeader" >{{getMonth(currentDate)}}</div>
-					<paper-icon-button class="marginRight5 weekdayItem weekdayItemButton nextButton" icon="hardware:keyboard-arrow-right" on-click="nextMonth"></paper-icon-button>
+					<paper-icon-button class="marginRight5 weekdayItem weekdayItemButton nextButton" icon="hardware:keyboard-arrow-right" on-click="onNextMonth"></paper-icon-button>
 				</div>
 				<div class="layout horizontal">
 					<span class="flex weekdayItem">S</span>
@@ -161,7 +167,10 @@
 				</div>
 				<div class="layout horizontal wrap">
 					<template is="dom-repeat" items="{{getDays(currentDate)}}">
-						<paper-button class$="{{getDayButtonClass(item)}}">{{item.label}}</paper-button>
+						<paper-button class$="{{getDayButtonClass(item)}}" 
+							data-datestring$="{{item.dateString}}"
+							data-cow="moo"
+							on-tap="onSelectDay">{{item.label}}</paper-button>
 					</template>
 				</div>
 			</div>
@@ -180,13 +189,21 @@
 			today: {
 				type: Date,
 				value: function(){return moment()},
-				observer: '_todayChanged'
+				observer: "_todayChanged"
 			},
 
 			currentDate: {
 				type: Date,
 				value: function(){return moment()},
-				observer: '_currentDateChanged'
+				observer: "_currentDateChanged",
+				notify: true
+			},
+
+			selectedDate: {
+				type: Date,
+				value: function(){return null;},
+				observer: "_selectedDateChanged",
+				notify: true
 			}
 		},
 
@@ -195,6 +212,11 @@
 		},
 
 		_currentDateChanged: function(newValue, oldValue)
+		{
+
+		},
+
+		_selectedDateChanged: function(newValue, oldValue)
 		{
 
 		},
@@ -225,30 +247,74 @@
 		   	.range(start, end)
 		   	.by('days', function(moment)
 		   	{
+		   		console.log("********");
+		   		console.log("me.selectedDate:", me.selectedDate);
+		   		console.log("moment:", moment);
+		   		console.log("moment.isSame(me.selectedDate, 'day'):", moment.isSame(me.selectedDate, 'day'));
 		   		days.push({
-		   			value: moment.format('D'),
+		   			dateString: moment.toISOString(),
 		   			label: moment.format('D'),
-		   			isToday: moment.isSame(me.today, 'day') ? ' dayIsToday' : '',
-		   			cssClass: moment.isSame(me.currentDate, 'month') ? 'dayActive': 'dayFade'
+		   			isSelected: me.isDateSame(moment, me.selectedDate, 'day'),
+		   			isToday: moment.isSame(me.today, 'day'),
+		   			isCurrentDate: moment.isSame(me.currentDate, 'month') ? 'dayActive': 'dayFade'
 		   		});
 		   	});
 		   	console.log("days.length:", days.length);
 		   	return days;
 		},
 
-		getDayButtonClass: function(item)
+		notDefined: function(obj)
 		{
-			return "dayItem dayPaperButton " + item.cssClass + item.isToday;
+			return _.isNull(obj) || _.isUndefined(obj);
 		},
 
-		previousMonth: function()
+		// [jwarden 9.15.2015] moment is fine with null, but not with undefined apparently
+		isDateSame: function(dateA, dateB, precision)
+		{
+			if(this.notDefined(dateA) || this.notDefined(dateB))
+			{
+				return false;
+			}
+			if(_.isString(precision) === false)
+			{
+				return dateA.isSame(dateB);
+			}
+			else
+			{
+				return dateA.isSame(dateB, precision);
+			}
+		},
+
+		getDayButtonClass: function(item)
+		{
+			var str = "dayItem dayPaperButton " + item.isCurrentDate;
+			if(item.isSelected)
+			{
+				str += " dayIsSelected";
+			}
+			else if(item.isToday)
+			{
+				str += " dayIsToday";
+			}
+			return str;
+		},
+
+		onPreviousMonth: function()
 		{
 			this.currentDate = this.currentDate.clone().subtract(1, 'months');
 		},
 
-		nextMonth: function(date)
+		onNextMonth: function()
 		{
 			this.currentDate = this.currentDate.clone().add(1, 'months');
+		},
+
+		onSelectDay: function(event)
+		{
+			var clickedButton = event.detail.sourceEvent.target.parentElement;
+			var dateString = clickedButton.dataset.datestring;
+			this.selectedDate = moment(dateString);
+			this.currentDate = this.currentDate.clone();
 		}
 
 	});
