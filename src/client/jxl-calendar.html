@@ -1,6 +1,6 @@
 <dom-module id="jxl-calendar">
 
-	<style>
+<style>
 
 	:host {
 		display: block;
@@ -62,8 +62,8 @@
 
 	.dayPaperButton
 	{
-	    background: white;
-	    color: black;
+		background: white;
+		color: black;
 	}
 
 	.dayActive
@@ -91,100 +91,98 @@
 	.calendarBackground
 	{
 		background-color: #FFFFFF;
-		margin-left: 10px;
+		margin-left: 0px;
 		margin-right: 10px;
 	}
 
-	</style>
+	.dayHide
+	{
+		visibility: "hidden";
+	}
 
-	<template>
+</style>
 
-		<style include="common-styles"></style>
+<template>
 
-		<div class="layout vertical calendarBackground">
+	<style include="common-styles"></style>
+
+	<div class="layout vertical calendarBackground">
+		<div class="layout horizontal">
+			<span class="flex weekdayItem">S</span>
+			<span class="flex weekdayItem">M</span>
+			<span class="flex weekdayItem">T</span>
+			<span class="flex weekdayItem">W</span>
+			<span class="flex weekdayItem">T</span>
+			<span class="flex weekdayItem">F</span>
+			<span class="flex weekdayItem">S</span>
+		</div>
+		<div id="daysContent" class="layout vertical">
 			<div class="layout horizontal">
-				<span class="flex weekdayItem">S</span>
-				<span class="flex weekdayItem">M</span>
-				<span class="flex weekdayItem">T</span>
-				<span class="flex weekdayItem">W</span>
-				<span class="flex weekdayItem">T</span>
-				<span class="flex weekdayItem">F</span>
-				<span class="flex weekdayItem">S</span>
+				<paper-button id="date0" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date1" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date2" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date3" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date4" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date5" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date6" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
 			</div>
-			<!-- <div class="layout horizontal wrap">
-				<template is="dom-repeat" items="{{getDays(currentDate)}}">
-					<paper-button class$="{{getDayButtonClass(item)}}" 
-						data-datestring$="{{item.dateString}}"
-						on-tap="onSelectDay">{{item.label}}</paper-button>
-				</template>
-			</div> -->
-			<div id="daysContent" class="layout vertical">
-				<div class="layout horizontal">
-					<paper-button id="date0" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date1" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date2" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date3" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date4" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date5" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date6" on-tap="onSelectDay"></paper-button>
-				</div>
-				<div class="layout horizontal">
-					<paper-button id="date7" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date8" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date9" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date10" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date11" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date12" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date13" on-tap="onSelectDay"></paper-button>
-				</div>
-				<div class="layout horizontal">
-					<paper-button id="date14" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date15" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date16" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date17" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date18" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date19" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date20" on-tap="onSelectDay"></paper-button>
-				</div>
-				<div class="layout horizontal">
-					<paper-button id="date21" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date22" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date23" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date24" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date25" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date26" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date27" on-tap="onSelectDay"></paper-button>
-				</div>
-				<div class="layout horizontal">
-					<paper-button id="date28" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date29" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date30" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date31" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date32" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date33" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date34" on-tap="onSelectDay"></paper-button>
-				</div>
-				<div class="layout horizontal">
-					<paper-button id="date35" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date36" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date37" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date38" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date39" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date40" on-tap="onSelectDay"></paper-button>
-					<paper-button id="date41" on-tap="onSelectDay"></paper-button>
-				</div>
+			<div class="layout horizontal">
+				<paper-button id="date7" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date8" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date9" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date10" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date11" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date12" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date13" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+			</div>
+			<div class="layout horizontal">
+				<paper-button id="date14" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date15" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date16" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date17" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date18" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date19" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date20" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+			</div>
+			<div class="layout horizontal">
+				<paper-button id="date21" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date22" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date23" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date24" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date25" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date26" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date27" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+			</div>
+			<div class="layout horizontal">
+				<paper-button id="date28" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date29" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date30" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date31" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date32" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date33" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date34" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+			</div>
+			<div class="layout horizontal">
+				<paper-button id="date35" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date36" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date37" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date38" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date39" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date40" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
+				<paper-button id="date41" class="dayItem dayPaperButton" on-tap="onSelectDay"></paper-button>
 			</div>
 		</div>
+	</div>
 
-	</template>
+</template>
 
-	<script>
+<script>
 	Polymer({
 
 		is: "jxl-calendar",
 
 		behaviors: [
-			Polymer.NeonAnimationRunnerBehavior
+		Polymer.NeonAnimationRunnerBehavior
 		],
 
 		properties: {
@@ -215,18 +213,18 @@
 			{
 				return {
 					'entry': [
-						{
-							name: 'fade-in-animation',
-							node: this,
-							timing: {duration: 1000}
-						}
+					{
+						name: 'fade-in-animation',
+						node: this,
+						timing: {duration: 1000}
+					}
 					],
 					'exit': [
-						{
-							name: 'fade-out-animation',
-							node: this,
-							timing: {duration: 1000}
-						}
+					{
+						name: 'fade-out-animation',
+						node: this,
+						timing: {duration: 1000}
+					}
 					],
 				};
 			}
@@ -237,85 +235,119 @@
 			'neon-animation-finish': '_onNeonAnimationFinish'
 		},
 
-	  _onNeonAnimationFinish: function()
-	  {
-	  	console.log("_onNeonAnimationFinish");
-	  },
+		hasAttached: false,
 
-	  _validDate: function(obj)
-	  {
-	  	// return _.isDate(obj) && obj.toString() !== 'Invalid Date';
-	  	return _.isObject(obj) && moment.isMoment(obj);
-	  },
+		attached: function()
+		{
+			this.hasAttached = true;
+			this.redraw();
+		},
+
+		_onNeonAnimationFinish: function()
+		{
+			console.log("_onNeonAnimationFinish");
+		},
+
+		_validDate: function(obj)
+		{
+			return moment.isMoment(obj);
+		},
 
 		_todayChanged: function(newValue, oldValue)
 		{
+			console.log("jxl-calendar::_todayChanged");
 			if(this._validDate(newValue))
 			{
-				this.setDate(newValue);
+				this.redraw();
 			}
 		},
 
 		_currentDateChanged: function(newValue, oldValue)
 		{
-			// var me = this;
-			// _.delay(function()
-			// {
-			// 	console.log("playing");
-			// 	me.playAnimation('entry');
-			// }, 2000);
+			console.log("jxl-calendar::_currentDateChanged");
 			if(this._validDate(newValue))
 			{
-				this.setDate(newValue);
+				this.redraw();
 			}
 		},
 
 		_selectedDateChanged: function(newValue, oldValue)
 		{
-			if(this._validDate(newValue))
+			var me = this;
+			if(me._validDate(newValue) && me.hasAttached)
 			{
-				this.setDate(newValue);
+				debugger;
+				for(var i = 0; i<42; i++)
+				{
+					var datePaperButton = me.$["date" + i];
+					if(datePaperButton.classList.contains('dayIsSelected'))
+					{
+						me.toggleClass("dayIsSelected", false, datePaperButton);
+					}
+					if(datePaperButton.classList.contains('dayHide') === false)
+					{
+						var buttonsDate = moment(datePaperButton.getAttribute("dateString"));
+						if(me.isDateSame(buttonsDate, me.selectedDate, 'day'))
+						{
+							me.toggleClass('dayIsSelected', true, datePaperButton);
+						}
+					}
+				}
 			}
 		},
 
-		setDate: function(date)
+		redraw: function()
 		{
-			console.log("jxl-calendar::setDate, date:", date);
+			console.log("jxl-calendar::redraw");
 			var me = this;
+			if(me.hasAttached === false)
+			{
+				return;
+			}
+
+			if(_.every([me.today, me.currentDate], function(item) { return me._validDate(item);}) === false)
+			{
+				return;
+			}
+
+			var datePaperButton;
 			for(var i = 0; i<42; i++)
 			{
-				me.$["date" + i].style.visibility = "hidden";
+				datePaperButton = me.$["date" + i];
+				me.toggleClass("dayHide", true, datePaperButton);
+				datePaperButton.removeAttribute("dateString");
 			}
-			
+
 			var days = [];
 			var start = me.currentDate.clone().startOf('month').day(0);
-		   	var end = me.currentDate.clone().endOf('month').day(6);
-		   	var index = -1;
-		   	var isCurrentDate, isSelected, isToday;
-		   	moment()
-		   	.range(start, end)
-		   	.by('days', function(moment)
-		   	{
-		   		index++;
-		   		var btn = me.$["date" + i];
-		   		btn.dataset.dateString = moment.toISOString();
-		   		isCurrentDate = moment.isSame(me.currentDate, 'month') ? 'dayActive': 'dayFade';
-		   		isSelected = me.isDateSame(moment, me.selectedDate, 'day');
-	   			isToday = moment.isSame(me.today, 'day');
-	   			btn.style.visibility = "visible";
-	   			Polymer.dom(btn).setAttribute('class', me.getDayButtonClass(isCurrentDate, isSelected, isToday));
-		   		Polymer.dom.flush();
-		   		Polymer.dom(btn).textContent = moment.format('D');
-		   		Polymer.dom.flush();
-		   	});
-		   	me.distributeContent();
+			var end = me.currentDate.clone().endOf('month').day(6);
+			var index = -1;
+			var isCurrentDate, isSelected, isToday;
+			moment()
+			.range(start, end)
+			.by('days', function(moment)
+			{
+				index++;
+				datePaperButton = me.$["date" + index];
+				datePaperButton.setAttribute("dateString", moment.toISOString());
 
-		},
+				isCurrentDate = moment.isSame(me.currentDate, 'month') ? 'dayActive': 'dayFade';
+				me.toggleClass(isCurrentDate, false, datePaperButton);
 
-		notDefined: function(obj)
-		{
-			return _.isNull(obj) || _.isUndefined(obj);
-		},
+				isSelected = me.isDateSame(moment, me.selectedDate, 'day');
+				me.toggleClass('dayIsSelected', isSelected, datePaperButton);
+
+				isToday = moment.isSame(me.today, 'day');
+				me.toggleClass("dayIsToday", isToday, datePaperButton);
+				Polymer.dom(datePaperButton).textContent = moment.format('D');
+			});
+		   	// me.distributeContent();
+		   },
+
+		   notDefined: function(obj)
+		   {
+		   	return _.isNull(obj) || _.isUndefined(obj);
+		   },
 
 		// [jwarden 9.15.2015] moment is fine with null, but not with undefined apparently
 		isDateSame: function(dateA, dateB, precision)
@@ -334,30 +366,15 @@
 			}
 		},
 
-		getDayButtonClass: function(isCurrentDate, isSelected, isToday)
-		{
-			var str = "dayItem dayPaperButton " + isCurrentDate;
-			if(isSelected)
-			{
-				str += " dayIsSelected";
-			}
-			else if(isToday)
-			{
-				str += " dayIsToday";
-			}
-			return str;
-		},
-
 		onSelectDay: function(event)
 		{
 			var clickedButton = event.detail.sourceEvent.target.parentElement;
 			var dateString    = clickedButton.dataset.datestring;
 			this.selectedDate = moment(dateString);
-			this.currentDate  = this.currentDate.clone();
 		}
 
 	});
 
-	</script>
+</script>
 
 </dom-module>
